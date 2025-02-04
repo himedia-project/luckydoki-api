@@ -5,7 +5,7 @@ services:
     container_name: mysql_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: luckydoki
       MYSQL_USER: luckydoki
       MYSQL_PASSWORD: luckydoki
