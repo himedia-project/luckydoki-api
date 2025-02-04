@@ -3,7 +3,6 @@ package com.himedia.luckydokiapi.init;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
-import com.himedia.luckydokiapi.domain.product.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -24,8 +23,6 @@ public class NotProd {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private final CategoryRepository categoryRepository;
-
 
     @Bean
     public CommandLineRunner init() {
@@ -33,7 +30,7 @@ public class NotProd {
             log.info("init data...");
 
             // 데이터가 하나라도 있으면 초기화하지 않음
-            if (memberRepository.count() > 0 && categoryRepository.count() > 0) {
+            if (memberRepository.count() > 0 ) {
                 log.info("이미 초기 데이터가 존재합니다.");
                 return;
             } else {
