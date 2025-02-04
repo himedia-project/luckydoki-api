@@ -66,13 +66,14 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Override
     public void remove(Long categoryId) {
-
         // 연관관계가 있는 카테고리라면 삭제 불가능
         if (productRepository.existsByCategoryId(categoryId)) {
             throw new IllegalStateException("연관된 상품이 있어 카테고리 삭제가 불가능합니다.");
         }
 
         categoryRepository.deleteById(categoryId);
+        // 파일 삭제
+        fileUtil.deleteS3File(this.getEntity(categoryId).getLogo());
     }
 
 
