@@ -50,6 +50,7 @@ public class ProductExcelService {
                             .price(product.getPrice())
                             .discountPrice(product.getDiscountPrice())
                             .description(product.getDescription())
+                            .stockNumber(product.getStockNumber())
                             .imagePathList(fileUtil.getMergedS3ImagePathList(product.getImageList().stream().map(ProductImage::getImageName).toList()))
                             .build();
                 })

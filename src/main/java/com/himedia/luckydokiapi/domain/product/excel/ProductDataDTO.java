@@ -20,14 +20,15 @@ public class ProductDataDTO {
 
     @ExcelColumn(header = "가격")
     private int price;
-    @ExcelColumn(header = "가격")
-    private String story;
 
     @ExcelColumn(header = "할인가격")
     private int discountPrice;
 
     @ExcelColumn(header = "설명")
     private String description;
+
+    @ExcelColumn(header = "재고수량")
+    private int stockNumber;
 
     @ExcelColumn(header = "이미지 경로 리스트")
     private String imagePathList;
