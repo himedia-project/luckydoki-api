@@ -39,8 +39,8 @@ public class NotProd {
             } else {
                 log.info("초기 데이터가 없어 초기화합니다.");
                 Member member1 = Member.builder()
-                        .email("adult@test.com")
-                        .name("adult")
+                        .email("user@test.com")
+                        .name("user")
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
                         .delFlag(false)
@@ -49,8 +49,8 @@ public class NotProd {
                 member1.addRole(MemberRole.USER);
 
                 Member member2 = Member.builder()
-                        .email("jammin@test.com")
-                        .name("jammin")
+                        .email("seller@test.com")
+                        .name("seller")
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
                         .delFlag(false)
@@ -58,7 +58,15 @@ public class NotProd {
 
                 member2.addRole(MemberRole.SELLER);
 
-                memberRepository.saveAll(List.of(member1, member2));
+                Member member3 = Member.builder()
+                        .email("admin@test.com")
+                        .name("admin")
+                        .password(passwordEncoder.encode("1234"))
+                        .phone("010-1234-5678")
+                        .delFlag(false)
+                        .build();
+
+                memberRepository.saveAll(List.of(member1, member2, member3));
                 log.info("Member 초기 데이터 생성 완료");
             }
 
