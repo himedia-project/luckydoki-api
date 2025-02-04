@@ -30,6 +30,10 @@ public class Category extends BaseEntity {
     @NotNull
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Size(max = 255)
+    @Column(name = "logo")
+    private String logo;
 //
 //
 //    @ManyToOne
