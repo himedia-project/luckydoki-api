@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface ProductRepositoryCustom {
 
+    List<Product> findByIdList(List<Long> idList);
+
     Page<Product> findListBy(ProductRequestDTO requestDTO);
 
     List<Product> findByDTO(ProductRequestDTO requestDTO);

@@ -89,6 +89,14 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
 
+    @Override
+    public List<Product> findByIdList(List<Long> idList) {
+        return queryFactory.selectFrom(product)
+                .where(product.id.in(idList))
+                .fetch();
+    }
+
+
     /**
      * Sort 정보를 OrderSpecifier 배열로 변환
      *

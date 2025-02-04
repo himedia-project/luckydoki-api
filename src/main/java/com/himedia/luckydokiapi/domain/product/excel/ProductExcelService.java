@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.product.excel;
 
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
+import com.himedia.luckydokiapi.domain.product.entity.ProductImage;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.util.excel.RegistrationFailResponseDTO;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
@@ -40,5 +41,18 @@ public class ProductExcelService {
     }
 
 
-
+    public List<ProductDataDTO> getExcelDataList(ProductIdListDTO requestDto) {
+        return productRepository.findByIdList(requestDto.getIdList()).stream()
+                .map(product -> {
+                    return ProductDataDTO.builder()
+                            .id(product.getId())
+                            .name(product.getName())
+                            .price(product.getPrice())
+                            .discountPrice(product.getDiscountPrice())
+                            .description(product.getDescription())
+                            .imagePathList(fileUtil.getMergedS3ImagePathList(product.getImageList().stream().map(ProductImage::getImageName).toList()))
+                            .build();
+                })
+                .toList();
+    }
 }
