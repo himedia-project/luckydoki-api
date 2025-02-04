@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.product.entity;
 
+import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
 import com.himedia.luckydokiapi.domain.product.enums.ProductMdPick;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -57,6 +58,9 @@ public class Product extends BaseEntity {
     @ColumnDefault("'N'")
     private ProductMdPick mdPick;
 
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'N'")
+    private ProductBest best;
 
     // 장르
     @NotNull
@@ -114,6 +118,14 @@ public class Product extends BaseEntity {
 
     public void changePrice(Integer price) {
         this.price = price;
+    }
+
+    public void changeDiscountPrice(Integer discountPrice) {
+        this.discountPrice = discountPrice;
+    }
+
+    public void changeBest(ProductBest best) {
+        this.best = best;
     }
 
     public void changeDescription(String description) {

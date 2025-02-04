@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.product.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
 import com.himedia.luckydokiapi.domain.product.enums.ProductMdPick;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ public class ProductDTO {
     private Integer discountPrice;
     private String description;
     private ProductMdPick mdPick;
+    private ProductBest best;
 
 
     private Integer stockNumber;

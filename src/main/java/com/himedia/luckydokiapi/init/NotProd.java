@@ -63,6 +63,8 @@ public class NotProd {
                         .delFlag(false)
                         .build();
 
+                member3.addRole(MemberRole.ADMIN);
+
                 memberRepository.saveAll(List.of(member1, member2, member3));
                 log.info("Member 초기 데이터 생성 완료");
             }

@@ -3,7 +3,9 @@ package com.himedia.luckydokiapi.domain.product.dto;
 
 import com.himedia.luckydokiapi.domain.product.enums.ProductMdPick;
 import com.himedia.luckydokiapi.domain.product.enums.ProductNew;
+import com.himedia.luckydokiapi.dto.PageRequestDTO;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -11,9 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @ToString
-public class ProductRequestDTO {
+public class ProductRequestDTO extends PageRequestDTO {
+
     private Long id;
     private Long categoryId;
     private ProductMdPick mdPick;

@@ -2,9 +2,11 @@ package com.himedia.luckydokiapi.domain.product.service;
 
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Category;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.entity.ProductImage;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
 
 
 import java.util.List;
@@ -13,7 +15,15 @@ import java.util.List;
 public interface AdminProductService {
 
 
+    PageResponseDTO<ProductDTO> list(ProductRequestDTO requestDTO);
+
+    ProductDTO getOne(Long id);
+
     Long register(ProductDTO productDTO);
+
+    Long modify(Long id, ProductDTO productDTO);
+
+    void remove(Long id);
 
     /**
      * Product -> ProductDTO 변환
@@ -76,4 +86,6 @@ public interface AdminProductService {
 
         return product;
     }
+
+
 }
