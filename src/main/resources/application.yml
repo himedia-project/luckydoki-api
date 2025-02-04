@@ -1,0 +1,127 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: local # ?? ???? ???
+
+  config:
+    import: optional:file:.env[.properties] # ???? ?? ??
+
+  output:
+    ansi:
+      enabled: always # ANSI ?? ?? ??? (JUnit ??? ??)
+
+  web:
+    resources:
+      add-mappings: false # ?? ??? ?? ?? ?? false
+  #  mvc:
+  #    throw-exception-if-no-handler-found: true # ?? ?? ??? ?? ? ?? ??
+
+  servlet:
+    multipart:
+      max-request-size: 30MB # ?? ?? ??
+      max-file-size: 10MB # ?? ?? ??
+
+  jpa:
+    open-in-view: false # Open EntityManager in View ?? ?? ??
+    hibernate:
+      ddl-auto: update # ??? ?? ? ???? ?? (create, create-drop, update, validate, none)
+#    defer-datasource-initialization: false # DataSource ??? ??
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect # Hibernate Dialect ??
+        format_sql: true # SQL ???
+        highlight_sql: true # SQL ????? ??
+        use_sql_comments: true # JPQL SQL ?? ??
+        default_batch_fetch_size: 100 # ?? ?? ?? ??
+  # ? sql init ??? ??
+  sql:
+    init:
+      platform: mysql # SQL ??? ??? (mysql, h2, postgresql, oracle, sqlserver)
+      data-locations: classpath:sql/data.sql # ddl-auto? create, create-drop, update? ? ??? ???, ??? ??? validate/none? ??
+      mode: never # SQL ??? ?? (always, never, embedded, embedded-always)
+
+app:
+  props:
+    social:
+      kakao:
+        client-id: ${KAKAO_CLIENT_ID}
+        client-secret: ${KAKAO_CLIENT_SECRET}
+        authorization-uri: https://kauth.kakao.com/oauth/authorize
+        token-uri: https://kauth.kakao.com/oauth/token
+        user-info-uri: https://kapi.kakao.com/v2/user/me
+        user-info-name-attribute-key: id
+        client-name: Kakao
+    jwt:
+      secret-key: ${JWT_SECRET_KEY}
+      access-token-expiration-period: 150 # ???, 15?, ???? ?? 150?
+      refresh-token-expiration-period: 1440 # 24?? 60 * 24 = 1440?
+
+    aws:
+      key:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      s3:
+        bucket-name: ${AWS_S3_BUCKET_NAME}
+        region: ${AWS_REGION}
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3308/luckydoki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: luckydoki
+    password: luckydoki
+
+app:
+  props:
+    social:
+      kakao:
+        redirect-uri: ${KAKAO_LOCAL_REDIRECT_URI}
+
+logging:
+  level:
+    org.hibernate.SQL: debug # Hibernate SQL ?? ??
+    org.hibernate.orm.jdbc.bind: trace # Hibernate SQL ??? ?? ??
+    org.springframework.transaction.interceptor: trace # Spring ???? ???? ?? ??
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod # ?? ??
+  jpa:
+    hibernate:
+      ddl-auto: update # ??? ?? ? ???? ?? (create, create-drop, update, validate, none)
+  sql:
+    init:
+      platform: mysql # SQL ??? ??? (mysql, h2, postgresql, oracle, sqlserver)
+      data-locations: classpath:sql/data.sql # ddl-auto? create, create-drop, update? ? ??? ???, ??? ??? validate/none? ??
+      mode: never # SQL ??? ?? (always, never, embedded, embedded-always)
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #    url: jdbc:mysql://host.docker.internal:3306/aniwhere?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/luckydoki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: luckydoki
+    password: luckydoki
+    hikari:
+      max-lifetime: 600000 # ?? ?? (???)
+      idle-timeout: 300000 # ?? ?? (???)
+      connection-timeout: 30000 # ?? ?? ?? (???)
+
+app:
+  props:
+    social:
+      kakao:
+        redirect-uri: ${KAKAO_PROD_REDIRECT_URI}
+
+logging:
+  level:
+    org.hibernate.SQL: error # Hibernate SQL ?? ??
