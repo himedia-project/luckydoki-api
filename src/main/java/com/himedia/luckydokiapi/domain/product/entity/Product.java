@@ -1,9 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.entity;
 
-import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
-import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
-import com.himedia.luckydokiapi.domain.product.enums.ProductDisplay;
-import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
+import com.himedia.luckydokiapi.domain.product.enums.*;
+import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -79,11 +77,19 @@ public class Product extends BaseEntity {
     @ColumnDefault("'N'")
     private ProductBest best;
 
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'N'")
+    private ProductEvent event;
+
     // 장르
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category category;
+    private Category category;      // 마지막 category
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shop_id")
+    private Shop shop;
 
     @ElementCollection
     @Builder.Default
