@@ -107,7 +107,8 @@ public class MemberServiceImpl implements MemberService {
         return Map.of();
     }
 
-    private Member getEntity(String email) {
+    @Override
+    public Member getEntity(String email) {
         return memberRepository.getWithRoles(email)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 회원이 없습니다."));
     }

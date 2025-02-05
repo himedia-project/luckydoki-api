@@ -9,6 +9,9 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.Map;
 
 public interface MemberService {
+
+    Member getEntity(String email);
+
     Map<String, Object> login(@NotBlank(message = "이메일을 입력해주세요") String email, @NotBlank(message = "패스워드를  입력해주세요") String password);
 
     void join(@Valid JoinRequestDTO joinRequestDTO);

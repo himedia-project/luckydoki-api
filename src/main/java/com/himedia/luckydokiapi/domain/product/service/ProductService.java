@@ -15,9 +15,12 @@ public interface ProductService {
 
     ProductResponseDTO getProduct(Long id);
 
+    Product getEntity(Long productId);
+
     List<ProductResponseDTO> list(ProductRequestDTO requestDTO);
 
     List<TagDTO> tagList(Long id);
+
 
     default ProductResponseDTO entityToDTO(Product product) {
         return ProductResponseDTO.builder()
@@ -35,5 +38,7 @@ public interface ProductService {
                 .modifiedAt(product.getModifiedAt())
                 .build();
     }
+
+
 
 }

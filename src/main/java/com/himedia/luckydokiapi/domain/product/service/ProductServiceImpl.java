@@ -32,7 +32,8 @@ public class ProductServiceImpl implements ProductService {
         return entityToDTO(product);
     }
 
-    private Product getEntity(Long id) {
+    @Override
+    public Product getEntity(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 상품이 존재하지 않습니다."));
     }
