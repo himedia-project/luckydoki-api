@@ -1,7 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.dto;
 
 
-import com.himedia.luckydokiapi.domain.product.enums.ProductMdPick;
+import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.himedia.luckydokiapi.domain.product.enums.ProductNew;
 import com.himedia.luckydokiapi.dto.PageRequestDTO;
 import lombok.*;
@@ -19,7 +19,7 @@ public class ProductRequestDTO extends PageRequestDTO {
 
     private Long id;
     private Long categoryId;
-    private ProductMdPick mdPick;
+    private ProductIsNew mdPick;
     private String releaseDate;
     private ProductNew isNew;
     private String searchKeyword;

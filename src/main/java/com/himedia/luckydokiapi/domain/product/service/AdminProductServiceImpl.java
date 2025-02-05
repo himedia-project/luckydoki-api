@@ -4,7 +4,7 @@ import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
 import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
-import com.himedia.luckydokiapi.domain.product.enums.ProductMdPick;
+import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.himedia.luckydokiapi.domain.product.repository.CategoryRepository;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.product.repository.ProductTagRepository;
@@ -151,7 +151,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         product.changeDescription(dto.getDescription());
         product.changeStockNumber(dto.getStockNumber());
         product.changeBest(dto.getBest() == null ? ProductBest.N : dto.getBest());
-        product.changeMdPick(dto.getMdPick() == null ? ProductMdPick.N : dto.getMdPick());
+        product.changeIsNew(dto.getIsNew() == null ? ProductIsNew.N : dto.getIsNew());
 
         product.clearImageList();
 

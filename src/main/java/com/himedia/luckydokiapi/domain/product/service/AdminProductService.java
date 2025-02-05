@@ -41,7 +41,7 @@ public interface AdminProductService {
                 .price(product.getPrice())
                 .discountPrice(product.getDiscountPrice())
                 .description(product.getDescription())
-                .mdPick(product.getMdPick())
+                .isNew(product.getIsNew())
                 .createdAt(product.getCreatedAt())
                 .modifiedAt(product.getModifiedAt())
                 .build();
@@ -69,7 +69,7 @@ public interface AdminProductService {
                 .price(dto.getPrice())
                 .discountPrice(dto.getDiscountPrice())
                 .description(dto.getDescription())
-                .mdPick(dto.getMdPick())
+                .isNew(dto.getIsNew())
                 .stockNumber(dto.getStockNumber())
                 .delFlag(false)
                 .build();

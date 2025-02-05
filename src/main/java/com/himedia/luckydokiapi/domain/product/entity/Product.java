@@ -1,7 +1,9 @@
 package com.himedia.luckydokiapi.domain.product.entity;
 
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
-import com.himedia.luckydokiapi.domain.product.enums.ProductMdPick;
+import com.himedia.luckydokiapi.domain.product.enums.ProductDisplay;
+import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +28,8 @@ public class Product extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String code;  // 24343233930
+
     @Size(max = 255)
     @NotNull
     @Column(name = "name", nullable = false)
@@ -41,6 +45,11 @@ public class Product extends BaseEntity {
     @Column(name = "discount_price")
     private Integer discountPrice;
 
+
+    @NotNull
+    @ColumnDefault("0")
+    private Integer discountRate;
+
     // LongText
     @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
@@ -49,6 +58,14 @@ public class Product extends BaseEntity {
     @Column(name = "del_flag")
     private Boolean delFlag;
 
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'N'")
+    private ProductDisplay display;     // 유저단 노출
+
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'N'")
+    private ProductApproval approval;   // 승인
+
     @NotNull
     @ColumnDefault("1")
     @Column(name = "stock_number", nullable = false)
@@ -56,7 +73,7 @@ public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'N'")
-    private ProductMdPick mdPick;
+    private ProductIsNew isNew;
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'N'")
@@ -76,6 +93,7 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @Builder.Default
     private List<ProductTag> productTagList = new ArrayList<>();
+
 
     /**
      * 상품 이미지, 상품에 추가
@@ -137,8 +155,8 @@ public class Product extends BaseEntity {
     }
 
 
-    public void changeMdPick(ProductMdPick mdPick) {
-        this.mdPick = mdPick;
+    public void changeIsNew(ProductIsNew isNew) {
+        this.isNew = isNew;
     }
 
     public void changeCategory(Category category) {

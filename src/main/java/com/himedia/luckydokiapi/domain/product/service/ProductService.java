@@ -31,7 +31,7 @@ public interface ProductService {
                 .price(product.getPrice())
                 .discountPrice(product.getDiscountPrice())
                 .description(product.getDescription())
-                .mdPick(product.getMdPick())
+                .mdPick(product.getIsNew())
                 .uploadFileNames(product.getImageList().stream().map(ProductImage::getImageName).collect(Collectors.toList()))
                 .imagePathList(product.getImageList().stream().map(ProductImage::getImageName).collect(Collectors.toList()))
                 .createdAt(product.getCreatedAt())

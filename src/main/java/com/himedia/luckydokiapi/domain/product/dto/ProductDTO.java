@@ -2,8 +2,10 @@ package com.himedia.luckydokiapi.domain.product.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
-import com.himedia.luckydokiapi.domain.product.enums.ProductMdPick;
+import com.himedia.luckydokiapi.domain.product.enums.ProductDisplay;
+import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,13 +21,17 @@ import java.util.List;
 @ToString
 public class ProductDTO {
     private Long id;
+    private String code;
     private Long categoryId;
     private String categoryName;
     private String name;
     private Integer price;
     private Integer discountPrice;
+    private Integer discountRate;
     private String description;
-    private ProductMdPick mdPick;
+    private ProductDisplay display;
+    private ProductApproval approval;
+    private ProductIsNew isNew;
     private ProductBest best;
 
 

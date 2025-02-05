@@ -3,7 +3,7 @@ package com.himedia.luckydokiapi.domain.product.excel;
 
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
-import com.himedia.luckydokiapi.domain.product.enums.ProductMdPick;
+import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.himedia.luckydokiapi.util.excel.ExcelDataExtractor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -42,7 +42,7 @@ public class ProductExcelDataExtractor {
                         .price((int) row.getCell(2).getNumericCellValue())
                         .discountPrice((int) row.getCell(5).getNumericCellValue())
                         .description(row.getCell(3).getStringCellValue().trim())
-                        .mdPick(row.getCell(4).getStringCellValue().trim().equals("Y") ? ProductMdPick.Y : ProductMdPick.N)
+                        .isNew(row.getCell(4).getStringCellValue().trim().equals("Y") ? ProductIsNew.Y : ProductIsNew.N)
                         .tagStrList(Arrays.asList(row.getCell(7).getStringCellValue().split(",")))
                         .imagePathList(getExcelImageList(row.getCell(10).getStringCellValue().trim()))
                         .build();

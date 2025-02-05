@@ -3,7 +3,7 @@ package com.himedia.luckydokiapi.domain.product.repository.querydsl;
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
-import com.himedia.luckydokiapi.domain.product.enums.ProductMdPick;
+import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -81,7 +81,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .where(
                         product.delFlag.eq(false),
                         eqCategory(requestDTO.getCategoryId()),
-                        eqMdPick(requestDTO.getMdPick()),
+                        eqIsNew(requestDTO.getMdPick()),
                         containsSearchKeyword(requestDTO.getSearchKeyword())
                 )
                 .orderBy(product.id.desc())
@@ -119,11 +119,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return product.category.id.eq(categoryId);
     }
 
-    private BooleanExpression eqMdPick(ProductMdPick mdPick) {
-        if (mdPick == null) {
+    private BooleanExpression eqIsNew(ProductIsNew isNew) {
+        if (isNew == null) {
             return null;
         }
-        return product.mdPick.eq(mdPick);
+        return product.isNew.eq(isNew);
     }
 
 

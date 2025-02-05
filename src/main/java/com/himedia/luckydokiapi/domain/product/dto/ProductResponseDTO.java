@@ -2,7 +2,7 @@ package com.himedia.luckydokiapi.domain.product.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.himedia.luckydokiapi.domain.product.enums.ProductMdPick;
+import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,7 +23,7 @@ public class ProductResponseDTO {
     private Integer price;
     private Integer discountPrice;
     private String description;
-    private ProductMdPick mdPick;
+    private ProductIsNew mdPick;
     private Integer totalEpisode;
     private String releaseDate;
     private String manufacturer;
