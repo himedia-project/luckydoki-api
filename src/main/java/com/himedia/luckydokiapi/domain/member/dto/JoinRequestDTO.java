@@ -13,8 +13,8 @@ import lombok.*;
 public class JoinRequestDTO {
     @NotBlank(message = "이메일 필수 입력 항목 입니다")
     private String email; //username
-    @NotBlank(message = "이름은 필수 입력 항목 입니다")
-    private String name;
+    @NotBlank(message = "닉네임은 필수 입력 항목 입니다")
+    private String nickName;
     @NotNull(message = "생년월일 필수 입력 값입니다.")
     private Long birthday;
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")

@@ -1,11 +1,14 @@
 package com.himedia.luckydokiapi.domain.member.entity;
 
 
+import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
+import com.himedia.luckydokiapi.domain.member.enums.PushActive;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +24,19 @@ public class Member extends BaseEntity {
 
     @Id
     private String email; //username
-    private String name;
+    private String nickName;
     private Long birthday;
+    private String profileImage;
     private String password;
     private String phone;
+
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'Y'")
+    private MemberActive active;
+
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'Y'")
+    private PushActive pushActive;
 
 
     private boolean delFlag;

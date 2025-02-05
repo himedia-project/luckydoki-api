@@ -7,9 +7,12 @@ import com.himedia.luckydokiapi.domain.product.entity.Category;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.entity.ProductImage;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
+import com.himedia.luckydokiapi.util.NumberGenerator;
 
 
 import java.util.List;
+
+import static com.himedia.luckydokiapi.util.NumberGenerator.*;
 
 // API 명세서 -> JDOC
 public interface AdminProductService {
@@ -35,13 +38,18 @@ public interface AdminProductService {
 
         ProductDTO productDTO = ProductDTO.builder()
                 .id(product.getId())
+                .code(product.getCode())
                 .categoryId(product.getCategory().getId())
                 .categoryName(product.getCategory().getName())
                 .name(product.getName())
                 .price(product.getPrice())
                 .discountPrice(product.getDiscountPrice())
+                .discountRate(product.getDiscountRate())
                 .description(product.getDescription())
                 .isNew(product.getIsNew())
+                .best(product.getBest())
+                .display(product.getDisplay())
+                .approval(product.getApproval())
                 .createdAt(product.getCreatedAt())
                 .modifiedAt(product.getModifiedAt())
                 .build();
@@ -64,12 +72,17 @@ public interface AdminProductService {
 
         Product product = Product.builder()
                 .id(dto.getId())
+                .code(generateRandomNumber(10))
                 .category(category)
                 .name(dto.getName())
                 .price(dto.getPrice())
                 .discountPrice(dto.getDiscountPrice())
+                .discountRate(dto.getDiscountRate())
                 .description(dto.getDescription())
                 .isNew(dto.getIsNew())
+                .best(dto.getBest())
+                .display(dto.getDisplay())
+                .approval(dto.getApproval())
                 .stockNumber(dto.getStockNumber())
                 .delFlag(false)
                 .build();

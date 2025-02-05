@@ -26,6 +26,7 @@ public class Product extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 상품 코드
     private String code;  // 24343233930
 
     @Size(max = 255)
@@ -43,9 +44,8 @@ public class Product extends BaseEntity {
     @Column(name = "discount_price")
     private Integer discountPrice;
 
-
-    @NotNull
     @ColumnDefault("0")
+    @Column(name = "discount_rate")
     private Integer discountRate;
 
     // LongText
@@ -140,14 +140,6 @@ public class Product extends BaseEntity {
         this.name = name;
     }
 
-    public void changePrice(Integer price) {
-        this.price = price;
-    }
-
-    public void changeDiscountPrice(Integer discountPrice) {
-        this.discountPrice = discountPrice;
-    }
-
     public void changeBest(ProductBest best) {
         this.best = best;
     }
@@ -167,6 +159,28 @@ public class Product extends BaseEntity {
 
     public void changeCategory(Category category) {
         this.category = category;
+    }
+
+
+    /**
+     * 할인가격 업데이트 -> 할인율 업데이트
+     */
+    public void updateDiscountRate() {
+        if (this.price != null && this.discountPrice != null && this.price > 0) {
+            this.discountRate = (int) ((1 - (double) this.discountPrice / this.price) * 100);
+        } else {
+            this.discountRate = 0;
+        }
+    }
+
+    public void changePrice(Integer price) {
+        this.price = price;
+        updateDiscountRate();
+    }
+
+    public void changeDiscountPrice(Integer discountPrice) {
+        this.discountPrice = discountPrice;
+        updateDiscountRate();
     }
 
 }

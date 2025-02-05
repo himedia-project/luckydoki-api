@@ -82,7 +82,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
             return null;
         }
         return member.email.like("%" + keyword + "%")
-                .or(member.name.like("%" + keyword + "%"));
+                .or(member.nickName.like("%" + keyword + "%"));
     }
 
 }

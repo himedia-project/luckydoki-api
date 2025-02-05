@@ -68,7 +68,7 @@ public class MemberServiceImpl implements MemberService {
             Member member = Member.builder()
                     .email(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword()))
-                    .name(request.getName())
+                    .nickName(request.getNickName())
                     .build();
 
             member.addRole(MemberRole.USER);
@@ -87,7 +87,7 @@ public class MemberServiceImpl implements MemberService {
         return new MemberDTO(
                 member.getEmail(),
                 member.getPassword(),
-                member.getName(),
+                member.getNickName(),
                 member.getMemberRoleList().stream()
                         .map(Enum::name).toList());
     }

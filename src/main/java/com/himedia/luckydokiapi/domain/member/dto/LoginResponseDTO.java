@@ -13,7 +13,7 @@ import java.util.List;
 public class LoginResponseDTO {
 
     private String email;
-    private String name;
+    private String nickName;
     private List<String> roles;
     private String accessToken;
 }

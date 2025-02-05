@@ -21,7 +21,7 @@ public interface AdminMemberService {
 
         return MemberResDTO.builder()
                 .email(member.getEmail())
-                .name(member.getName())
+                .nickName(member.getNickName())
                 .phone(member.getPhone())
                 .roles(member.getMemberRoleList())
                 .createdAt(member.getCreatedAt())

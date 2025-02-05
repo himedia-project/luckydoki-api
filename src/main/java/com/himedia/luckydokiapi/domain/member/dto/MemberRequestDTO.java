@@ -13,9 +13,9 @@ import lombok.experimental.SuperBuilder;
 public class MemberRequestDTO extends PageRequestDTO {
 
     private String email;
-    private String name;
+    private String nickName;
     private String phone;
-    private String birth;
+    private String birthday;
 
     private String searchKeyword;
 }

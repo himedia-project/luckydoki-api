@@ -41,7 +41,7 @@ public interface MemberService {
         return new MemberDTO(
                 member.getEmail(),
                 member.getPassword(),
-                member.getName(),
+                member.getNickName(),
                 member.getMemberRoleList().stream()
                         .map(Enum::name).toList());
     }

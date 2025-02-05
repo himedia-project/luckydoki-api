@@ -7,7 +7,6 @@ import com.himedia.luckydokiapi.domain.member.dto.LoginResponseDTO;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.util.CookieUtil;
-import com.himedia.luckydokiapi.util.JWTUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +58,7 @@ public class MemberController {
 
         LoginResponseDTO loginResponseDTO = LoginResponseDTO.builder()
                 .email(loginClaims.get("email").toString())
-                .name(loginClaims.get("name").toString())
+                .nickName(loginClaims.get("name").toString())
                 .roles((List<String>) loginClaims.get("roleNames"))
                 .accessToken(accessToken)
                 .build();

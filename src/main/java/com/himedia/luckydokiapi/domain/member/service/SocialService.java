@@ -512,7 +512,7 @@ public class SocialService {
         Member member = Member.builder()
                 .email(email)
                 .password(passwordEncoder.encode(tempPassword))
-                .name(nickname)
+                .nickName(nickname)
                 .build();
         member.addRole(MemberRole.USER);
         return member;

@@ -37,7 +37,7 @@ public class NotProd {
                 log.info("초기 데이터가 없어 초기화합니다.");
                 Member member1 = Member.builder()
                         .email("user@test.com")
-                        .name("user")
+                        .nickName("user")
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
                         .delFlag(false)
@@ -47,7 +47,7 @@ public class NotProd {
 
                 Member member2 = Member.builder()
                         .email("seller@test.com")
-                        .name("seller")
+                        .nickName("seller")
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
                         .delFlag(false)
@@ -57,7 +57,7 @@ public class NotProd {
 
                 Member member3 = Member.builder()
                         .email("admin@test.com")
-                        .name("admin")
+                        .nickName("admin")
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
                         .delFlag(false)
