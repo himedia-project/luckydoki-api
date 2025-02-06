@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import com.himedia.luckydokiapi.exception.EventNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -156,6 +157,16 @@ public class CustomControllerAdvice {
         log.error("NoHandlerFoundException: {}", msg);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorMessage(msg));
+    }
+    
+    @ExceptionHandler(EventNotFoundException.class)
+    public ResponseEntity<String> handleEventNotFoundException(EventNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+    
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGeneralException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
     }
 
 
