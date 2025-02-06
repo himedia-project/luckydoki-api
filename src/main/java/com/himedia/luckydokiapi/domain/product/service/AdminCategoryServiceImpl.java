@@ -58,7 +58,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
             MultipartFile file = categoryDTO.getFile();
             String uploadFileName = fileUtil.uploadS3File(file);
-            category.setLogo(uploadFileName);
+            category.changeLogo(uploadFileName);
         }
 
         return category.getId();

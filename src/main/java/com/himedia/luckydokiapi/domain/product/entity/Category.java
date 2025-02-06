@@ -54,4 +54,8 @@ public class Category extends BaseEntity {
     private List<CategoryBridge> categoryBridgeList = new ArrayList<>();
 
 
+    public void changeLogo(String logo) {
+        this.logo = logo;
+    }
+
 }

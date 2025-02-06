@@ -2,9 +2,7 @@ package com.himedia.luckydokiapi.domain.event.entity;
 
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
@@ -16,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@ToString(exclude = "eventBridgeList")
 @Table(name = "event")
 public class Event extends BaseEntity {
 
@@ -38,5 +37,6 @@ public class Event extends BaseEntity {
     private LocalDateTime endAt;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    List<EventBridge> eventBridgeList = new ArrayList<>();
+    @Builder.Default
+    private List<EventBridge> eventBridgeList = new ArrayList<>();
 }
