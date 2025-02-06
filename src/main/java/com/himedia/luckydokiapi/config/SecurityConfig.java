@@ -71,6 +71,9 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/product/view/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/content/view/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/product/excel/download")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/admin/member/seller-applications/pending")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/admin/member/seller-applications/approved")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/admin/member/approve-seller/{applicationId}")).permitAll()
                         // health check
                         .requestMatchers(new AntPathRequestMatcher("/health/**")).permitAll()
                         // api path에 admin 포함되면 ROLE_ADMIN 권한이 있어야 접근 가능,

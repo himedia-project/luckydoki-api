@@ -2,10 +2,7 @@ package com.himedia.luckydokiapi.domain.member.controller;
 
 
 
-import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.LoginRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.MemberRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.MemberResDTO;
+import com.himedia.luckydokiapi.domain.member.dto.*;
 import com.himedia.luckydokiapi.domain.member.service.AdminMemberService;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
@@ -149,4 +146,31 @@ public class AdminMemberController {
         long leftMin = gap / (1000 * 60);
         return leftMin < 60;
     }
+
+    /**
+     *  승인되지 않은 셀러 신청 목록 조회
+     */
+    @GetMapping("/seller-applications/pending")
+    public ResponseEntity<List<SellerResponseDTO>> getPendingApplications() {
+        return ResponseEntity.ok(adminMemberService.getPendingApplications());
+    }
+
+    /**
+     *  승인된 셀러 신청 목록 조회
+     */
+    @GetMapping("/seller-applications/approved")
+    public ResponseEntity<List<SellerResponseDTO>> getApprovedApplications() {
+        return ResponseEntity.ok(adminMemberService.getApprovedApplications());
+    }
+
+    /**
+     *  셀러 신청 승인 API
+     */
+    @PostMapping("/approve-seller/{applicationId}")
+    public ResponseEntity<SellerResponseDTO> approveSeller(@PathVariable Long applicationId) {
+        SellerResponseDTO approvedApplication = adminMemberService.approveSeller(applicationId);
+        return ResponseEntity.ok(approvedApplication);
+    }
+
+
 }
