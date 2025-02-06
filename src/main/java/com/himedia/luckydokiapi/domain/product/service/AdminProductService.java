@@ -48,8 +48,6 @@ public interface AdminProductService {
                 .description(product.getDescription())
                 .isNew(product.getIsNew())
                 .best(product.getBest())
-                .display(product.getDisplay())
-                .approval(product.getApproval())
                 .createdAt(product.getCreatedAt())
                 .modifiedAt(product.getModifiedAt())
                 .build();
@@ -81,8 +79,6 @@ public interface AdminProductService {
                 .description(dto.getDescription())
                 .isNew(dto.getIsNew())
                 .best(dto.getBest())
-                .display(dto.getDisplay())
-                .approval(dto.getApproval())
                 .stockNumber(dto.getStockNumber())
                 .delFlag(false)
                 .build();
