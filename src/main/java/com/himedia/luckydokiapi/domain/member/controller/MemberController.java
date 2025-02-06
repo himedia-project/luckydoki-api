@@ -58,7 +58,7 @@ public class MemberController {
 
         LoginResponseDTO loginResponseDTO = LoginResponseDTO.builder()
                 .email(loginClaims.get("email").toString())
-                .nickName(loginClaims.get("name").toString())
+                .nickName(loginClaims.get("nickName").toString())
                 .roles((List<String>) loginClaims.get("roleNames"))
                 .accessToken(accessToken)
                 .build();
