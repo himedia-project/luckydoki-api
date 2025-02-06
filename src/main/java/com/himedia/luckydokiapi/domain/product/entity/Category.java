@@ -1,23 +1,23 @@
 package com.himedia.luckydokiapi.domain.product.entity;
 
 
+import com.himedia.luckydokiapi.domain.product.enums.LastType;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
 @Entity
-//@ToString(exclude = "")
 @Table(name = "category")
 public class Category extends BaseEntity {
 
@@ -34,11 +34,24 @@ public class Category extends BaseEntity {
     @Size(max = 255)
     @Column(name = "logo")
     private String logo;
-//
-//
-//    @ManyToOne
-//    @JoinColumn(name="product_id")
-//    private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="parent_id")
+    private Category parent;
+
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'N'")
+    private LastType lastType;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Category> children = new ArrayList<>();
+
+
+    // 카테고리 브릿지
+    @OneToMany(mappedBy = "category")
+    @Builder.Default
+    private List<CategoryBridge> categoryBridgeList = new ArrayList<>();
 
 
 }
