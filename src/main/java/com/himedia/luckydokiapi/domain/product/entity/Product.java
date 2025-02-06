@@ -56,14 +56,6 @@ public class Product extends BaseEntity {
     @Column(name = "del_flag")
     private Boolean delFlag;
 
-    @Enumerated(EnumType.STRING)
-    @ColumnDefault("'N'")
-    private ProductDisplay display;     // 유저단 노출
-
-    @Enumerated(EnumType.STRING)
-    @ColumnDefault("'N'")
-    private ProductApproval approval;   // 승인
-
     @NotNull
     @ColumnDefault("1")
     @Column(name = "stock_number", nullable = false)
