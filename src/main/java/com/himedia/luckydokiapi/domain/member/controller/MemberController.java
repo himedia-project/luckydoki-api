@@ -1,9 +1,7 @@
 package com.himedia.luckydokiapi.domain.member.controller;
 
 
-import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.LoginRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.LoginResponseDTO;
+import com.himedia.luckydokiapi.domain.member.dto.*;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.util.CookieUtil;
@@ -79,6 +77,11 @@ public class MemberController {
         return ResponseEntity.ok("logout success!");
     }
 
+    @PostMapping("/upgrade-to-seller")
+    public ResponseEntity<SellerResponseDTO> upgradeToSeller(@Valid @RequestBody SellerRequestDTO requestDTO) {
+        log.info("셀러 승급 신청 요청: {}", requestDTO);
+        SellerResponseDTO response = memberService.upgradeToSeller(requestDTO);
+        return ResponseEntity.ok(response);
 
+    }
 }
-//true -> adult , false -> 잼민이 ㅋ

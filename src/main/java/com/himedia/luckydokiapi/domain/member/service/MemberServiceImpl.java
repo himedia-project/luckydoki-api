@@ -2,9 +2,13 @@ package com.himedia.luckydokiapi.domain.member.service;
 
 
 import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
+import com.himedia.luckydokiapi.domain.member.dto.SellerRequestDTO;
+import com.himedia.luckydokiapi.domain.member.dto.SellerResponseDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
+import com.himedia.luckydokiapi.domain.member.repository.SellerApplicationRepository;
 import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.security.CustomUserDetailService;
 import com.himedia.luckydokiapi.security.MemberDTO;
@@ -17,7 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,7 +31,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
-
+    private final SellerApplicationRepository sellerApplicationRepository;
     private final JWTUtil jwtUtil;
     private final JwtProps jwtProps;
 
@@ -112,5 +118,44 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.getWithRoles(email)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 회원이 없습니다."));
     }
+
+    /**
+     *  셀러 신청과 동시에 DB에 저장
+     */
+    @Override
+    public SellerResponseDTO upgradeToSeller(SellerRequestDTO requestDTO) {
+        // 1. 회원 정보 조회 (이메일 기준)
+        Member member = memberRepository.findById(requestDTO.getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("해당 회원이 존재하지 않습니다. email: " + requestDTO.getEmail()));
+
+        // 2. 이미 신청했는지 확인 (중복 방지)
+        boolean alreadyExists = sellerApplicationRepository.findByEmail(requestDTO.getEmail()).isPresent();
+        if (alreadyExists) {
+            throw new IllegalStateException("이미 셀러 신청을 완료한 회원입니다.");
+        }
+
+        // 3. 신청 정보 생성 및 저장 (isApproved = false)
+        SellerApplication application = SellerApplication.builder()
+                .email(member.getEmail())
+                .nickName(member.getNickName())
+                .isApproved(false)
+                .build();
+
+        sellerApplicationRepository.save(application);
+
+        // 4. DTO 변환 후 반환
+        return SellerResponseDTO.builder()
+                .id(application.getId())
+                .email(application.getEmail())
+                .nickName(application.getNickName())
+                .isApproved(application.isApproved())
+                .statusDescription(application.isApproved() ? "승인 완료" : "승인 대기")
+                .build();
+    }
+
+
+
+
+
 
 }
