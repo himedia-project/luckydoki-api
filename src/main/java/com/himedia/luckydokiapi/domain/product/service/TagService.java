@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface TagService {
 
-    List<ProductDTO> list(Long id);
+    List<ProductDTO.Response> list(Long id);
 }

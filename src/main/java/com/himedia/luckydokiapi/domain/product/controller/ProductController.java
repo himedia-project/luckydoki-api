@@ -1,7 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.controller;
 
-import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
-import com.himedia.luckydokiapi.domain.product.dto.ProductResponseDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
 import com.himedia.luckydokiapi.domain.product.service.ProductService;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
@@ -26,15 +26,13 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/{id}/detail")
-    public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable Long id) {
-        ProductResponseDTO responseDTO = productService.getProduct(id);
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<ProductDTO.Response> getProduct(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProduct(id));
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<ProductResponseDTO>> searchProducts(ProductRequestDTO requestDTO) {
-        List<ProductResponseDTO> responseDTOList = productService.list(requestDTO);
-        return ResponseEntity.ok(responseDTOList);
+    public ResponseEntity<List<ProductDTO.Response>> searchProducts(ProductSearchDTO requestDTO) {
+        return ResponseEntity.ok(productService.list(requestDTO));
     }
 
     @GetMapping("/{id}/tag/list")

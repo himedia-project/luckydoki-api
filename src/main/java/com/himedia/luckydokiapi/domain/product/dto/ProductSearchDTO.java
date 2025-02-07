@@ -4,7 +4,6 @@ package com.himedia.luckydokiapi.domain.product.dto;
 import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
 import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
-import com.himedia.luckydokiapi.domain.product.enums.ProductNew;
 import com.himedia.luckydokiapi.dto.PageRequestDTO;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -17,7 +16,7 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @ToString
-public class ProductRequestDTO extends PageRequestDTO {
+public class ProductSearchDTO extends PageRequestDTO {
 //검색용 dto
     private Long id;
     private Long categoryId;

@@ -1,7 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.repository.querydsl;
 
 
-import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
 import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
@@ -34,7 +34,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
 
     @Override
-    public Page<Product> findListBy(ProductRequestDTO requestDTO) {
+    public Page<Product> findListBy(ProductSearchDTO requestDTO) {
 //admin 용
 
         Pageable pageable = PageRequest.of(
@@ -84,7 +84,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     //새로 추가된 옵션들도  (enums ) 검색 옵ㄱ션추가
     //member 용
     @Override
-    public List<Product> findByDTO(ProductRequestDTO requestDTO) {
+    public List<Product> findByDTO(ProductSearchDTO requestDTO) {
 
         return queryFactory
                 .selectFrom(product)

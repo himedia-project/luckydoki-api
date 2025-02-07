@@ -4,12 +4,9 @@ package com.himedia.luckydokiapi.domain.product.service;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
-import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
-import com.himedia.luckydokiapi.domain.product.dto.ProductResponseDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
-import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
-import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.himedia.luckydokiapi.domain.product.repository.CategoryRepository;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.product.repository.ProductTagRepository;
@@ -35,7 +32,7 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
-    private final AdminProductService adminProductService;
+
     private final ShopRepository shopRepository;
     private final CategoryRepository categoryRepository;
 
@@ -46,9 +43,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional(readOnly = true)
     @Override
-    public ProductResponseDTO getProduct(Long id) {
+    public ProductDTO.Response getProduct(Long id) {
         Product product = getEntity(id);
-        return entityToResDTO(product);
+        return this.entityToDTO(product);
     }
 
 
@@ -61,9 +58,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ProductResponseDTO> list(ProductRequestDTO requestDTO) {
+    public List<ProductDTO.Response> list(ProductSearchDTO requestDTO) {
         return productRepository.findByDTO(requestDTO).stream()
-                .map(this::entityToResDTO).collect(Collectors.toList());
+                .map(this::entityToDTO).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -83,15 +80,15 @@ public class ProductServiceImpl implements ProductService {
     //member 의 본인이 올린  상품 리스트 확인
     @Transactional(readOnly = true)
     @Override
-    public List<ProductResponseDTO> getListByMember(String email) {
+    public List<ProductDTO.Response> getListByMember(String email) {
         Member member = getMember(email);
         return productRepository.findProductByShopMemberEmail(member.getEmail()).stream()
-                .map(this::entityToResDTO).collect(Collectors.toList());
+                .map(this::entityToDTO).collect(Collectors.toList());
     }
 
     //member 의 상품 등록
     @Override
-    public Long createProduct(String email, ProductDTO dto) {
+    public Long createProduct(String email, ProductDTO.Request dto) {
 
         try {
             List<MultipartFile> files = dto.getFiles();
@@ -140,12 +137,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Long updateProduct(String email, ProductDTO dto, Long productId) {
+    public Long updateProduct(String email, ProductDTO.Request dto, Long productId) {
         Member member = getMember(email);
         Product product = this.getEntity(productId);
 
         //기존의 dto
-        ProductDTO oldDTO = this.entityToDTO(product);
+        ProductDTO.Response oldDTO = this.entityToDTO(product);
 
         // 파일 업로드 처리
         //기존 db에 저징된 이미지들

@@ -18,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -92,13 +93,10 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         String autHeaderStr = request.getHeader("Authorization");
         log.info("autHeaderStr Authorization: {}", autHeaderStr);
 
-        if (autHeaderStr == null && (
+        if ((Objects.equals(autHeaderStr, "Bearer null") || autHeaderStr == null ) && (
                 request.getServletPath().startsWith("/api/product/list")
-                        || request.getServletPath().startsWith("/api/product/new")
-                        || request.getServletPath().startsWith("/api/product/detail")
-                        || request.getServletPath().startsWith("/api/content/list")
-                        || request.getServletPath().startsWith("/api/content/detail")
-                        || request.getServletPath().startsWith("/api/content/search")
+                        || (request.getServletPath().startsWith("/api/product/") && request.getServletPath().endsWith("/detail"))
+                        || (request.getServletPath().startsWith("/api/product/") && request.getServletPath().endsWith("/tag/list"))
         )) {
             filterChain.doFilter(request, response);
             return;
