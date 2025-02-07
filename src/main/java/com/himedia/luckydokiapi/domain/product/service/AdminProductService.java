@@ -7,7 +7,6 @@ import com.himedia.luckydokiapi.domain.product.entity.*;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.NumberGenerator;
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 
 
 import java.util.Collections;
@@ -79,7 +78,7 @@ List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
                 .name(dto.getName())
                 .price(dto.getPrice())
                 .discountPrice(dto.getDiscountPrice())
-                .discountRate(dto.getDiscountRate())
+                .discountRate((int) ((1 - (double) dto.getDiscountPrice() / dto.getPrice()) * 100))
                 .description(dto.getDescription())
                 .isNew(dto.getIsNew())
                 .best(dto.getBest())
