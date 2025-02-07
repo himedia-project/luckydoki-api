@@ -232,8 +232,21 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProductById(Long productId) {
         Product product = this.getEntity(productId);
+        // s3 파일 삭제
         List<String> deleteImages = product.getImageList().stream().map(ProductImage::getImageName).collect(Collectors.toList());
         customFileUtil.deleteS3Files(deleteImages);
+
+        // 파일 삭제
+        product.clearImageList();
+        // 해당 참조한 태그 삭제
+        List<ProductTag> productTags = product.getProductTagList();
+        log.info("productTags: {}", productTags);
+        if(productTags != null && !productTags.isEmpty()) {
+            // deleteAll && clear 모두 해야 삭제된다.
+            productTagRepository.deleteAll(productTags);
+            product.clearTagList();
+        }
+        // 상품 delFlag true 로 변경
         productRepository.modifyDeleteFlag(productId);
 //row 가 삭제되는게 아니라 deflag 가 바뀐다
     }

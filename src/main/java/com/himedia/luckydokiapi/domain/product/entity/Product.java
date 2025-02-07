@@ -193,4 +193,7 @@ public class Product extends BaseEntity {
     }
 
 
+    public void clearTagList() {
+        this.productTagList.clear();
+    }
 }

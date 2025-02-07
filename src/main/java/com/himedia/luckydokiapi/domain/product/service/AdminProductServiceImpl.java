@@ -178,6 +178,14 @@ public class AdminProductServiceImpl implements AdminProductService {
 
         // 파일 삭제
         product.clearImageList();
+        // 해당 참조한 태그 삭제
+        List<ProductTag> productTags = product.getProductTagList();
+        log.info("productTags: {}", productTags);
+        if(productTags != null && !productTags.isEmpty()) {
+            // deleteAll && clear 모두 해야 삭제된다.
+            productTagRepository.deleteAll(productTags);
+            product.clearTagList();
+        }
 
         productRepository.modifyDeleteFlag(product.getId());
     }
