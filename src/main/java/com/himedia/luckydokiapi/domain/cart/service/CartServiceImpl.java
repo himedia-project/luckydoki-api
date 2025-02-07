@@ -29,6 +29,7 @@ public class CartServiceImpl implements CartService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
 
+
     @Transactional(readOnly = true)
     @Override
     public List<CartItemListDTO> getCartItemList(String email) {

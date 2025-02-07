@@ -19,6 +19,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "category")
+
 public class Category extends BaseEntity {
 
     @Id

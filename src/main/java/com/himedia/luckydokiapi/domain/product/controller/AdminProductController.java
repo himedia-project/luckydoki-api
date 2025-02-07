@@ -70,4 +70,6 @@ public class AdminProductController {
         return fileUtil.getFile(fileName);
 
     }
+
+    //TODO : member 권한 변경 (seller)  + 상품 노출 display , approval  변경 -> 찬엽이가 만들기 ㅎㅎ
 }
