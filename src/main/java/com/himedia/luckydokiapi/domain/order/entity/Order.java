@@ -28,7 +28,7 @@ public class Order {
     private String code;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memberEmail")
+    @JoinColumn(name = "email")
     private Member member;
 
     // 주문 날짜
