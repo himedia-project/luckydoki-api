@@ -1,12 +1,12 @@
-package com.himedia.luckydokiapi.domain.shop.entity;
+package com.himedia.luckydokiapi.domain.likes.entity;
 
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
@@ -15,16 +15,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "shop_like")
-public class ShopLike {
+@Table(name = "product_like")
+public class ProductLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "shop_id")
-    private Shop shop;
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @ManyToOne
     @JoinColumn(name = "email")
@@ -37,5 +37,7 @@ public class ShopLike {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+
 
 }

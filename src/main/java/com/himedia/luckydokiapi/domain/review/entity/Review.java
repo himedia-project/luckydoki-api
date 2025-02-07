@@ -1,6 +1,7 @@
-package com.himedia.luckydokiapi.domain.product.entity;
+package com.himedia.luckydokiapi.domain.review.entity;
 
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -39,4 +40,12 @@ public class Review extends BaseEntity {
     private String content;
 
     private String image;       // image url or path
+
+    public void addMember(Member member) {
+        this.member = member;
+    }
+
+    public void addImage(String image) {
+        this.image = image;
+    }
 }
