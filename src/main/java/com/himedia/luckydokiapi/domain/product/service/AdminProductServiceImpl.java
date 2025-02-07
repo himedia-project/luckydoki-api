@@ -1,10 +1,8 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
-import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
-import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
-import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.himedia.luckydokiapi.domain.product.repository.CategoryRepository;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.product.repository.ProductTagRepository;
@@ -44,12 +42,12 @@ public class AdminProductServiceImpl implements AdminProductService {
 
     @Transactional(readOnly = true)
     @Override
-    public PageResponseDTO<ProductDTO> list(ProductRequestDTO requestDTO) {
+    public PageResponseDTO<ProductDTO.Response> list(ProductSearchDTO requestDTO) {
         log.info("ProductAdminService list...");
 
         Page<Product> result = productRepository.findListBy(requestDTO);
 
-        return PageResponseDTO.<ProductDTO>withAll()
+        return PageResponseDTO.<ProductDTO.Response>withAll()
                 .dtoList(result.stream().map(this::entityToDTO).collect(Collectors.toList()))
                 .totalCount(result.getTotalElements())
                 .pageRequestDTO(requestDTO)
@@ -59,13 +57,13 @@ public class AdminProductServiceImpl implements AdminProductService {
     //admin 프로덕트 확인용
     @Transactional(readOnly = true)
     @Override
-    public ProductDTO getOne(Long id) {
+    public ProductDTO.Response getOne(Long id) {
         Product product = this.getEntity(id);
         return this.entityToDTO(product);
     }
 
     @Override
-    public Long register(ProductDTO dto) {
+    public Long register(ProductDTO.Request dto) {
 
         // 파일 업로드 처리
         if (dto.getFiles() != null || !dto.getFiles().isEmpty()) {
@@ -111,15 +109,15 @@ public class AdminProductServiceImpl implements AdminProductService {
 
 
     @Override
-    public Long modify(Long id, ProductDTO dto) {
+    public Long modify(Long id, ProductDTO.Request dto) {
 
         Product product = this.getEntity(id);
 
-        ProductDTO oldDTO = this.entityToDTO(product);
+        ProductDTO.Request request = this.entityToReqDTO(product);
 
         // 파일 업로드 처리
         //기존의 파일들 (데이터베이스에 존재하는 파일들 - 수정 과정에서 삭제되었을 수 있음)
-        List<String> oldFileNames = oldDTO.getUploadFileNames();
+        List<String> oldFileNames = request.getUploadFileNames();
 
         //새로 업로드 해야 하는 파일들
         List<MultipartFile> files = dto.getFiles();
@@ -153,12 +151,9 @@ public class AdminProductServiceImpl implements AdminProductService {
         product.changeCategory(this.getCategory(dto.getCategoryId()));
         product.changeName(dto.getName());
         product.changePrice(dto.getPrice());
-        product.changeDiscountPrice(dto.getDiscountPrice() == null ? 0 : dto.getDiscountPrice());
+        product.changeDiscountPrice(dto.getDiscountPrice());
         product.changeDescription(dto.getDescription());
         product.changeStockNumber(dto.getStockNumber());
-        product.changeBest(dto.getBest() == null ? ProductBest.N : dto.getBest());
-        product.changeIsNew(dto.getIsNew() == null ? ProductIsNew.N : dto.getIsNew());
-        product.changeEvent(dto.getEvent());
         product.clearImageList();
 
         // 새로 업로드할 파일들을 새로 추가
@@ -215,7 +210,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
 
-    Product dtoToEntity(ProductDTO dto, Category category, Shop shop) {
+    Product dtoToEntity(ProductDTO.Request dto, Category category, Shop shop) {
         List<String> uploadFileNames = dto.getUploadFileNames();
         List<ProductImage> productImages = uploadFileNames.stream()
                 .map(imageName -> ProductImage.builder()
@@ -229,12 +224,8 @@ public class AdminProductServiceImpl implements AdminProductService {
                 .name(dto.getName())
                 .price(dto.getPrice())
                 .discountPrice(dto.getDiscountPrice())
-                .discountRate(dto.getDiscountRate())
                 .description(dto.getDescription())
-                .isNew(dto.getIsNew())
-                .best(dto.getBest())
                 .stockNumber(dto.getStockNumber())
-                .event(dto.getEvent())
                 .imageList(productImages)
                 .shop(shop)
                 .delFlag(false)

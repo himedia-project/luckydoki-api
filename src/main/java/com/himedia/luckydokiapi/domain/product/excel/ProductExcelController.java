@@ -31,7 +31,7 @@ public class ProductExcelController {
     public ResponseEntity<?> registerByExcel(
             @RequestPart(value = "file") MultipartFile batchRegistrationFile
     ) {
-        List<ProductDTO> registrationDtoList = ProductExcelDataExtractor.extract(batchRegistrationFile);
+        List<ProductDTO.Request> registrationDtoList = ProductExcelDataExtractor.extract(batchRegistrationFile);
         List<RegistrationFailResponseDTO> response = excelService.register(registrationDtoList);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

@@ -1,7 +1,6 @@
 package com.himedia.luckydokiapi.domain.member.controller;
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
-import com.himedia.luckydokiapi.domain.product.dto.ProductResponseDTO;
 import com.himedia.luckydokiapi.domain.product.service.ProductService;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import lombok.RequiredArgsConstructor;
@@ -23,31 +22,27 @@ public class SellerController {
     private final ProductService productService;
 
     @GetMapping("/product/{productId}")
-    public ResponseEntity<ProductResponseDTO> getProductDetail(@PathVariable Long productId) {
-        ProductResponseDTO product = productService.getProduct(productId);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<ProductDTO.Response> getProductDetail(@PathVariable Long productId) {
+        return ResponseEntity.ok(productService.getProduct(productId));
     }
 
 
     @GetMapping("/product/list")
-    public ResponseEntity<List<ProductResponseDTO>> listByMember(@AuthenticationPrincipal MemberDTO memberDTO) {
+    public ResponseEntity<List<ProductDTO.Response>> listByMember(@AuthenticationPrincipal MemberDTO memberDTO) {
         log.info("list: {}", memberDTO);
-        List<ProductResponseDTO> dto = productService.getListByMember(memberDTO.getEmail());
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(productService.getListByMember(memberDTO.getEmail()));
     }
 
     @PostMapping("/product")
-    public ResponseEntity<Long> createMyProduct(@AuthenticationPrincipal MemberDTO memberDTO, ProductDTO dto) {
-        log.info("create: {}", memberDTO, "ProductDTO :{}", dto);
-        Long resultId = productService.createProduct(memberDTO.getEmail(), dto);
-        return ResponseEntity.ok(resultId);
+    public ResponseEntity<Long> createMyProduct(@AuthenticationPrincipal MemberDTO memberDTO, ProductDTO.Request dto) {
+        log.info("create memberDTO: {}, productDTO: {}", memberDTO, dto);
+        return ResponseEntity.ok(productService.createProduct(memberDTO.getEmail(), dto));
     }
 
     @PutMapping("/product/{productId}")
-    public ResponseEntity<Long> modifyProduct(@AuthenticationPrincipal MemberDTO memberDTO, @PathVariable Long productId, ProductDTO dto) {
-        log.info("modify: {}", memberDTO);
-        Long resultId = productService.updateProduct(memberDTO.getEmail(), dto, productId);
-        return ResponseEntity.ok(resultId);
+    public ResponseEntity<Long> modifyProduct(@AuthenticationPrincipal MemberDTO memberDTO, @PathVariable Long productId, ProductDTO.Request dto) {
+        log.info("modify memberDTO: {}, productId: {}", memberDTO, productId);
+        return ResponseEntity.ok(productService.updateProduct(memberDTO.getEmail(), dto, productId));
     }
 
     @DeleteMapping("/product/{productId}")

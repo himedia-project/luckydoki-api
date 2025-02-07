@@ -2,16 +2,12 @@ package com.himedia.luckydokiapi.domain.product.service;
 
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
-import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
-import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
-import com.himedia.luckydokiapi.util.NumberGenerator;
 
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.himedia.luckydokiapi.util.NumberGenerator.*;
 
@@ -19,15 +15,40 @@ import static com.himedia.luckydokiapi.util.NumberGenerator.*;
 public interface AdminProductService {
 
 
-    PageResponseDTO<ProductDTO> list(ProductRequestDTO requestDTO);
+    PageResponseDTO<ProductDTO.Response> list(ProductSearchDTO requestDTO);
 
-    ProductDTO getOne(Long id);
+    ProductDTO.Response getOne(Long id);
 
-    Long register(ProductDTO productDTO);
+    Long register(ProductDTO.Request productDTO);
 
-    Long modify(Long id, ProductDTO productDTO);
+    Long modify(Long id, ProductDTO.Request productDTO);
 
     void remove(Long id);
+
+
+    default ProductDTO.Request entityToReqDTO(Product product) {
+        ProductDTO.Request request = ProductDTO.Request.builder()
+                .categoryId(product.getCategory().getId())
+                .name(product.getName())
+                .price(product.getPrice())
+                .discountPrice(product.getDiscountPrice())
+                .description(product.getDescription())
+                .build();
+
+        List<ProductImage> imageList = product.getImageList();
+
+        if (imageList == null || imageList.isEmpty()) {
+            return request;
+        }
+
+        List<String> fileNameList = imageList.stream().map(ProductImage::getImageName).toList();
+
+        request.setUploadFileNames(fileNameList);
+        request.setCategoryId(product.getCategory().getId());
+
+        return request;
+    }
+
 
     /**
      * Product -> ProductDTO 변환
@@ -35,10 +56,10 @@ public interface AdminProductService {
      * @param product Product
      * @return ProductDTO
      */
-    default ProductDTO entityToDTO(Product product) {
-List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
-        .map(Tag::getName).toList();
-        ProductDTO productDTO = ProductDTO.builder()
+    default ProductDTO.Response entityToDTO(Product product) {
+        List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
+                .map(Tag::getName).toList();
+        ProductDTO.Response productDTO = ProductDTO.Response.builder()
                 .id(product.getId())
                 .code(product.getCode())
                 .categoryId(product.getCategory().getId())
@@ -50,6 +71,9 @@ List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
                 .description(product.getDescription())
                 .isNew(product.getIsNew())
                 .best(product.getBest())
+                .event(product.getEvent())
+                .shopId(product.getShop().getId())
+                .shopName(product.getShop().getMember().getNickName())
                 .createdAt(product.getCreatedAt())
                 .modifiedAt(product.getModifiedAt())
                 .tagStrList(tags)
@@ -69,7 +93,7 @@ List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
         return productDTO;
     }
 
-    default Product dtoToEntity(ProductDTO dto, Category category) {
+    default Product dtoToEntity(ProductDTO.Request dto, Category category) {
 
         Product product = Product.builder()
                 .id(dto.getId())
@@ -80,8 +104,6 @@ List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
                 .discountPrice(dto.getDiscountPrice())
                 .discountRate((int) ((1 - (double) dto.getDiscountPrice() / dto.getPrice()) * 100))
                 .description(dto.getDescription())
-                .isNew(dto.getIsNew())
-                .best(dto.getBest())
                 .stockNumber(dto.getStockNumber())
                 .delFlag(false)
                 .build();

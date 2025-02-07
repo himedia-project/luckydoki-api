@@ -23,7 +23,7 @@ public class ProductExcelService {
     private final CustomFileUtil fileUtil;
 
 
-    public List<RegistrationFailResponseDTO> register(List<ProductDTO> dtoList) {
+    public List<RegistrationFailResponseDTO> register(List<ProductDTO.Request> dtoList) {
         List<RegistrationFailResponseDTO> failRowList = new ArrayList<>();
         log.info("register dtoList: {}", dtoList);
         for (int i = 0; i < dtoList.size(); i++) {

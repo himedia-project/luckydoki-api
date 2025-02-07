@@ -23,7 +23,7 @@ public class TagServiceImpl implements TagService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ProductDTO> list(Long id) {
+    public List<ProductDTO.Response> list(Long id) {
         List<Long> productIds = tagRepository.findByTag(id);
         if (productIds == null || productIds.isEmpty()) {
             throw new EntityNotFoundException("해당 엔티티가 없습니다.");

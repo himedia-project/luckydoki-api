@@ -1,7 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.controller;
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
-import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.service.AdminProductService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
@@ -22,36 +22,33 @@ public class AdminProductController {
 
     // 리스트조회
     @GetMapping("/list")
-    public ResponseEntity<PageResponseDTO<ProductDTO>> list(ProductRequestDTO requestDTO) {
+    public ResponseEntity<PageResponseDTO<ProductDTO.Response>> list(ProductSearchDTO requestDTO) {
         log.info("list: {}", requestDTO);
-        PageResponseDTO<ProductDTO> dto = productService.list(requestDTO);
+        PageResponseDTO<ProductDTO.Response> dto = productService.list(requestDTO);
         return ResponseEntity.ok(dto);
     }
 
     // 상세조회
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> read(Long id) {
+    public ResponseEntity<ProductDTO.Response> read(Long id) {
         log.info("read: {}", id);
-        ProductDTO dto = productService.getOne(id);
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(productService.getOne(id));
     }
 
 
     // 등록
     @PostMapping
-    public ResponseEntity<Long> register(ProductDTO productDTO) {
+    public ResponseEntity<Long> register(ProductDTO.Request productDTO) {
         log.info("register: {}", productDTO);
-        Long id = productService.register(productDTO);
-        return ResponseEntity.ok(id);
+        return ResponseEntity.ok(productService.register(productDTO));
     }
 
 
     // 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Long> modify(@PathVariable Long id, ProductDTO productDTO) {
+    public ResponseEntity<Long> modify(@PathVariable Long id, ProductDTO.Request productDTO) {
         log.info("modify: {}, {}", id, productDTO);
-        Long productId = productService.modify(id, productDTO);
-        return ResponseEntity.ok(productId);
+        return ResponseEntity.ok(productService.modify(id, productDTO));
     }
 
 
