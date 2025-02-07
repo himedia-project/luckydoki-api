@@ -23,7 +23,7 @@ import java.util.List;
 public class Member extends BaseEntity {
 
     @Id
-    private String email; //username
+    private String email;
     private String nickName;
     private Long birthday;
     private String profileImage;
@@ -37,13 +37,6 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'Y'")
     private PushActive pushActive;
-
-
-    private boolean delFlag;
-
-    public void changeDel(boolean delFlag) {
-        this.delFlag = delFlag;
-    }
 
 
     @ElementCollection(fetch = FetchType.LAZY)
