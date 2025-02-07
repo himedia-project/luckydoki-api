@@ -9,6 +9,8 @@ import com.himedia.luckydokiapi.domain.product.repository.CategoryRepository;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.product.repository.ProductTagRepository;
 import com.himedia.luckydokiapi.domain.product.repository.TagRepository;
+import com.himedia.luckydokiapi.domain.shop.entity.Shop;
+import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.himedia.luckydokiapi.util.NumberGenerator.generateRandomNumber;
 
 
 @Slf4j
@@ -35,6 +39,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
     private final ProductTagRepository productTagRepository;
+    private final ShopRepository shopRepository;
 
 
     @Transactional(readOnly = true)
@@ -51,6 +56,7 @@ public class AdminProductServiceImpl implements AdminProductService {
                 .build();
     }
 
+    //admin 프로덕트 확인용
     @Transactional(readOnly = true)
     @Override
     public ProductDTO getOne(Long id) {
@@ -77,9 +83,9 @@ public class AdminProductServiceImpl implements AdminProductService {
 
         // 카테고리
         Category category = this.getCategory(dto.getCategoryId());
-
+        Shop shop = this.getShop(dto.getShopId());
         // 실제 저장 처리
-        Product result = productRepository.save(this.dtoToEntity(dto, category));
+        Product result = productRepository.save(this.dtoToEntity(dto, category, shop));
         log.info("product result: {}", result);
 
         // 태그 처리
@@ -152,7 +158,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         product.changeStockNumber(dto.getStockNumber());
         product.changeBest(dto.getBest() == null ? ProductBest.N : dto.getBest());
         product.changeIsNew(dto.getIsNew() == null ? ProductIsNew.N : dto.getIsNew());
-
+        product.changeEvent(dto.getEvent());
         product.clearImageList();
 
         // 새로 업로드할 파일들을 새로 추가
@@ -202,4 +208,41 @@ public class AdminProductServiceImpl implements AdminProductService {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다. id: " + categoryId));
     }
+
+    private Shop getShop(Long shopId) {
+        return shopRepository.findById(shopId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 seller 가 존재하지 않습니다 " + shopId));
+    }
+
+
+    Product dtoToEntity(ProductDTO dto, Category category, Shop shop) {
+        List<String> uploadFileNames = dto.getUploadFileNames();
+        List<ProductImage> productImages = uploadFileNames.stream()
+                .map(imageName -> ProductImage.builder()
+                        .imageName(imageName)
+                        .build())
+                .toList();
+
+        Product product = Product.builder()
+                .code(generateRandomNumber(10))
+                .category(category)
+                .name(dto.getName())
+                .price(dto.getPrice())
+                .discountPrice(dto.getDiscountPrice())
+                .discountRate(dto.getDiscountRate())
+                .description(dto.getDescription())
+                .isNew(dto.getIsNew())
+                .best(dto.getBest())
+                .stockNumber(dto.getStockNumber())
+                .event(dto.getEvent())
+                .imageList(productImages)
+                .shop(shop)
+                .delFlag(false)
+                .build();
+
+
+        return product;
+    }
+
+
 }

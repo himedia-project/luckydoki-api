@@ -18,7 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@ToString(exclude = "imageList")
+@Setter
+@ToString(exclude = {"imageList", "shop", "category", "productTagList"})
 @Table(name = "product")
 public class Product extends BaseEntity {
 
@@ -26,10 +27,12 @@ public class Product extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //mdpick 빼고 best 넣음
+
     // 상품 코드
     private String code;  // 24343233930
 
-    @Size(max = 255)
+    @Size(max = 35)
     @NotNull
     @Column(name = "name", nullable = false)
     private String name;
@@ -73,7 +76,7 @@ public class Product extends BaseEntity {
     @ColumnDefault("'N'")
     private ProductEvent event;
 
-    // 장르
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -153,6 +156,13 @@ public class Product extends BaseEntity {
         this.category = category;
     }
 
+    public void changeEvent(ProductEvent event) {
+        this.event = event;
+    }
+
+    public void changeShop(Shop shop) {
+        this.shop = shop;
+    }
 
     /**
      * 할인가격 업데이트 -> 할인율 업데이트
@@ -174,5 +184,10 @@ public class Product extends BaseEntity {
         this.discountPrice = discountPrice;
         updateDiscountRate();
     }
+
+    public void changeTagList(List<ProductTag> tagList) {
+        this.productTagList = tagList;
+    }
+
 
 }

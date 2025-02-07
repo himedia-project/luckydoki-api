@@ -2,10 +2,8 @@ package com.himedia.luckydokiapi.domain.product.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
-import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
-import com.himedia.luckydokiapi.domain.product.enums.ProductDisplay;
-import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
+import com.himedia.luckydokiapi.domain.product.enums.*;
+import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +18,8 @@ import java.util.List;
 @Builder
 @ToString
 public class ProductDTO {
+    //어드민 , member  싱품 등록/수정 용 dto
+    //여기엔 member email 없음
     private Long id;
     private String code;
     private Long categoryId;
@@ -33,13 +33,13 @@ public class ProductDTO {
     private ProductApproval approval;
     private ProductIsNew isNew;
     private ProductBest best;
-
+    private ProductEvent event;
+    private Long shopId;
 
     private Integer stockNumber;
 //    private Integer delFlag;
 //    private List
 
-    private String searchKeyword;
 
     // 파일 입력값
     @Builder.Default

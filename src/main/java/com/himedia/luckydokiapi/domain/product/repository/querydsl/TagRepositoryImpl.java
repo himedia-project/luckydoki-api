@@ -1,12 +1,15 @@
 package com.himedia.luckydokiapi.domain.product.repository.querydsl;
 
+import com.himedia.luckydokiapi.domain.product.entity.Tag;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.himedia.luckydokiapi.domain.product.entity.QProductTag.productTag;
+import static com.himedia.luckydokiapi.domain.product.entity.QTag.tag;
 
 
 @Slf4j
@@ -23,5 +26,7 @@ public class TagRepositoryImpl implements TagRepositoryCustom {
                 .where(productTag.tag.id.eq(id))
                 .fetch();
     }
+
+
 
 }

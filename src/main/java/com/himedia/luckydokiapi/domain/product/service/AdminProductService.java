@@ -3,14 +3,16 @@ package com.himedia.luckydokiapi.domain.product.service;
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
-import com.himedia.luckydokiapi.domain.product.entity.Category;
-import com.himedia.luckydokiapi.domain.product.entity.Product;
-import com.himedia.luckydokiapi.domain.product.entity.ProductImage;
+import com.himedia.luckydokiapi.domain.product.entity.*;
+import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.NumberGenerator;
+import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.himedia.luckydokiapi.util.NumberGenerator.*;
 
@@ -35,7 +37,8 @@ public interface AdminProductService {
      * @return ProductDTO
      */
     default ProductDTO entityToDTO(Product product) {
-
+List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
+        .map(Tag::getName).toList();
         ProductDTO productDTO = ProductDTO.builder()
                 .id(product.getId())
                 .code(product.getCode())
@@ -50,6 +53,7 @@ public interface AdminProductService {
                 .best(product.getBest())
                 .createdAt(product.getCreatedAt())
                 .modifiedAt(product.getModifiedAt())
+                .tagStrList(tags)
                 .build();
 
         List<ProductImage> imageList = product.getImageList();

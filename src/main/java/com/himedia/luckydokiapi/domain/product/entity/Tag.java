@@ -26,4 +26,5 @@ public class Tag extends BaseEntity {
                 .name(tag)
                 .build();
     }
+
 }

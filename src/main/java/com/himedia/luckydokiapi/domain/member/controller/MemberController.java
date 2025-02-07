@@ -45,7 +45,7 @@ public class MemberController {
         String refreshToken = loginClaims.get("refresh_token").toString();
         String accessToken = loginClaims.get("access_token").toString();
 
-        CookieUtil.setTokenCookie(resposnse, "refreshToken", refreshToken, jwtProps.getRefreshTokenExpirationPeriod());
+        CookieUtil.setTokenCookie(resposnse, "refresh_token", refreshToken, jwtProps.getRefreshTokenExpirationPeriod());
 
 /*        // 웹 클라이언트인 경우 쿠키 설정
         if ("web".equals(clientType)) {
