@@ -40,6 +40,8 @@ public class ProductDTO {
 //    private Integer delFlag;
 //    private List
 
+    private String nickName;
+    private String email;
 
     // 파일 입력값
     @Builder.Default

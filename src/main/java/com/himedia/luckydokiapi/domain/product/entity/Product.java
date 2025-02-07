@@ -66,15 +66,18 @@ public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'N'")
-    private ProductIsNew isNew;
+    @Builder.Default
+    private ProductIsNew isNew = ProductIsNew.N;
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'N'")
-    private ProductBest best;
+    @Builder.Default
+    private ProductBest best = ProductBest.N;
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'N'")
-    private ProductEvent event;
+    @Builder.Default
+    private ProductEvent event = ProductEvent.N;
 
 
     @NotNull

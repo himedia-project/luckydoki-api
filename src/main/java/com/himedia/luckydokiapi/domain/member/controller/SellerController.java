@@ -37,17 +37,17 @@ public class SellerController {
     }
 
     @PostMapping("/product")
-    public ResponseEntity<String> createMyProduct(@AuthenticationPrincipal MemberDTO memberDTO, ProductDTO dto) {
+    public ResponseEntity<Long> createMyProduct(@AuthenticationPrincipal MemberDTO memberDTO, ProductDTO dto) {
         log.info("create: {}", memberDTO, "ProductDTO :{}", dto);
-        productService.createProduct(memberDTO.getEmail(), dto);
-        return ResponseEntity.ok("상품 등록이 완료 되었숩니다 😀");
+        Long resultId = productService.createProduct(memberDTO.getEmail(), dto);
+        return ResponseEntity.ok(resultId);
     }
 
     @PutMapping("/product/{productId}")
     public ResponseEntity<Long> modifyProduct(@AuthenticationPrincipal MemberDTO memberDTO, @PathVariable Long productId, ProductDTO dto) {
         log.info("modify: {}", memberDTO);
-        productService.updateProduct(memberDTO.getEmail(), dto, productId);
-        return ResponseEntity.ok(dto.getId());
+        Long resultId = productService.updateProduct(memberDTO.getEmail(), dto, productId);
+        return ResponseEntity.ok(resultId);
     }
 
     @DeleteMapping("/product/{productId}")
