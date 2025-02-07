@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/seller/product")
+@RequestMapping("/api/seller")
 @RequiredArgsConstructor
 public class SellerController {
 
@@ -22,35 +22,35 @@ public class SellerController {
 
     private final ProductService productService;
 
-    @GetMapping("/{productId}")
+    @GetMapping("/product/{productId}")
     public ResponseEntity<ProductResponseDTO> getProductDetail(@PathVariable Long productId) {
         ProductResponseDTO product = productService.getProduct(productId);
         return ResponseEntity.ok(product);
     }
 
 
-    @GetMapping("/list")
+    @GetMapping("/product/list")
     public ResponseEntity<List<ProductResponseDTO>> listByMember(@AuthenticationPrincipal MemberDTO memberDTO) {
         log.info("list: {}", memberDTO);
         List<ProductResponseDTO> dto = productService.getListByMember(memberDTO.getEmail());
         return ResponseEntity.ok(dto);
     }
 
-    @PostMapping
+    @PostMapping("/product")
     public ResponseEntity<String> createMyProduct(@AuthenticationPrincipal MemberDTO memberDTO, ProductDTO dto) {
         log.info("create: {}", memberDTO, "ProductDTO :{}", dto);
         productService.createProduct(memberDTO.getEmail(), dto);
         return ResponseEntity.ok("상품 등록이 완료 되었숩니다 😀");
     }
 
-    @PutMapping("/{productId}")
+    @PutMapping("/product/{productId}")
     public ResponseEntity<Long> modifyProduct(@AuthenticationPrincipal MemberDTO memberDTO, @PathVariable Long productId, ProductDTO dto) {
         log.info("modify: {}", memberDTO);
         productService.updateProduct(memberDTO.getEmail(), dto, productId);
         return ResponseEntity.ok(dto.getId());
     }
 
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/product/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
         log.info("delete: {}", productId);
         productService.deleteProductById(productId);
