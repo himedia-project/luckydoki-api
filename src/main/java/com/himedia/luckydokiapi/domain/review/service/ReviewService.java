@@ -10,7 +10,7 @@ import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import java.util.List;
 
 public interface ReviewService {
-    List<ReviewResponseDTO> findAll();
+    List<ReviewResponseDTO> findAll(Long productId);
 
     List<ReviewResponseDTO> getReviewByMember(String email);
 

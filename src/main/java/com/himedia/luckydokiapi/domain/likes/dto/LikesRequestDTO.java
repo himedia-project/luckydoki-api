@@ -11,4 +11,5 @@ import lombok.ToString;
 @ToString
 public class LikesRequestDTO {
     private Long productId;
+    private Long shopId;
 }

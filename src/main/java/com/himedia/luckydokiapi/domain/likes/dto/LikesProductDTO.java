@@ -20,5 +20,5 @@ public class LikesProductDTO {
 
     private String productImageUrl;
     //추가 예정
-    private Integer likesCount;
+//    private Integer likesCount;
 }

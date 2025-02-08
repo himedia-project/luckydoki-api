@@ -13,7 +13,7 @@ public class LikesShopDTO {
 
     private Long id;
     private String email;
-    private Long ShopId;
+    private Long shopId;
     private String sellerEmail;
-    private Integer likesCount;
+//    private Integer likesCount;
 }

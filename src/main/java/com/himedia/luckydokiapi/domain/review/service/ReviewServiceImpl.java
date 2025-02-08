@@ -36,8 +36,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ReviewResponseDTO> findAll() {
-        List<ReviewResponseDTO> reviewResponseDTOS = reviewRepository.findAll().stream().map(this::entityToDTO).toList();
+    public List<ReviewResponseDTO> findAll(Long productId) {
+        List<ReviewResponseDTO> reviewResponseDTOS = reviewRepository.findByProductId(productId).stream().map(this::entityToDTO).toList();
         return reviewResponseDTOS;
     }
 

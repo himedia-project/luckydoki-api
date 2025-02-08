@@ -20,9 +20,9 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     //모든 리뷰 보기
-    @GetMapping("/list")
-    public ResponseEntity<List<ReviewResponseDTO>> getAllReviews() {
-        List<ReviewResponseDTO> reviewDTOS = reviewService.findAll();
+    @GetMapping("/{productId}")
+    public ResponseEntity<List<ReviewResponseDTO>> getAllReviews(@PathVariable Long productId) {
+        List<ReviewResponseDTO> reviewDTOS = reviewService.findAll(productId);
         return ResponseEntity.ok(reviewDTOS);
     }
 

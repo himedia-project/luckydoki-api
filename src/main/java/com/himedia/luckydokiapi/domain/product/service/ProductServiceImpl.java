@@ -141,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
         Member member = getMember(email);
         Product product = this.getEntity(productId);
 
-        //기존의 dto
+        //기존의 product 를 dto 로  변환
         ProductDTO.Response oldDTO = this.entityToDTO(product);
 
         // 파일 업로드 처리
