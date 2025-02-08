@@ -14,7 +14,6 @@ public interface ProductLikeRepository extends JpaRepository<ProductLike, Long> 
     boolean existsByMember_EmailAndProduct_Id(String email, Long id);
 
 @Modifying
-@Transactional
     @Query("delete from ProductLike pl where pl.product.id =:id and pl.member.email =:email")
     void deleteByEmailAndProductId(@Param("email") String email, @Param("id") Long id);
 

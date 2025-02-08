@@ -51,7 +51,7 @@ public class LikesServiceImpl implements LikesService {
         productLikeRepository.save(productLike);
         return true; // 좋아요 추가 !
     }
-
+@Transactional(readOnly = true)
     @Override
     public List<LikesProductDTO> getProductLikesByMember(String email) {
         Member member = getMember(email);
@@ -75,7 +75,7 @@ public class LikesServiceImpl implements LikesService {
         shopLikeRepository.save(shopLike);
         return true; // 좋아요 추가 !
     }
-
+    @Transactional(readOnly = true)
     @Override
     public List<LikesShopDTO> getShopLikesByMember(String email) {
         Member member = getMember(email);
