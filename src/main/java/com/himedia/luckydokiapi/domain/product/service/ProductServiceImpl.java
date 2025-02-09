@@ -204,6 +204,8 @@ public class ProductServiceImpl implements ProductService {
         // 태그 처리
         if (dto.getTagStrList() != null) {
             dto.getTagStrList().forEach(tag -> {
+                //trim : 양 끝단에 있는 빈값을 없애주는거
+                //str.replace(" ", "") : 문자열사이에 있는 공백을 모두 없애준다
                 String tagName = tag.trim();
                 log.info("tagName: {}", tagName);
                 // 이미 기존에 존재하는 태그인지 확인
@@ -233,7 +235,7 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProductById(Long productId) {
         Product product = this.getEntity(productId);
         // s3 파일 삭제
-        List<String> deleteImages = product.getImageList().stream().map(ProductImage::getImageName).collect(Collectors.toList());
+        List<String> deleteImages = product.getImageList().stream().map(ProductImage::getImageName).toList();
         customFileUtil.deleteS3Files(deleteImages);
 
         // 파일 삭제
@@ -244,7 +246,9 @@ public class ProductServiceImpl implements ProductService {
         if(productTags != null && !productTags.isEmpty()) {
             // deleteAll && clear 모두 해야 삭제된다.
             productTagRepository.deleteAll(productTags);
+            //productTag 엔티티 내에서 삭제
             product.clearTagList();
+            //product 객체 안에서 삭제
         }
         // 상품 delFlag true 로 변경
         productRepository.modifyDeleteFlag(productId);

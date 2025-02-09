@@ -16,4 +16,6 @@ public interface ProductRepositoryCustom {
     List<Product> findByDTO(ProductSearchDTO requestDTO);
 
     List<Product> findProductByShopMemberEmail(String email);
+
+    List<Product> findByChildCategoryId(Long childCategoryId);
 }
