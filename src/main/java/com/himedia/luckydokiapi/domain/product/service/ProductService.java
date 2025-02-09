@@ -40,7 +40,7 @@ public interface ProductService {
                 .discountPrice(dto.getDiscountPrice())
                 .discountRate((int) ((1 - (double) dto.getDiscountPrice() / dto.getPrice()) * 100))
                 .description(dto.getDescription())
-                .stockNumber(dto.getStockNumber())
+                .stockNumber(dto.getStockNumber() == null ? 99 : dto.getStockNumber())
                 .shop(shop)
                 .delFlag(false)
                 .build();

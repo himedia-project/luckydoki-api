@@ -3,10 +3,7 @@ package com.himedia.luckydokiapi.domain.product.service;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
-import com.himedia.luckydokiapi.domain.product.repository.CategoryRepository;
-import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
-import com.himedia.luckydokiapi.domain.product.repository.ProductTagRepository;
-import com.himedia.luckydokiapi.domain.product.repository.TagRepository;
+import com.himedia.luckydokiapi.domain.product.repository.*;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
@@ -22,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.himedia.luckydokiapi.util.NumberGenerator.generateRandomNumber;
 
 
 @Slf4j
@@ -35,9 +31,12 @@ public class AdminProductServiceImpl implements AdminProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final CategoryBridgeRepository categoryBridgeRepository;
     private final TagRepository tagRepository;
     private final ProductTagRepository productTagRepository;
     private final ShopRepository shopRepository;
+
+    private final ProductService productService;
 
 
     @Transactional(readOnly = true)
@@ -79,12 +78,17 @@ public class AdminProductServiceImpl implements AdminProductService {
             dto.setUploadFileNames(fileUtil.uploadImagePathS3Files(dto.getImagePathList()));
         }
 
-        // 카테고리
+
         Category category = this.getCategory(dto.getCategoryId());
         Shop shop = this.getShop(dto.getShopId());
         // 실제 저장 처리
-        Product result = productRepository.save(this.dtoToEntity(dto, category, shop));
+        Product result = productRepository.save(productService.dtoToEntity(dto, category, shop));
         log.info("product result: {}", result);
+
+        // 카테고리 처리
+        if(dto.getCategoryId() != null) {
+            categoryBridgeRepository.save(CategoryBridge.from(category, result));
+        }
 
         // 태그 처리
         if (dto.getTagStrList() != null) {
@@ -215,32 +219,6 @@ public class AdminProductServiceImpl implements AdminProductService {
     private Shop getShop(Long shopId) {
         return shopRepository.findById(shopId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 seller 가 존재하지 않습니다 " + shopId));
-    }
-
-
-    Product dtoToEntity(ProductDTO.Request dto, Category category, Shop shop) {
-        List<String> uploadFileNames = dto.getUploadFileNames();
-        List<ProductImage> productImages = uploadFileNames.stream()
-                .map(imageName -> ProductImage.builder()
-                        .imageName(imageName)
-                        .build())
-                .toList();
-
-        Product product = Product.builder()
-                .code(generateRandomNumber(10))
-                .category(category)
-                .name(dto.getName())
-                .price(dto.getPrice())
-                .discountPrice(dto.getDiscountPrice())
-                .description(dto.getDescription())
-                .stockNumber(dto.getStockNumber())
-                .imageList(productImages)
-                .shop(shop)
-                .delFlag(false)
-                .build();
-
-
-        return product;
     }
 
 

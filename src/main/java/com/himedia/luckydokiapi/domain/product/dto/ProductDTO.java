@@ -37,8 +37,8 @@ public class ProductDTO {
         @Builder.Default
         private List<String> uploadFileNames = new ArrayList<>();
 
+        // 상품 엑셀 업로드시 사용
         private List<String> imagePathList;
-        
         private List<String> tagStrList;
     }
 

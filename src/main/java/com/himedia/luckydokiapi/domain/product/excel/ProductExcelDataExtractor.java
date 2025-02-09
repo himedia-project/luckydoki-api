@@ -35,19 +35,43 @@ public class ProductExcelDataExtractor {
             @Override
             protected ProductDTO.Request map(Row row) {
                 ProductDTO.Request dto = ProductDTO.Request.builder()
-                        .categoryId((long) row.getCell(0).getNumericCellValue())
-                        .name(row.getCell(1).getStringCellValue().trim())
-                        .price((int) row.getCell(2).getNumericCellValue())
-                        .discountPrice((int) row.getCell(5).getNumericCellValue())
-                        .description(row.getCell(3).getStringCellValue().trim())
-                        .tagStrList(Arrays.asList(row.getCell(7).getStringCellValue().split(",")))
-                        .imagePathList(getExcelImageList(row.getCell(10).getStringCellValue().trim()))
+                        .shopId((long) row.getCell(0).getNumericCellValue())
+                        .categoryId((long) row.getCell(1).getNumericCellValue())
+                        .name(row.getCell(2).getStringCellValue().trim())
+                        .price((int) row.getCell(3).getNumericCellValue())
+                        .discountPrice((int) row.getCell(4).getNumericCellValue())
+                        .description(row.getCell(5).getStringCellValue().trim())
+                        .tagStrList(getExcelTagList(row.getCell(6).getStringCellValue().trim()))
+                        .imagePathList(getExcelImageList(row.getCell(7).getStringCellValue().trim()))
                         .build();
 
                 validateValue(dto);
                 return dto;
             }
         };
+    }
+
+    /**
+     * 태그 정보를 ","로 구분하여 List로 반환
+     * @param tagStrList 태그 정보
+     * @return 태그 List
+     */
+    private static List<String> getExcelTagList(String tagStrList) {
+        List<String> tagList = new ArrayList<>();
+        // 태그가 없을시
+        if(tagStrList == null || tagStrList.isEmpty()) {
+            return tagList;
+        }
+        // if "," 없을시 ->  태그가 1개일 경우
+        if (!tagStrList.contains(",")) {
+            tagList.add(tagStrList);
+        // if "," 있을시
+        } else {
+            String[] tags = tagStrList.split(",");
+            tagList.addAll(Arrays.asList(tags));
+        }
+
+        return tagList;
     }
 
     /**

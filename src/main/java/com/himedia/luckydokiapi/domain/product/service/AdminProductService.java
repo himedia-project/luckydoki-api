@@ -9,7 +9,6 @@ import com.himedia.luckydokiapi.dto.PageResponseDTO;
 
 import java.util.List;
 
-import static com.himedia.luckydokiapi.util.NumberGenerator.*;
 
 // API 명세서 -> JDOC
 public interface AdminProductService {
@@ -91,34 +90,6 @@ public interface AdminProductService {
         productDTO.setCategoryId(product.getCategory().getId());
 
         return productDTO;
-    }
-
-    default Product dtoToEntity(ProductDTO.Request dto, Category category) {
-
-        Product product = Product.builder()
-                .id(dto.getId())
-                .code(generateRandomNumber(10))
-                .category(category)
-                .name(dto.getName())
-                .price(dto.getPrice())
-                .discountPrice(dto.getDiscountPrice())
-                .discountRate((int) ((1 - (double) dto.getDiscountPrice() / dto.getPrice()) * 100))
-                .description(dto.getDescription())
-                .stockNumber(dto.getStockNumber())
-                .delFlag(false)
-                .build();
-
-        //업로드 처리가 끝난 파일들의 이름 리스트
-        List<String> uploadFileNames = dto.getUploadFileNames();
-
-        if (uploadFileNames == null) {
-            return product;
-        }
-
-        // 이미지 파일 업로드 처리
-        uploadFileNames.forEach(product::addImageString);
-
-        return product;
     }
 
 

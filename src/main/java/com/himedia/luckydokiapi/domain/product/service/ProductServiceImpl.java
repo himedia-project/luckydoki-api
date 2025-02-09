@@ -7,10 +7,7 @@ import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
-import com.himedia.luckydokiapi.domain.product.repository.CategoryRepository;
-import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
-import com.himedia.luckydokiapi.domain.product.repository.ProductTagRepository;
-import com.himedia.luckydokiapi.domain.product.repository.TagRepository;
+import com.himedia.luckydokiapi.domain.product.repository.*;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
@@ -36,6 +33,7 @@ public class ProductServiceImpl implements ProductService {
     private final ShopRepository shopRepository;
     private final CategoryRepository categoryRepository;
 
+    private final CategoryBridgeRepository categoryBridgeRepository;
     private final ProductTagRepository productTagRepository;
     private final TagRepository tagRepository;
     private final CustomFileUtil fileUtil;
@@ -114,6 +112,11 @@ public class ProductServiceImpl implements ProductService {
 
         //업로드 리턴 값 저장
         Product result = productRepository.save(newProduct);
+
+        // 카테고리 처리
+        if(dto.getCategoryId() != null) {
+            categoryBridgeRepository.save(CategoryBridge.from(category, result));
+        }
 
         // 태그 처리
         if (dto.getTagStrList() != null) {
@@ -200,6 +203,16 @@ public class ProductServiceImpl implements ProductService {
             uploadFileNames.forEach(product::addImageString);
         }//업로드 이미지들 엔티티 저장
 
+        // 카테고리 처리
+        // 만일, 카테고리 변경이 있다면, 카테고리 삭제 -> 등록
+        if (!product.getCategory().getId().equals(dto.getCategoryId())) {
+            Category category = this.getCategory(dto.getCategoryId());
+            categoryBridgeRepository.deleteByProduct(product);
+            categoryBridgeRepository.save(CategoryBridge.from(category, product));
+        }
+        // 만일, 카테고리 변경이 없다면 그대로 둚
+
+
         // 태그 처리
         if (dto.getTagStrList() != null) {
             dto.getTagStrList().forEach(tag -> {
@@ -237,14 +250,10 @@ public class ProductServiceImpl implements ProductService {
 
         // 파일 삭제
         product.clearImageList();
+        // 해당 참조한 카테고리 삭제
+        categoryBridgeRepository.deleteByProduct(product);
         // 해당 참조한 태그 삭제
-        List<ProductTag> productTags = product.getProductTagList();
-        log.info("productTags: {}", productTags);
-        if(productTags != null && !productTags.isEmpty()) {
-            // deleteAll && clear 모두 해야 삭제된다.
-            productTagRepository.deleteAll(productTags);
-            product.clearTagList();
-        }
+        productTagRepository.deleteByProduct(product);
         // 상품 delFlag true 로 변경
         productRepository.modifyDeleteFlag(productId);
 //row 가 삭제되는게 아니라 deflag 가 바뀐다

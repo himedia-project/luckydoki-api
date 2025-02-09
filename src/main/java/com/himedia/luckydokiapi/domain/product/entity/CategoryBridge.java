@@ -33,4 +33,10 @@ public class CategoryBridge {
         this.createdAt = LocalDateTime.now();
     }
 
+    public static CategoryBridge from(Category category, Product product) {
+        return CategoryBridge.builder()
+                .category(category)
+                .product(product)
+                .build();
+    }
 }
