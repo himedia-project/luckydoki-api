@@ -69,8 +69,7 @@ public class ProductDTO {
         
         @Builder.Default
         private List<String> uploadFileNames = new ArrayList<>();
-        
-        private List<String> imagePathList;
+
         private List<String> tagStrList;
         
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
