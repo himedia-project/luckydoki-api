@@ -62,7 +62,7 @@ public class IdusCrawlServiceImpl implements CrawlService {
             int discountPrice = price;
             try {
                 String discountPriceText = wait.until(ExpectedConditions.presenceOfElementLocated(
-                    By.xpath("//*[@id=\"__nuxt\"]/div/div/div[5]/div[1]/div/div[1]/div[2]/div[4]/div[1]/div[1]/span[1]")))
+                    By.cssSelector("#__nuxt > div > div > div.appContents > div:nth-child(1) > div > div.PdpAtf > div.PdpAtf__right > div.flex.items-center.justify-between.mb-\\[12px\\] > div > div.flex.items-center.mb-\\[4px\\] > div:nth-child(2) > span")))
                     .getText().replaceAll("[^0-9]", "");
                 if (!discountPriceText.isEmpty()) {
                     discountPrice = Integer.parseInt(discountPriceText);
@@ -73,9 +73,23 @@ public class IdusCrawlServiceImpl implements CrawlService {
             log.info("할인 가격: {}", discountPrice);
 
             // 상품 설명 추출
-            String description = wait.until(ExpectedConditions.presenceOfElementLocated(
-                    By.xpath("//*[@id='DESC']/div[1]//div[contains(@class, 'ComponentText')]"))).getText();
-            log.info("상품 설명: {}", description);
+            String description = "";
+            try {
+                // 작품정보 탭으로 이동
+                WebElement descTab = wait.until(ExpectedConditions.elementToBeClickable(
+                        By.xpath("//button[contains(text(), '작품정보')]")));
+                descTab.click();
+
+                // 페이지 로딩을 위한 잠시 대기
+                Thread.sleep(1000);
+
+                // 작품정보 내용 추출
+                description = wait.until(ExpectedConditions.presenceOfElementLocated(
+                        By.xpath("//*[@id=\"DESC\"]/div[1]/div[1]/div[2]"))).getText();
+                log.info("상품 설명: {}", description);
+            } catch (Exception e) {
+                log.error("상품 설명 추출 중 오류 발생: ", e);
+            }
 
             // 이미지 URL 리스트 추출
 //            List<String> imagePathList = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
