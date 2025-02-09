@@ -93,7 +93,8 @@ public class AdminProductServiceImpl implements AdminProductService {
         // 태그 처리
         if (dto.getTagStrList() != null) {
             dto.getTagStrList().forEach(tag -> {
-                String tagName = tag.trim();
+                // " " 그리고 "#" 제거
+                String tagName = tag.replace(" ", "").replace("#", "");
                 log.info("tagName: {}", tagName);
                 // 이미 기존에 존재하는 태그인지 확인
                 Tag savedTag = null;
