@@ -1,4 +1,4 @@
-package com.himedia.luckydokiapi.domain.shop.entity;
+package com.himedia.luckydokiapi.domain.community.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;

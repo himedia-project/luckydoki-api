@@ -1,6 +1,7 @@
-package com.himedia.luckydokiapi.domain.shop.entity;
+package com.himedia.luckydokiapi.domain.community.entity;
 
 
+import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
