@@ -36,7 +36,6 @@ public class ProductServiceImpl implements ProductService {
     private final ShopRepository shopRepository;
     private final CategoryRepository categoryRepository;
 
-    private final CustomFileUtil customFileUtil;
     private final ProductTagRepository productTagRepository;
     private final TagRepository tagRepository;
     private final CustomFileUtil fileUtil;
@@ -234,7 +233,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = this.getEntity(productId);
         // s3 파일 삭제
         List<String> deleteImages = product.getImageList().stream().map(ProductImage::getImageName).collect(Collectors.toList());
-        customFileUtil.deleteS3Files(deleteImages);
+        fileUtil.deleteS3Files(deleteImages);
 
         // 파일 삭제
         product.clearImageList();
