@@ -90,7 +90,8 @@ public class LikesServiceImpl implements LikesService {
     private Product getProduct(Long productId) {
         return productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("해당 싱품은 존재하지 않습니다 "));
     }
+
     private Shop getShop(Long shopId) {
-        return shopRepository.findById(shopId).orElseThrow(()->new EntityNotFoundException("존재하지 않는 셀러입니다"));
+        return shopRepository.findById(shopId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 셀러입니다"));
     }
 }

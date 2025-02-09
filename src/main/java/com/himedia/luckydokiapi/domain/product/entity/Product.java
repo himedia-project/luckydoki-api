@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.product.entity;
 
+import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
 import com.himedia.luckydokiapi.domain.product.enums.*;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.entity.BaseEntity;
@@ -83,7 +84,7 @@ public class Product extends BaseEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category category;      // 마지막 category
+    private Category category;      // 해당 category
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
@@ -98,6 +99,12 @@ public class Product extends BaseEntity {
     @Builder.Default
     private List<ProductTag> productTagList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductLike> productLikes = new ArrayList<>();
+
+    public Integer productLikesCount(ProductLike productLike) {
+        return productLikes.size();
+    }
 
     /**
      * 상품 이미지, 상품에 추가
@@ -196,4 +203,5 @@ public class Product extends BaseEntity {
     public void clearTagList() {
         this.productTagList.clear();
     }
+
 }

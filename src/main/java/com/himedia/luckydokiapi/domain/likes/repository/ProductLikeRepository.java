@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.likes.repository;
 
 import com.himedia.luckydokiapi.domain.likes.dto.LikesProductDTO;
 import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
+import com.himedia.luckydokiapi.domain.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,6 @@ public interface ProductLikeRepository extends JpaRepository<ProductLike, Long> 
 
     @Query("select m from ProductLike m where m.member.email =:email")
     List<ProductLike> findByEmail(@Param("email") String email);
+
+    Integer countByProduct(Product product);
 }

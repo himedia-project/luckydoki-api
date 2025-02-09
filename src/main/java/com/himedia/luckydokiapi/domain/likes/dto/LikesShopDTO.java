@@ -9,11 +9,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Setter
 public class LikesShopDTO {
 
     private Long id;
     private String email;
     private Long shopId;
     private String sellerEmail;
-//    private Integer likesCount;
+    private Integer likesCount;
 }

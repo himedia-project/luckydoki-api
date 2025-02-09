@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Setter
 public class LikesProductDTO {
 
     private Long id;
@@ -17,8 +18,6 @@ public class LikesProductDTO {
     private String email;
     private String productName;
     private String productCode;
-
+    private Integer likesCount;
     private String productImageUrl;
-    //추가 예정
-//    private Integer likesCount;
 }

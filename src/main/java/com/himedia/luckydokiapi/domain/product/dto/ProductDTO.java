@@ -23,6 +23,8 @@ public class ProductDTO {
     public static class Request {
 
         private Long id;
+        //해당 최하위 카테고리 (헷깔리지 않기)
+        //여성/잡화/신발/아디다스 에서 '아디다스' 의 카테고리 번호임
         private Long categoryId;
         private String name;
         private Integer price;
