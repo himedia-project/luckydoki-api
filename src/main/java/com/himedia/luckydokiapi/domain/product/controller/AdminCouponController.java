@@ -21,6 +21,12 @@ public class AdminCouponController {
 		return couponService.getAllCoupons();
 	}
 	
+	// 활성화된 쿠폰 조회
+	@GetMapping("/active")
+	public List<CouponDto> getActiveCoupons() {
+		return couponService.getActiveCoupons();
+	}
+	
 	// 새로운 쿠폰 생성
 	@PostMapping
 	public CouponDto createCoupon(@RequestBody CouponDto couponDto) {

@@ -11,12 +11,6 @@ import java.util.List;
 public class CouponController {
 	private final CouponService couponService;
 	
-	// 활성화된 쿠폰 조회
-	@GetMapping("/active")
-	public List<CouponDto> getActiveCoupons() {
-		return couponService.getActiveCoupons();
-	}
-	
 	// 쿠폰 코드로 조회
 	@GetMapping("/{code}")
 	public CouponDto getCouponByCode(@PathVariable String code) {
