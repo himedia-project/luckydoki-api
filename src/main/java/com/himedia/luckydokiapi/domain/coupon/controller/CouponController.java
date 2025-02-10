@@ -23,4 +23,6 @@ public class CouponController {
 		return couponService.getCouponByCode(code);
 	}
 	
+	
+	// 나머지 CRUD 는 AdminCouponController 에서 구현
 }
