@@ -36,14 +36,14 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody
                                                   LoginRequestDTO loginRequestDTO,
-                                                  HttpServletResponse resposnse) {
+                                                  HttpServletResponse response) {
         log.info("Login request: {}", loginRequestDTO);
         Map<String, Object> loginClaims = memberService.login(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
 
         String refreshToken = loginClaims.get("refresh_token").toString();
         String accessToken = loginClaims.get("access_token").toString();
 
-        CookieUtil.setTokenCookie(resposnse, "refresh_token", refreshToken, jwtProps.getRefreshTokenExpirationPeriod());
+        CookieUtil.setTokenCookie(response, "refresh_token", refreshToken, jwtProps.getRefreshTokenExpirationPeriod());
 
 /*        // 웹 클라이언트인 경우 쿠키 설정
         if ("web".equals(clientType)) {

@@ -54,7 +54,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers(new AntPathRequestMatcher("/api/member/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/apiember/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/product/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/content/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/test/**")).permitAll()
