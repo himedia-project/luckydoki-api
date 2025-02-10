@@ -1,5 +1,4 @@
-package com.himedia.luckydokiapi.domain.shop.entity;
-
+package com.himedia.luckydokiapi.domain.community.entity;
 
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.entity.BaseEntity;
@@ -14,22 +13,22 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "report")
-public class Report extends BaseEntity {
+@Table(name = "comment")
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "community_id")
-    private Community community;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "email")
     private Member member;
 
-    private String title;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "community_id")
+    private Community community;
 
-    private String reason;
+    private String content;
+
+
 }

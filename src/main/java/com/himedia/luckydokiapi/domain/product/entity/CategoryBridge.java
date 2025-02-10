@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "category_bridge")
 @ToString(exclude = {"product", "category"})
 public class CategoryBridge {
-
+//다대다 관계를 위한 중간 매핑 테이블
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,4 +33,10 @@ public class CategoryBridge {
         this.createdAt = LocalDateTime.now();
     }
 
+    public static CategoryBridge from(Category category, Product product) {
+        return CategoryBridge.builder()
+                .category(category)
+                .product(product)
+                .build();
+    }
 }

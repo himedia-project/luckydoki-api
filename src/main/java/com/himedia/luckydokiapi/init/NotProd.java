@@ -40,7 +40,6 @@ public class NotProd {
                         .nickName("user")
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
-                        .delFlag(false)
                         .build();
 
                 member1.addRole(MemberRole.USER);
@@ -50,7 +49,6 @@ public class NotProd {
                         .nickName("seller")
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
-                        .delFlag(false)
                         .build();
 
                 member2.addRole(MemberRole.SELLER);
@@ -60,7 +58,6 @@ public class NotProd {
                         .nickName("admin")
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
-                        .delFlag(false)
                         .build();
 
                 member3.addRole(MemberRole.ADMIN);

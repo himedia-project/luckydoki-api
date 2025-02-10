@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
@@ -13,6 +14,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tag")
+@ToString
 public class Tag extends BaseEntity {
 
     @Id
@@ -26,4 +28,5 @@ public class Tag extends BaseEntity {
                 .name(tag)
                 .build();
     }
+
 }

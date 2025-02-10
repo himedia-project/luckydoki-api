@@ -81,6 +81,9 @@ dependencies {
 
     // WebP 지원을 위한 의존성 추가
     implementation 'org.sejda.imageio:webp-imageio:0.1.6'
+
+    // selenium
+    implementation 'org.seleniumhq.selenium:selenium-java:4.25.0'
 }
 
 tasks.named('test') {

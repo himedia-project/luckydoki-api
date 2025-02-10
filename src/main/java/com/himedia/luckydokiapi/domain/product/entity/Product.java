@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.product.entity;
 
+import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
 import com.himedia.luckydokiapi.domain.product.enums.*;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.entity.BaseEntity;
@@ -18,7 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@ToString(exclude = "imageList")
+@Setter
+@ToString(exclude = {"imageList", "shop", "category", "productTagList"})
 @Table(name = "product")
 public class Product extends BaseEntity {
 
@@ -26,10 +28,12 @@ public class Product extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //mdpick 빼고 best 넣음
+
     // 상품 코드
     private String code;  // 24343233930
 
-    @Size(max = 255)
+    @Size(max = 35)
     @NotNull
     @Column(name = "name", nullable = false)
     private String name;
@@ -63,21 +67,24 @@ public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'N'")
-    private ProductIsNew isNew;
+    @Builder.Default
+    private ProductIsNew isNew = ProductIsNew.N;
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'N'")
-    private ProductBest best;
+    @Builder.Default
+    private ProductBest best = ProductBest.N;
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'N'")
-    private ProductEvent event;
+    @Builder.Default
+    private ProductEvent event = ProductEvent.N;
 
-    // 장르
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category category;      // 마지막 category
+    private Category category;      // 해당 category
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
@@ -92,6 +99,12 @@ public class Product extends BaseEntity {
     @Builder.Default
     private List<ProductTag> productTagList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductLike> productLikes = new ArrayList<>();
+
+    public Integer productLikesCount(ProductLike productLike) {
+        return productLikes.size();
+    }
 
     /**
      * 상품 이미지, 상품에 추가
@@ -153,6 +166,13 @@ public class Product extends BaseEntity {
         this.category = category;
     }
 
+    public void changeEvent(ProductEvent event) {
+        this.event = event;
+    }
+
+    public void changeShop(Shop shop) {
+        this.shop = shop;
+    }
 
     /**
      * 할인가격 업데이트 -> 할인율 업데이트
@@ -173,6 +193,15 @@ public class Product extends BaseEntity {
     public void changeDiscountPrice(Integer discountPrice) {
         this.discountPrice = discountPrice;
         updateDiscountRate();
+    }
+
+    public void changeTagList(List<ProductTag> tagList) {
+        this.productTagList = tagList;
+    }
+
+
+    public void clearTagList() {
+        this.productTagList.clear();
     }
 
 }

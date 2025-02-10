@@ -1,8 +1,10 @@
 package com.himedia.luckydokiapi.domain.product.repository.querydsl;
 
 
-import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
+import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
+import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -20,8 +22,11 @@ import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 
+import static com.himedia.luckydokiapi.domain.product.entity.QCategory.category;
+import static com.himedia.luckydokiapi.domain.product.entity.QCategoryBridge.categoryBridge;
 import static com.himedia.luckydokiapi.domain.product.entity.QProduct.product;
 import static com.himedia.luckydokiapi.domain.product.entity.QProductImage.productImage;
+import static com.himedia.luckydokiapi.domain.shop.entity.QShop.shop;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,8 +36,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
 
     @Override
-    public Page<Product> findListBy(ProductRequestDTO requestDTO) {
-
+    public Page<Product> findListBy(ProductSearchDTO requestDTO) {
+//admin 용
 
         Pageable pageable = PageRequest.of(
                 requestDTO.getPage() - 1,  //페이지 시작 번호가 0부터 시작하므로
@@ -51,7 +56,12 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .where(
                         product.delFlag.eq(false),
                         containsSearchKeyword(requestDTO.getSearchKeyword()),
-                        eqCategoryId(requestDTO.getCategoryId())
+                        eqCategoryId(requestDTO.getCategoryId()),
+                        eqIsNew(requestDTO.getIsNew()),
+                        eqBest(requestDTO.getBest()),
+                        eqEvent(requestDTO.getEvent()),
+                        eqShopId(requestDTO.getShopId()),
+                        betweenPrice(requestDTO.getMinPrice(), requestDTO.getMaxPrice())
                 )
                 .orderBy(orderSpecifiers)
                 .offset(pageable.getOffset())
@@ -73,75 +83,144 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
     }
 
+    //새로 추가된 옵션들도  (enums ) 검색 옵ㄱ션추가
+    //member 용
     @Override
-    public List<Product> findByDTO(ProductRequestDTO requestDTO) {
+    public List<Product> findByDTO(ProductSearchDTO requestDTO) {
 
         return queryFactory
                 .selectFrom(product)
                 .where(
                         product.delFlag.eq(false),
                         eqCategory(requestDTO.getCategoryId()),
-                        eqIsNew(requestDTO.getMdPick()),
-                        containsSearchKeyword(requestDTO.getSearchKeyword())
+                        eqIsNew(requestDTO.getIsNew()),
+                        containsSearchKeyword(requestDTO.getSearchKeyword()),
+                        eqBest(requestDTO.getBest()),
+                        eqEvent(requestDTO.getEvent()),
+                        eqShopId(requestDTO.getShopId()),
+                        betweenPrice(requestDTO.getMinPrice(), requestDTO.getMaxPrice()) //가격 범위 검색
                 )
                 .orderBy(product.id.desc())
                 .fetch();
     }
 
-
     @Override
-    public List<Product> findByIdList(List<Long> idList) {
-        return queryFactory.selectFrom(product)
-                .where(product.id.in(idList))
+    public List<Product> findProductByShopMemberEmail(String email) {
+        return queryFactory
+                .select(product)
+                .from(product)
+                .leftJoin(product.imageList, productImage).on(productImage.ord.eq(0))
+                .join(product.shop, shop)
+                .join(shop.member)
+                .where(shop.member.email.eq(email))
                 .fetch();
     }
 
-
-    /**
-     * Sort 정보를 OrderSpecifier 배열로 변환
-     *
-     * @param sort Sort 정보
-     * @return OrderSpecifier 배열
-     */
-    private OrderSpecifier[] createOrderSpecifier(Sort sort) {
-        return sort.stream()
-                .map(order -> new OrderSpecifier(
-                        order.isAscending() ? Order.ASC : Order.DESC,
-                        new PathBuilder<>(Product.class, "product").get(order.getProperty())
-                ))
-                .toArray(OrderSpecifier[]::new);
-    }
-
-    private BooleanExpression eqCategory(Long categoryId) {
-        if (categoryId == null) {
-            return null;
-        }
-        return product.category.id.eq(categoryId);
-    }
-
-    private BooleanExpression eqIsNew(ProductIsNew isNew) {
-        if (isNew == null) {
-            return null;
-        }
-        return product.isNew.eq(isNew);
-    }
-
-
-    private BooleanExpression containsSearchKeyword(String searchKeyword) {
-        if (searchKeyword == null) {
-            return null;
-        }
-        return product.name.contains(searchKeyword)
-                .or(product.category.name.contains(searchKeyword));
+    //최하위 카테고리로 해당 프로덕트 들을 조회
+    @Override
+    public List<Product> findByChildCategoryId(Long childCategoryId) {
+        return queryFactory
+                .selectFrom(product) // 프로덕트 -> 카테고리 -> 카테고리 브릿지  + 카테고리 브릿지
+                .where(product.category.id.eq(childCategoryId))
+                .fetch();
 
     }
 
 
-    private BooleanExpression eqCategoryId(Long categoryId) {
-        if (categoryId == null) {
-            return null;
-        }
-        return product.category.id.eq(categoryId);
+@Override
+public List<Product> findByIdList(List<Long> idList) {
+    return queryFactory.selectFrom(product)
+            .where(product.id.in(idList))
+            .fetch();
+}
+
+
+/**
+ * Sort 정보를 OrderSpecifier 배열로 변환
+ *
+ * @param sort Sort 정보
+ * @return OrderSpecifier 배열
+ */
+private OrderSpecifier[] createOrderSpecifier(Sort sort) {
+    return sort.stream()
+            .map(order -> new OrderSpecifier(
+                    order.isAscending() ? Order.ASC : Order.DESC,
+                    new PathBuilder<>(Product.class, "product").get(order.getProperty())
+            ))
+            .toArray(OrderSpecifier[]::new);
+}
+
+private BooleanExpression eqCategory(Long categoryId) {
+    if (categoryId == null) {
+        return null;
     }
+    return product.category.id.eq(categoryId);
+}
+
+private BooleanExpression eqIsNew(ProductIsNew isNew) {
+    if (isNew == null) {
+        return null;
+    }
+    return product.isNew.eq(isNew);
+}
+
+private BooleanExpression eqBest(ProductBest best) {
+    if (best == null) {
+        return null;
+    }
+    return product.best.eq(best);
+}
+
+private BooleanExpression eqEvent(ProductEvent event) {
+    if (event == null) {
+        return null;
+    }
+    return product.event.eq(event);
+}
+
+private BooleanExpression eqShopId(Long shopId) {
+    if (shopId == null) {
+        return null;
+    }
+    return product.shop.id.eq(shopId);
+}
+
+private BooleanExpression containsSearchKeyword(String searchKeyword) {
+    if (searchKeyword == null) {
+        return null;
+    }
+    return product.name.contains(searchKeyword)
+            .or(product.category.name.contains(searchKeyword));
+
+}
+
+//가격 범위 검색
+private BooleanExpression betweenPrice(Integer minPrice, Integer maxPrice) {
+    if (minPrice == null && maxPrice == null) {
+        return null;
+    }
+    if (minPrice != null) {
+        return product.price.loe(maxPrice);
+    }
+    if (maxPrice != null) {
+        return product.price.goe(minPrice);
+    }
+    return product.price.between(minPrice, maxPrice);
+}
+
+private BooleanExpression eqCategoryId(Long categoryId) {
+    if (categoryId == null) {
+        return null;
+    }
+    return product.category.id.eq(categoryId);
+}
+
+private BooleanExpression eqShopMember(String email) {
+    if (email == null) {
+        return null;
+    }
+    return product.shop.member.email.eq(email); // product - shop - member - email 연관관계
+
+}
 
 }

@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface ProductRepository extends JpaRepository<Product, Long>
         , ProductRepositoryCustom {
 
@@ -20,4 +23,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>
     @Modifying
     @Query("update Product p set p.delFlag = true where p.id = :id")
     void modifyDeleteFlag(@Param("id") Long id);
+
+
 }

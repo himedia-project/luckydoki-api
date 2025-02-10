@@ -8,6 +8,7 @@ import lombok.*;
 @Builder
 @Entity
 @ToString
+@Setter
 @Table(name = "product_tag")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,4 +32,6 @@ public class ProductTag {
                 .product(product)
                 .build();
     }
+
+
 }

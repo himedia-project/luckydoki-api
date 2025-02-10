@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.shop.entity;
 
+import com.himedia.luckydokiapi.domain.likes.entity.ShopLike;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.entity.BaseEntity;
@@ -27,6 +28,15 @@ public class Shop extends BaseEntity {
     private Member member;
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
+    private List<ShopLike> shopLikes = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Product> productList = new ArrayList<>();
+
+
+    public Integer shopLikesCount(ShopLike shopLike) {
+        return this.shopLikes.size();
+    }
 }

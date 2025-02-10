@@ -11,7 +11,7 @@ public class ProductCreator {
 
     private final AdminProductService productService;
 
-    public void create(ProductDTO dto) {
+    public void create(ProductDTO.Request dto) {
 
         productService.register(dto);
 

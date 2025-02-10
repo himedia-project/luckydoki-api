@@ -1,11 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
-import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
-import com.himedia.luckydokiapi.domain.product.enums.ProductDisplay;
-import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
+import com.himedia.luckydokiapi.domain.product.enums.*;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,52 +9,75 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @Builder
 @ToString
 public class ProductDTO {
-    private Long id;
-    private String code;
-    private Long categoryId;
-    private String categoryName;
-    private String name;
-    private Integer price;
-    private Integer discountPrice;
-    private Integer discountRate;
-    private String description;
-    private ProductDisplay display;
-    private ProductApproval approval;
-    private ProductIsNew isNew;
-    private ProductBest best;
 
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @Builder
+    public static class Request {
 
-    private Integer stockNumber;
-//    private Integer delFlag;
-//    private List
+        private Long id;
+        //해당 최하위 카테고리 (헷깔리지 않기)
+        //여성/잡화/신발/아디다스 에서 '아디다스' 의 카테고리 번호임
+        private Long categoryId;
+        private String name;
+        private Integer price;
+        private Integer discountPrice;
+        private String description;
+        private Long shopId;
+        private Integer stockNumber;
+        
+        @Builder.Default
+        private List<MultipartFile> files = new ArrayList<>();
 
-    private String searchKeyword;
+        @Builder.Default
+        private List<String> uploadFileNames = new ArrayList<>();
 
-    // 파일 입력값
-    @Builder.Default
-    private List<MultipartFile> files = new ArrayList<>();
+        // 상품 엑셀 업로드시 사용
+        private List<String> imagePathList;
+        private List<String> tagStrList;
+    }
 
-    // 파일 업로드한 url 응답값
-    @Builder.Default
-    private List<String> uploadFileNames = new ArrayList<>();
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @Builder
+    public static class Response {
+        private Long id;
+        private String code;
+        private Long categoryId;
+        private String categoryName;
+        private String name;
+        private Integer price;
+        private Integer discountPrice;
+        private Integer discountRate;
+        private String description;
+        private ProductIsNew isNew;
+        private ProductBest best;
+        private ProductEvent event;
+        private Long shopId;
+        private String shopName;
+        private String shopImage;
+        private Integer stockNumber;
+        private String nickName;
+        private String email;
+        
+        @Builder.Default
+        private List<String> uploadFileNames = new ArrayList<>();
 
-    // excel 등록시 image path list
-    private List<String> imagePathList;
-
-    // 상품 태그 문자열 리스트 "액션,스포츠,연애"
-    private List<String> tagStrList;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime modifiedAt;
-
-
+        private List<String> tagStrList;
+        
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime createdAt;
+        
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime modifiedAt;
+    }
 }

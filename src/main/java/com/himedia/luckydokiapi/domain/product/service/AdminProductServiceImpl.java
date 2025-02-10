@@ -1,14 +1,11 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
-import com.himedia.luckydokiapi.domain.product.dto.ProductRequestDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
-import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
-import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
-import com.himedia.luckydokiapi.domain.product.repository.CategoryRepository;
-import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
-import com.himedia.luckydokiapi.domain.product.repository.ProductTagRepository;
-import com.himedia.luckydokiapi.domain.product.repository.TagRepository;
+import com.himedia.luckydokiapi.domain.product.repository.*;
+import com.himedia.luckydokiapi.domain.shop.entity.Shop;
+import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+
 @Slf4j
 @Transactional
 @Service
@@ -33,33 +31,38 @@ public class AdminProductServiceImpl implements AdminProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final CategoryBridgeRepository categoryBridgeRepository;
     private final TagRepository tagRepository;
     private final ProductTagRepository productTagRepository;
+    private final ShopRepository shopRepository;
+
+    private final ProductService productService;
 
 
     @Transactional(readOnly = true)
     @Override
-    public PageResponseDTO<ProductDTO> list(ProductRequestDTO requestDTO) {
+    public PageResponseDTO<ProductDTO.Response> list(ProductSearchDTO requestDTO) {
         log.info("ProductAdminService list...");
 
         Page<Product> result = productRepository.findListBy(requestDTO);
 
-        return PageResponseDTO.<ProductDTO>withAll()
+        return PageResponseDTO.<ProductDTO.Response>withAll()
                 .dtoList(result.stream().map(this::entityToDTO).collect(Collectors.toList()))
                 .totalCount(result.getTotalElements())
                 .pageRequestDTO(requestDTO)
                 .build();
     }
 
+    //admin 프로덕트 확인용
     @Transactional(readOnly = true)
     @Override
-    public ProductDTO getOne(Long id) {
+    public ProductDTO.Response getOne(Long id) {
         Product product = this.getEntity(id);
         return this.entityToDTO(product);
     }
 
     @Override
-    public Long register(ProductDTO dto) {
+    public Long register(ProductDTO.Request dto) {
 
         // 파일 업로드 처리
         if (dto.getFiles() != null || !dto.getFiles().isEmpty()) {
@@ -75,17 +78,23 @@ public class AdminProductServiceImpl implements AdminProductService {
             dto.setUploadFileNames(fileUtil.uploadImagePathS3Files(dto.getImagePathList()));
         }
 
-        // 카테고리
-        Category category = this.getCategory(dto.getCategoryId());
 
+        Category category = this.getCategory(dto.getCategoryId());
+        Shop shop = this.getShop(dto.getShopId());
         // 실제 저장 처리
-        Product result = productRepository.save(this.dtoToEntity(dto, category));
+        Product result = productRepository.save(productService.dtoToEntity(dto, category, shop));
         log.info("product result: {}", result);
+
+        // 카테고리 처리
+        if(dto.getCategoryId() != null) {
+            categoryBridgeRepository.save(CategoryBridge.from(category, result));
+        }
 
         // 태그 처리
         if (dto.getTagStrList() != null) {
             dto.getTagStrList().forEach(tag -> {
-                String tagName = tag.trim();
+                // " " 그리고 "#" 제거
+                String tagName = tag.replace(" ", "").replace("#", "");
                 log.info("tagName: {}", tagName);
                 // 이미 기존에 존재하는 태그인지 확인
                 Tag savedTag = null;
@@ -105,15 +114,15 @@ public class AdminProductServiceImpl implements AdminProductService {
 
 
     @Override
-    public Long modify(Long id, ProductDTO dto) {
+    public Long modify(Long id, ProductDTO.Request dto) {
 
         Product product = this.getEntity(id);
 
-        ProductDTO oldDTO = this.entityToDTO(product);
+        ProductDTO.Request request = this.entityToReqDTO(product);
 
         // 파일 업로드 처리
         //기존의 파일들 (데이터베이스에 존재하는 파일들 - 수정 과정에서 삭제되었을 수 있음)
-        List<String> oldFileNames = oldDTO.getUploadFileNames();
+        List<String> oldFileNames = request.getUploadFileNames();
 
         //새로 업로드 해야 하는 파일들
         List<MultipartFile> files = dto.getFiles();
@@ -147,12 +156,9 @@ public class AdminProductServiceImpl implements AdminProductService {
         product.changeCategory(this.getCategory(dto.getCategoryId()));
         product.changeName(dto.getName());
         product.changePrice(dto.getPrice());
-        product.changeDiscountPrice(dto.getDiscountPrice() == null ? 0 : dto.getDiscountPrice());
+        product.changeDiscountPrice(dto.getDiscountPrice());
         product.changeDescription(dto.getDescription());
         product.changeStockNumber(dto.getStockNumber());
-        product.changeBest(dto.getBest() == null ? ProductBest.N : dto.getBest());
-        product.changeIsNew(dto.getIsNew() == null ? ProductIsNew.N : dto.getIsNew());
-
         product.clearImageList();
 
         // 새로 업로드할 파일들을 새로 추가
@@ -177,6 +183,14 @@ public class AdminProductServiceImpl implements AdminProductService {
 
         // 파일 삭제
         product.clearImageList();
+        // 해당 참조한 태그 삭제
+        List<ProductTag> productTags = product.getProductTagList();
+        log.info("productTags: {}", productTags);
+        if(productTags != null && !productTags.isEmpty()) {
+            // deleteAll && clear 모두 해야 삭제된다.
+            productTagRepository.deleteAll(productTags);
+            product.clearTagList();
+        }
 
         productRepository.modifyDeleteFlag(product.getId());
     }
@@ -202,4 +216,11 @@ public class AdminProductServiceImpl implements AdminProductService {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 카테고리가 존재하지 않습니다. id: " + categoryId));
     }
+
+    private Shop getShop(Long shopId) {
+        return shopRepository.findById(shopId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 seller 가 존재하지 않습니다 " + shopId));
+    }
+
+
 }
