@@ -11,19 +11,16 @@ import java.util.List;
 public class CouponController {
 	private final CouponService couponService;
 	
-	@GetMapping
-	public List<CouponDto> getAllCoupons() {
-		return couponService.getAllCoupons();
-	}
-	
+	// 활성화된 쿠폰 조회
 	@GetMapping("/active")
 	public List<CouponDto> getActiveCoupons() {
 		return couponService.getActiveCoupons();
 	}
 	
-	@GetMapping("/{id}")
-	public CouponDto getCouponById(@PathVariable Long id) {
-		return couponService.getCouponById(id);
+	// 쿠폰 코드로 조회
+	@GetMapping("/{code}")
+	public CouponDto getCouponByCode(@PathVariable String code) {
+		return couponService.getCouponByCode(code);
 	}
 	
 }

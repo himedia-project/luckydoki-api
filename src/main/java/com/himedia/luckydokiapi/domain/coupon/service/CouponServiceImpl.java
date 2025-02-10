@@ -56,6 +56,15 @@ public class CouponServiceImpl implements CouponService {
 	}
 	
 	@Override
+	public CouponDto getCouponByCode(String code) {
+		Coupon coupon = couponRepository.findByCode(code);
+		if (coupon == null) {
+			throw new EntityNotFoundException("Coupon not found with code: " + code);
+		}
+		return convertToDto(coupon);
+	}
+	
+	@Override
 	@Transactional
 	public CouponDto createCoupon(CouponDto couponDto) {
 		Coupon coupon = new Coupon(
