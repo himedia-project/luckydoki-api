@@ -1,7 +1,9 @@
 package com.himedia.luckydokiapi.init;
 
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
+import com.himedia.luckydokiapi.domain.member.enums.PushActive;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,8 @@ public class NotProd {
                         .nickName("user")
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
+                        .active(MemberActive.Y)
+                        .pushActive(PushActive.Y)
                         .build();
 
                 member1.addRole(MemberRole.USER);
@@ -49,6 +53,8 @@ public class NotProd {
                         .nickName("seller")
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
+                        .active(MemberActive.Y)
+                        .pushActive(PushActive.Y)
                         .build();
 
                 member2.addRole(MemberRole.SELLER);
@@ -58,6 +64,8 @@ public class NotProd {
                         .nickName("admin")
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
+                        .active(MemberActive.Y)
+                        .pushActive(PushActive.Y)
                         .build();
 
                 member3.addRole(MemberRole.ADMIN);
