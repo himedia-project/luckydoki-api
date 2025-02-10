@@ -8,6 +8,7 @@ public interface CouponService {
 	List<CouponDto> getAllCoupons();
 	List<CouponDto> getActiveCoupons();
 	CouponDto getCouponById(Long id);
+	CouponDto getCouponByCode(String code);
 	CouponDto createCoupon(CouponDto couponDto);
 	CouponDto updateCoupon(Long id, CouponDto couponDto);
 	void deleteCoupon(Long id);

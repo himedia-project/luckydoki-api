@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface CouponRepositoryCustom {
 	List<Coupon> findActiveCoupons();
+	Coupon findByCode(String code);
 	void updateCoupon(Long id, CouponDto couponDto);
 }

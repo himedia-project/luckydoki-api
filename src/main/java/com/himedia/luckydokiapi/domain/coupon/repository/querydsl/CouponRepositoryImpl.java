@@ -25,6 +25,14 @@ public class CouponRepositoryImpl implements CouponRepositoryCustom{
 	}
 	
 	@Override
+	public Coupon findByCode(String code) {
+		QCoupon coupon = QCoupon.coupon;
+		return queryFactory.selectFrom(coupon)
+				.where(coupon.code.eq(code))
+				.fetchOne();
+	}
+	
+	@Override
 	@Transactional
 	public void updateCoupon(Long id, CouponDto couponDto) {
 		QCoupon coupon = QCoupon.coupon;
