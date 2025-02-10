@@ -48,7 +48,7 @@ public class AdminMemberController {
     @Data
     static class LoginResponseDTO {
         private String email;
-        private String nickName;
+        private String name;
         private List<String> roles;
         private String accessToken;
     }
@@ -61,15 +61,15 @@ public class AdminMemberController {
 
         // 로그인 성공시 accessToken, refreshToken 생성
         String refreshToken = jwtUtil.generateToken(loginClaims, jwtProps.getRefreshTokenExpirationPeriod());
-        String accessToken = loginClaims.get("access_token").toString();
+        String accessToken = loginClaims.get("accessToken").toString();
         // TODO: user 로그인시, refreshToken token 테이블에 저장
 //        tokenService.saveRefreshToken(accessToken, refreshToken, memberService.getMember(loginDTO.getEmail()));
         // refreshToken 쿠키로 클라이언트에게 전달
-        CookieUtil.setTokenCookie(response, "refresh_token", refreshToken, jwtProps.getRefreshTokenExpirationPeriod()); // 1day
+        CookieUtil.setTokenCookie(response, "refreshToken", refreshToken, jwtProps.getRefreshTokenExpirationPeriod()); // 1day
 
         LoginResponseDTO loginResponseDTO = LoginResponseDTO.builder()
                 .email(loginClaims.get("email").toString())
-                .nickName(loginClaims.get("nickName").toString())
+                .name(loginClaims.get("name").toString())
                 .roles((List<String>) loginClaims.get("roleNames"))
                 .accessToken(accessToken)
                 .build();
