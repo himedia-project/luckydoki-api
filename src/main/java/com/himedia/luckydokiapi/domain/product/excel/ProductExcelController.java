@@ -32,8 +32,8 @@ public class ProductExcelController {
             @RequestPart(value = "file") MultipartFile batchRegistrationFile
     ) {
         List<ProductDTO.Request> registrationDtoList = ProductExcelDataExtractor.extract(batchRegistrationFile);
-        List<RegistrationFailResponseDTO> response = excelService.register(registrationDtoList);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        Long registeredSize = excelService.register(registrationDtoList);
+        return new ResponseEntity<>(registeredSize + "개 row 데이터 excel 등록 완료!", HttpStatus.CREATED);
     }
 
 
