@@ -111,32 +111,23 @@ public class AdminMemberServiceImpl implements AdminMemberService {
      *  셀러 신청 승인
      */
     public SellerResponseDTO approveSeller(Long applicationId) {
-        // 1. 신청 내역 조회
+
         SellerApplication application = sellerApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 신청이 존재하지 않습니다. id: " + applicationId));
 
-        // 2. 회원 정보 조회
         Member member = memberRepository.findByEmail(application.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("해당 회원이 존재하지 않습니다. email: " + application.getEmail()));
 
-        // 3. SELLER 역할 부여
         if (!member.getMemberRoleList().contains(MemberRole.SELLER)) {
             member.addRole(MemberRole.SELLER);
             memberRepository.save(member);
         }
 
-        // 4. 신청 상태를 승인 완료로 변경
         application.approve();
         sellerApplicationRepository.save(application);
 
-        // 5. 승인된 정보를 DTO로 변환하여 반환
-        return SellerResponseDTO.builder()
-                .id(application.getId())
-                .email(application.getEmail())
-                .nickName(application.getNickName())
-                .isApproved(application.isApproved())
-                .statusDescription(application.isApproved() ? "승인 완료" : "승인 대기")
-                .build();
+
+        return convertToDTO(application);
     }
 
 
