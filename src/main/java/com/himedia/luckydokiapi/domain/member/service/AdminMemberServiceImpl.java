@@ -116,7 +116,7 @@ public class AdminMemberServiceImpl implements AdminMemberService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 신청이 존재하지 않습니다. id: " + applicationId));
 
         // 2. 회원 정보 조회
-        Member member = memberRepository.findById(application.getEmail())
+        Member member = memberRepository.findByEmail(application.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("해당 회원이 존재하지 않습니다. email: " + application.getEmail()));
 
         // 3. SELLER 역할 부여

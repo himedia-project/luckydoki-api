@@ -16,5 +16,4 @@ public class SellerRequestDTO {
 
     @NotBlank
     private String nickName;
-
 }
