@@ -1,16 +1,14 @@
 package com.himedia.luckydokiapi.domain.coupon.service;
 
-import com.himedia.luckydokiapi.domain.coupon.dto.CouponRequestDto;
-import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
+import com.himedia.luckydokiapi.domain.coupon.dto.CouponDto;
 
 import java.util.List;
 
 public interface CouponService {
-	List<CouponResponseDto> getAllCoupons();
-	List<CouponResponseDto> getActiveCoupons();
-	CouponResponseDto getCouponById(Long id);
-	CouponResponseDto getCouponByCode(String code);
-	CouponResponseDto createCoupon(CouponRequestDto couponRequestDto);
-	CouponResponseDto updateCoupon(Long id, CouponRequestDto couponRequestDto);
+	List<CouponDto> getAllCoupons();
+	List<CouponDto> getActiveCoupons();
+	CouponDto getCouponById(Long id);
+	CouponDto createCoupon(CouponDto couponDto);
+	CouponDto updateCoupon(Long id, CouponDto couponDto);
 	void deleteCoupon(Long id);
 }
