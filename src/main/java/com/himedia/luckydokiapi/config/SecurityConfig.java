@@ -55,14 +55,14 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
                 authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(new AntPathRequestMatcher("/api/member/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/category/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/product/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/content/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/test/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/chat/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/crawl/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/category/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/heart/**")).permitAll()
-
+                        .requestMatchers(new AntPathRequestMatcher("/api/community/**")).permitAll()
                         // /api/admin/join, /api/admin/login,logout 모두 접근 가능
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/join")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/login")).permitAll()

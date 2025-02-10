@@ -6,10 +6,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -28,6 +30,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "community_id")
     private Community community;
 
+    @Column(nullable = false)
     private String content;
 
 
