@@ -10,6 +10,8 @@ import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.repository.SellerApplicationRepository;
+import com.himedia.luckydokiapi.domain.shop.entity.Shop;
+import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.dto.PageRequestDTO;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,7 @@ public class AdminMemberServiceImpl implements AdminMemberService {
 
     private final MemberRepository memberRepository;
     private final SellerApplicationRepository sellerApplicationRepository;
+    private final ShopRepository shopRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -72,29 +76,6 @@ public class AdminMemberServiceImpl implements AdminMemberService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public SellerResponseDTO applyForSeller(SellerRequestDTO requestDTO) {
-        // 1. 회원 정보 조회 (이메일 기준)
-        Member member = memberRepository.findById(requestDTO.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("해당 회원이 존재하지 않습니다. email: " + requestDTO.getEmail()));
-
-        // 2. 이미 신청했는지 확인
-        boolean alreadyExists = sellerApplicationRepository.findByEmail(requestDTO.getEmail()).isPresent();
-        if (alreadyExists) {
-            throw new IllegalStateException("이미 셀러 신청을 완료한 회원입니다.");
-        }
-
-        // 3. 신청 정보 생성 및 저장 (isApproved = false)
-        SellerApplication application = SellerApplication.builder()
-                .email(member.getEmail())
-                .nickName(member.getNickName())
-                .isApproved(false)
-                .build();
-
-        sellerApplicationRepository.save(application);
-        return convertToDTO(application);
-
-    }
 
     /**
      *  승인된 셀러 신청 목록 조회
@@ -111,25 +92,29 @@ public class AdminMemberServiceImpl implements AdminMemberService {
      *  셀러 신청 승인
      */
     public SellerResponseDTO approveSeller(Long applicationId) {
-
         SellerApplication application = sellerApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 신청이 존재하지 않습니다. id: " + applicationId));
 
         Member member = memberRepository.findByEmail(application.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("해당 회원이 존재하지 않습니다. email: " + application.getEmail()));
 
-        if (!member.getMemberRoleList().contains(MemberRole.SELLER)) {
-            member.addRole(MemberRole.SELLER);
-            memberRepository.save(member);
-        }
+        member.changeRole(MemberRole.SELLER);
+        memberRepository.save(member);
 
         application.approve();
         sellerApplicationRepository.save(application);
 
-
+        // ✅ 승인된 셀러를 Shop에 자동 등록
+        if (shopRepository.findByMemberEmail(member.getEmail()).isEmpty()) {
+            Shop shop = Shop.builder()
+                    .member(member)
+                    .shopLikes(new ArrayList<>())
+                    .productList(new ArrayList<>())
+                    .build();
+            shopRepository.save(shop);
+        }
         return convertToDTO(application);
     }
-
 
 
     private SellerResponseDTO convertToDTO(SellerApplication application) {
@@ -137,6 +122,8 @@ public class AdminMemberServiceImpl implements AdminMemberService {
                 .id(application.getId())
                 .email(application.getEmail())
                 .nickName(application.getNickName())
+                .profileImage(application.getProfileImage())
+                .introduction(application.getIntroduction())
                 .isApproved(application.isApproved())
                 .statusDescription(application.isApproved() ? "승인 완료" : "승인 대기")
                 .build();

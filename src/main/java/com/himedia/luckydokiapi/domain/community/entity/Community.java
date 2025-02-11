@@ -31,6 +31,6 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
 
     @ElementCollection
     @CollectionTable(name = "community_images", joinColumns = @JoinColumn(name = "community_id"))
-    @Column(name = "image_url")
+    @Column(name = "image_url", nullable = true)
     private List<String> imageList = new ArrayList<>();
 }
