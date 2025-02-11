@@ -58,6 +58,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .select(product)
                 .from(product)
                 .leftJoin(product.imageList, productImage).on(productImage.ord.eq(0))
+                .leftJoin(product.productTagList, productTag)
+                .leftJoin(productTag.tag, tag)
                 .where(
                         product.delFlag.eq(false),
                         containsSearchKeyword(requestDTO.getSearchKeyword()),
@@ -68,10 +70,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         eqShopId(requestDTO.getShopId()),
                         betweenPrice(requestDTO.getMinPrice(), requestDTO.getMaxPrice())
                 )
+                .groupBy(product) // 상품별로 그룹화 -> 중복되지 않게 하기 위함
                 .orderBy(orderSpecifiers)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        log.info("findListBy list : {}", list);
 
         // pageable의 sort 정보를 querydsl에 적용
 
@@ -79,11 +84,20 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .select(product)
                 .from(product)
                 .leftJoin(product.imageList, productImage).on(productImage.ord.eq(0))
+                .leftJoin(product.productTagList, productTag)
+                .leftJoin(productTag.tag, tag)
                 .where(
                         product.delFlag.eq(false),
                         containsSearchKeyword(requestDTO.getSearchKeyword()),
-                        eqCategoryId(requestDTO.getCategoryId())
-                );
+                        eqCategoryId(requestDTO.getCategoryId()),
+                        eqIsNew(requestDTO.getIsNew()),
+                        eqBest(requestDTO.getBest()),
+                        eqEvent(requestDTO.getEvent()),
+                        eqShopId(requestDTO.getShopId()),
+                        betweenPrice(requestDTO.getMinPrice(), requestDTO.getMaxPrice())
+                )
+                .groupBy(product) // 상품별로 그룹화
+                ;
 
         return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
     }
