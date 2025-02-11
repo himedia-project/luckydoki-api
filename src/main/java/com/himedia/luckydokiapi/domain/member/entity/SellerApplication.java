@@ -13,22 +13,26 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class SellerApplication extends BaseEntity {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;  // 신청 고유 ID
+    private Long id;
 
     @Column(nullable = false, unique = true)
-    private String email;  // 신청한 유저의 이메일
+    private String email;
 
     @Column(nullable = false)
-    private String nickName;  // 신청한 유저의 닉네임
+    private String nickName;
 
     @Column(nullable = false)
-    private boolean isApproved; // false: 승인 대기, true: 승인 완료
+    private String profileImage;
 
-    /**
-     * 셀러 승인 처리
-     */
+    @Column(nullable = false, length = 1000)
+    private String introduction;
+
+    @Column(nullable = false)
+    private boolean isApproved;
+
     public void approve() {
         this.isApproved = true;
     }

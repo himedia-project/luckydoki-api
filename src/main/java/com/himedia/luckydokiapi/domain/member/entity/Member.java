@@ -30,6 +30,14 @@ public class Member extends BaseEntity {
     private String password;
     private String phone;
 
+    public void updateNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public void updatePhone(String phone) {
+        this.phone = phone;
+    }
+
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'Y'")
     private MemberActive active;
@@ -49,4 +57,10 @@ public class Member extends BaseEntity {
     public void addRole(MemberRole memberRole) {
         memberRoleList.add(memberRole);
     }
+
+    public void changeRole(MemberRole role) {
+        this.memberRoleList.clear();
+        this.memberRoleList.add(role);
+    }
+
 }

@@ -4,12 +4,14 @@ package com.himedia.luckydokiapi.domain.member.controller;
 import com.himedia.luckydokiapi.domain.member.dto.*;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.props.JwtProps;
+import com.himedia.luckydokiapi.security.MemberDTO;
 import com.himedia.luckydokiapi.util.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -84,5 +86,19 @@ public class MemberController {
         return ResponseEntity.ok(response);
 
     }
+
+    @GetMapping("/me")
+    public MemberDTO getMyInfo(@AuthenticationPrincipal MemberDTO member) {
+        return memberService.getMyInfo(member.getEmail());
+    }
+
+
+    @PutMapping("/me")
+    public MemberDTO updateMyInfo(
+            @AuthenticationPrincipal MemberDTO member,
+            @RequestBody UpdateMemberDTO request) {
+        return memberService.updateMyInfo(member.getEmail(), request);
+    }
+
 }
 //true -> adult , false -> 잼민이 ㅋ

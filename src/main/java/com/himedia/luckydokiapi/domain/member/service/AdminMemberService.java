@@ -13,7 +13,6 @@ import java.util.List;
 public interface AdminMemberService {
 
     SellerResponseDTO approveSeller(Long applicationId);
-    SellerResponseDTO applyForSeller(SellerRequestDTO requestDTO);
     List<SellerResponseDTO> getPendingApplications();
     List<SellerResponseDTO> getApprovedApplications();
 
