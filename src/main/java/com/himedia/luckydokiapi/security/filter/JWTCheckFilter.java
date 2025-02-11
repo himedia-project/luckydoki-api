@@ -62,6 +62,11 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return true;
         }
 
+        // /api/category 관련 api는 필터를 타지 않도록 설정
+        if (path.startsWith("/api/category")) {
+            return true;
+        }
+
         // health check
         if (path.startsWith("/health")) {
             return true;
