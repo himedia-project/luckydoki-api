@@ -3,44 +3,44 @@ server:
 
 spring:
   profiles:
-    active: local # ?? ???? ???
+    active: local # 로컬 프로파일 활성화
 
   config:
-    import: optional:file:.env[.properties] # ???? ?? ??
+    import: optional:file:.env[.properties] # 환경변수 파일 로드
 
   output:
     ansi:
-      enabled: always # ANSI ?? ?? ??? (JUnit ??? ??)
+      enabled: always # ANSI 콘솔 색상 활성화 (JUnit 테스트 포함)
 
   web:
     resources:
-      add-mappings: false # ?? ??? ?? ?? ?? false
-  #  mvc:
-  #    throw-exception-if-no-handler-found: true # ?? ?? ??? ?? ? ?? ??
+      add-mappings: false # 정적 리소스 매핑 추가 여부 false
+    #  mvc:
+  #    throw-exception-if-no-handler-found: true # 요청 처리 핸들러 없을 때 예외 처리
 
   servlet:
     multipart:
-      max-request-size: 30MB # ?? ?? ??
-      max-file-size: 10MB # ?? ?? ??
+      max-request-size: 30MB # 최대 요청 크기
+      max-file-size: 10MB # 최대 파일 크기
 
   jpa:
-    open-in-view: false # Open EntityManager in View ?? ?? ??
+    open-in-view: false # open in view 설정
     hibernate:
-      ddl-auto: update # ??? ?? ? ???? ?? (create, create-drop, update, validate, none)
-#    defer-datasource-initialization: false # DataSource ??? ??
+      ddl-auto: update # 테이블 생성 및 업데이트 전략 (create, create-drop, update, validate, none)
+#    defer-datasource-initialization: true # true일시, DataSource 초기화 지연
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect # Hibernate Dialect ??
-        format_sql: true # SQL ???
-        highlight_sql: true # SQL ????? ??
-        use_sql_comments: true # JPQL SQL ?? ??
-        default_batch_fetch_size: 100 # ?? ?? ?? ??
-  # ? sql init ??? ??
-  sql:
-    init:
-      platform: mysql # SQL ??? ??? (mysql, h2, postgresql, oracle, sqlserver)
-      data-locations: classpath:sql/data.sql # ddl-auto? create, create-drop, update? ? ??? ???, ??? ??? validate/none? ??
-      mode: never # SQL ??? ?? (always, never, embedded, embedded-always)
+        dialect: org.hibernate.dialect.MySQL8Dialect # Hibernate Dialect 설정
+        format_sql: true # SQL 포맷팅
+        highlight_sql: true # SQL 하이라이트 출력
+        use_sql_comments: true # JPQL SQL 주석 사용
+        default_batch_fetch_size: 100 # 기본 배치 크기 설정
+  #
+#  sql:
+#    init:
+#      platform: mysql # SQL 초기화 플랫폼 (mysql, h2, postgresql, oracle, sqlserver)
+#      data-locations: classpath:sql/data.sql # ddl-auto가 create, create-drop, update일 경우에만 해당, validate/none일 경우 무시됨
+#      mode: always # SQL 초기화 모드 (always, never, embedded, embedded-always)
 
 app:
   props:
@@ -87,23 +87,24 @@ app:
 
 logging:
   level:
-    org.hibernate.SQL: debug # Hibernate SQL ?? ??
-    org.hibernate.orm.jdbc.bind: trace # Hibernate SQL ??? ?? ??
-    org.springframework.transaction.interceptor: trace # Spring ???? ???? ?? ??
+    org.hibernate.SQL: debug # Hibernate SQL 로그 레벨
+    org.hibernate.orm.jdbc.bind: trace # Hibernate SQL 바인딩 로그 레벨
+    org.springframework.transaction.interceptor: trace # Spring 트랜잭션 인터셉터 로그 레벨
 
 ---
 spring:
   config:
     activate:
-      on-profile: prod # ?? ??
+      on-profile: prod # 운영 환경
   jpa:
     hibernate:
-      ddl-auto: update # ??? ?? ? ???? ?? (create, create-drop, update, validate, none)
+      ddl-auto: update # 테이블 생성 및 업데이트 전략 (create, create-drop, update, validate, none)
   sql:
     init:
-      platform: mysql # SQL ??? ??? (mysql, h2, postgresql, oracle, sqlserver)
-      data-locations: classpath:sql/data.sql # ddl-auto? create, create-drop, update? ? ??? ???, ??? ??? validate/none? ??
-      mode: never # SQL ??? ?? (always, never, embedded, embedded-always)
+      platform: mysql # SQL 초기화 플랫폼 (mysql, h2, postgresql, oracle, sqlserver)
+      data-locations: classpath:sql/data.sql # ddl-auto가 create, create-drop, update일 경우에만 해당, validate/none일 경우 무시됨
+      mode: never # SQL 초기화 모드 (always, never, embedded, embedded-always)
+
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -112,9 +113,9 @@ spring:
     username: luckydoki
     password: luckydoki
     hikari:
-      max-lifetime: 600000 # ?? ?? (???)
-      idle-timeout: 300000 # ?? ?? (???)
-      connection-timeout: 30000 # ?? ?? ?? (???)
+      max-lifetime: 600000 # 최대 수명 (밀리초)
+      idle-timeout: 300000 # 유휴 시간 (밀리초)
+      connection-timeout: 30000 # 연결 시간 초과 (밀리초)
 
 app:
   props:
@@ -124,4 +125,4 @@ app:
 
 logging:
   level:
-    org.hibernate.SQL: error # Hibernate SQL ?? ??
+    org.hibernate.SQL: error # Hibernate SQL 로그 레벨

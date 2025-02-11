@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.exception.advice;
 
 
 import com.himedia.luckydokiapi.exception.CustomJWTException;
+import com.himedia.luckydokiapi.exception.ExcelFailException;
 import com.himedia.luckydokiapi.exception.OutOfStockException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -160,12 +161,33 @@ public class CustomControllerAdvice {
     }
     
     @ExceptionHandler(EventNotFoundException.class)
-    public ResponseEntity<String> handleEventNotFoundException(EventNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<?> handleEventNotFoundException(EventNotFoundException e) {
+        String msg = e.getMessage();
+        log.error("EventNotFoundException: {}", msg);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorMessage(msg));
     }
-    
+
+    /**
+     * 엑셀 파일 업로드 실패시 처리
+     * @param e ExcelFailException
+     * @return ResponseEntity
+     */
+    @ExceptionHandler(ExcelFailException.class)
+    public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {
+        String msg = e.getMessage();
+        log.error("handleExcelFailException: {}", msg);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
+    }
+
+    /**
+     * 나머지 exception 서버오류 500 에러로 통일
+     * @param e 글로벌 Exception
+     * @return ResponseEntity
+     */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception ex) {
+    public ResponseEntity<String> handleGeneralException(Exception e) {
+        log.error("Exception: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
     }
 
