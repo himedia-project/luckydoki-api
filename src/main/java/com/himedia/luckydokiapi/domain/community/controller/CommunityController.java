@@ -4,10 +4,12 @@ import com.himedia.luckydokiapi.domain.community.DTO.CommunityRequestDTO;
 import com.himedia.luckydokiapi.domain.community.DTO.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.community.service.CommunityService;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.security.MemberDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,15 +32,18 @@ public class CommunityController {
     }
 
     @PostMapping("/post")
-    public ResponseEntity<?> postCommunity(@RequestBody(required = false) CommunityRequestDTO request) {
-        return ResponseEntity.ok(communityService.postCommunity(request));
+    public ResponseEntity<?> postCommunity(@AuthenticationPrincipal MemberDTO memberDTO, @Valid @RequestBody CommunityRequestDTO request) {
+        log.info("postCommunity memberDTO: {}, request: {}", memberDTO, request);
+        return ResponseEntity.ok(communityService.postCommunity(memberDTO.getEmail(), request));
     }
 
 
     @PutMapping("/update/{communityId}")
     public ResponseEntity<CommunityResponseDTO> updateCommunity(
+            @AuthenticationPrincipal MemberDTO memberDTO,
             @PathVariable Long communityId, @Valid @RequestBody CommunityRequestDTO request) {
-        return ResponseEntity.ok(communityService.updateCommunity(communityId, request));
+        log.info("updateCommunity communityId: {}, memberDTO: {}, request: {}", communityId, memberDTO, request);
+        return ResponseEntity.ok(communityService.updateCommunity(communityId, memberDTO.getEmail(), request));
     }
 
     @DeleteMapping("/delete/{communityId}")
@@ -47,6 +52,7 @@ public class CommunityController {
         communityService.deleteCommunity(communityId, email);
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("/member/{email}")
     public ResponseEntity<List<CommunityResponseDTO>> getCommunitiesByMember(@PathVariable String email) {
         return ResponseEntity.ok(communityService.getCommunitiesByMemberEmail(email));
