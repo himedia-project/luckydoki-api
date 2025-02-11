@@ -46,3 +46,6 @@ db_dev.trace.db
 
 # Mac
 .DS_Store
+
+# node_modules
+/node_modules
