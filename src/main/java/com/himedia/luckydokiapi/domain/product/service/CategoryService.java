@@ -1,7 +1,8 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
 
-import com.himedia.luckydokiapi.domain.member.dto.AdminCategoriesDTO;
+
+import com.himedia.luckydokiapi.domain.product.dto.AdminCategoriesDTO;
 import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Category;
@@ -11,21 +12,30 @@ import java.util.stream.Collectors;
 
 public interface CategoryService {
 
-    List<ProductDTO.Response> getProductsByChildCategoryId(Long childCategoryId) ;
 
-    List<CategoryDTO> getCategory(Long categoryId);
+    List<CategoryDTO> getParentCategories();
 
-//    List<ProductDTO> getCategoryProducts(Long categoryId);
+    List<CategoryDTO> getSubCategoryList(Long mainCategoryId);
 
-    List<AdminCategoriesDTO> getAdminSubCategoryList(Long mainCategoryId);
+    List<CategoryDTO> getChildCategoryList(Long subCategoryId);
 
-    List<AdminCategoriesDTO> getAdminChildCategoryList(Long subCategoryId);
+    List<ProductDTO.Response> getProductCategoryId(Long categoryId) ;
 
-    List<AdminCategoriesDTO> getAdminParentCategories();
 
-    default CategoryDTO entityToDTO(Category category) {
+    List<AdminCategoriesDTO> getCategory(Long categoryId);
 
-        CategoryDTO dto = new CategoryDTO();
+    default CategoryDTO entityToCategoriesDTO(Category category) {
+        CategoryDTO mainCategoryDTO = CategoryDTO.builder()
+                .name(category.getName())
+                .logo(category.getLogo())
+                .categoryId(category.getId())
+                .build();
+        return mainCategoryDTO;
+    }
+
+    default AdminCategoriesDTO entityToDTO(Category category) {
+
+        AdminCategoriesDTO dto = new AdminCategoriesDTO();
         dto.setCategoryId(category.getId());
         dto.setName(category.getName());
         dto.setLogo(category.getLogo());
@@ -35,12 +45,4 @@ public interface CategoryService {
         return dto;
     }
 
-    default AdminCategoriesDTO entityToAdminCategoriesDTO(Category category) {
-        AdminCategoriesDTO mainCategoryDTO = AdminCategoriesDTO.builder()
-                .name(category.getName())
-                .logo(category.getLogo())
-                .categoryId(category.getId())
-                .build();
-        return mainCategoryDTO;
-    }
 }

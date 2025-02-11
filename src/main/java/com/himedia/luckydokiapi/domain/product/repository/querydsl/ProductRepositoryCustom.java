@@ -17,5 +17,6 @@ public interface ProductRepositoryCustom {
 
     List<Product> findProductByShopMemberEmail(String email);
 
-    List<Product> findByChildCategoryId(Long childCategoryId);
+    List<Product> findByProductCategoryId(Long CategoryId);
+
 }

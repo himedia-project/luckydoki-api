@@ -1,10 +1,7 @@
 package com.himedia.luckydokiapi.exception.advice;
 
 
-
-import com.himedia.luckydokiapi.exception.CustomJWTException;
-import com.himedia.luckydokiapi.exception.ExcelFailException;
-import com.himedia.luckydokiapi.exception.OutOfStockException;
+import com.himedia.luckydokiapi.exception.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,7 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import com.himedia.luckydokiapi.exception.EventNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -159,7 +155,7 @@ public class CustomControllerAdvice {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorMessage(msg));
     }
-    
+
     @ExceptionHandler(EventNotFoundException.class)
     public ResponseEntity<?> handleEventNotFoundException(EventNotFoundException e) {
         String msg = e.getMessage();
@@ -172,6 +168,24 @@ public class CustomControllerAdvice {
      * @param e ExcelFailException
      * @return ResponseEntity
      */
+
+
+    /**
+     * 나머지 exception 서버오류 500 에러로 통일
+     *
+     * @param e 글로벌 Exception
+     * @return ResponseEntity
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGeneralException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
+    }
+
+    @ExceptionHandler(OrderMemberNotFoundException.class)
+    public ResponseEntity<String> handleOrderNotFoundException(OrderMemberNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("리뷰 작성은 구매한 상품만 가능합니다.");
+    }
+
     @ExceptionHandler(ExcelFailException.class)
     public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {
         String msg = e.getMessage();
@@ -179,20 +193,6 @@ public class CustomControllerAdvice {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
     }
-
-    /**
-     * 나머지 exception 서버오류 500 에러로 통일
-     * @param e 글로벌 Exception
-     * @return ResponseEntity
-     */
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception e) {
-        log.error("Exception: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
-    }
-
-
-
 
     private static Map<String, String> getErrorMessage(String msg) {
         return Map.of("errMsg", msg);
