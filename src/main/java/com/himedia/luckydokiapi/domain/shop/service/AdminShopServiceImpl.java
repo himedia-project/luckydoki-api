@@ -4,6 +4,7 @@ import com.himedia.luckydokiapi.domain.member.dto.SellerResponseDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
+import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.repository.SellerApplicationRepository;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
@@ -69,7 +70,7 @@ public class AdminShopServiceImpl implements AdminShopService {
 
     @Transactional(readOnly = true)
     public List<SellerResponseDTO> getPendingApplications() {
-        return sellerApplicationRepository.findByIsApproved(false)
+        return sellerApplicationRepository.findByIsApproved(ShopApproved.N)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -81,7 +82,7 @@ public class AdminShopServiceImpl implements AdminShopService {
      */
     @Transactional(readOnly = true)
     public List<SellerResponseDTO> getApprovedApplications() {
-        return sellerApplicationRepository.findByIsApproved(true)
+        return sellerApplicationRepository.findByIsApproved(ShopApproved.Y)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
