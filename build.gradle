@@ -84,6 +84,22 @@ dependencies {
 
     // selenium
     implementation 'org.seleniumhq.selenium:selenium-java:4.25.0'
+
+    //mongodb
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    //mongodb test 를 위한 의존성
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    //webSocket 구현을 위한 기본적인 패키지
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    //STOMP(Simple Text Oriented Messaging Protocol) 구현체
+    implementation 'org.webjars:stomp-websocket:2.3.4'
+
+    //WebSocket을 지원하지 않는 브라우저를 위한 대체 솔루션
+    implementation 'org.webjars:sockjs-client:1.5.1'
+
 }
 
 tasks.named('test') {
@@ -94,7 +110,7 @@ tasks.named('test') {
 def querydslDir = "$buildDir/generated/querydsl"
 
 sourceSets {
-    main.java.srcDirs += [ querydslDir ]
+    main.java.srcDirs += [querydslDir]
 }
 
 tasks.withType(JavaCompile) {

@@ -1,9 +1,9 @@
 package com.himedia.luckydokiapi.domain.product.controller;
 
 
-import com.himedia.luckydokiapi.domain.member.dto.AdminCategoriesDTO;
+
+import com.himedia.luckydokiapi.domain.product.dto.AdminCategoriesDTO;
 import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
-import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.service.AdminCategoryService;
 import com.himedia.luckydokiapi.domain.product.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,7 @@ public class AdminCategoryController {
     //admin 에게 보여지는 카테고리 리스트
     //부모 카테고리를 클릭하면 해당 자식 카테고리들 까지 나오게 !
     @GetMapping("/{categoryId}")
-    public ResponseEntity<List<CategoryDTO>> getCategories(@PathVariable Long categoryId) {
+    public ResponseEntity<List<AdminCategoriesDTO>> getCategories(@PathVariable Long categoryId) {
         return ResponseEntity.ok(categoryService.getCategory(categoryId));
     }
 

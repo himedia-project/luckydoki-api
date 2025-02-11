@@ -1,6 +1,8 @@
 package com.himedia.luckydokiapi.domain.member.controller;
 
+import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
+import com.himedia.luckydokiapi.domain.product.service.CategoryService;
 import com.himedia.luckydokiapi.domain.product.service.ProductService;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class SellerController {
     //관심사 분리 -> 멤버의 상품 등록 + shop 관련 api
 
     private final ProductService productService;
+    private final CategoryService categoryService;
 
     @GetMapping("/product/{productId}")
     public ResponseEntity<ProductDTO.Response> getProductDetail(@PathVariable Long productId) {
@@ -52,4 +55,6 @@ public class SellerController {
         return ResponseEntity.ok().build();
     }
     //TODO : 상품 상세 태그 , 리뷰
+
+
 }

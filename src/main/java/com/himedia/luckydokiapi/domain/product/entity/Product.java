@@ -91,6 +91,7 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
+
     @ElementCollection
     @Builder.Default
     private List<ProductImage> imageList = new ArrayList<>();
@@ -101,12 +102,20 @@ public class Product extends BaseEntity {
     private List<ProductTag> productTagList = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<ProductLike> productLikes = new ArrayList<>();
 
     // 리뷰 리스트
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Review> productReviews = new ArrayList<>();
+
+
+
+    @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CategoryBridge> categoryBridges = new ArrayList<>();
+
 
     public Integer productLikesCount(ProductLike productLike) {
         return productLikes.size();

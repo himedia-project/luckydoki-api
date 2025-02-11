@@ -46,5 +46,5 @@ public class ProductController {
         return fileUtil.getFile(fileName);
     }
 
-    //TODO: memberProductController 에 상품 crud  만들기 + create 할때 seller로 권한 요청
+
 }
