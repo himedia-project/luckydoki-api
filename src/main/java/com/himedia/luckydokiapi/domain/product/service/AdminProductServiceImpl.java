@@ -1,9 +1,12 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
+import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
 import com.himedia.luckydokiapi.domain.product.repository.*;
+import com.himedia.luckydokiapi.domain.review.dto.ReviewRequestDTO;
+import com.himedia.luckydokiapi.domain.review.service.ReviewService;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
@@ -37,6 +40,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final ShopRepository shopRepository;
 
     private final ProductService productService;
+    private final ReviewService reviewService;
 
 
     @Transactional(readOnly = true)
@@ -106,6 +110,17 @@ public class AdminProductServiceImpl implements AdminProductService {
                     savedTag = tagRepository.save(Tag.from(tagName));
                 }
                 productTagRepository.save(ProductTag.from(savedTag, result));
+            });
+        }
+
+        // 리뷰 처리(excel 업로드시)
+        if (dto.getReviewList() != null) {
+            ReviewRequestDTO reviewRequestDTO = new ReviewRequestDTO();
+            reviewRequestDTO.setProductId(result.getId());
+            reviewRequestDTO.setRating(5);
+            dto.getReviewList().forEach(reviewContent -> {
+                reviewRequestDTO.setContent(reviewContent);
+                reviewService.createReview("user1@test.com", reviewRequestDTO);
             });
         }
 
