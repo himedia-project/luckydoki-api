@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ import static com.himedia.luckydokiapi.domain.product.enums.LastType.Y;
 import static com.himedia.luckydokiapi.domain.shop.entity.QShop.shop;
 
 @Slf4j
+@Repository
 @RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
