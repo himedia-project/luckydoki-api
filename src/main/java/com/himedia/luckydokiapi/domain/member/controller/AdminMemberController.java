@@ -147,30 +147,6 @@ public class AdminMemberController {
         return leftMin < 60;
     }
 
-    /**
-     *  승인되지 않은 셀러 신청 목록 조회
-     */
-    @GetMapping("/seller-applications/pending")
-    public ResponseEntity<List<SellerResponseDTO>> getPendingApplications() {
-        return ResponseEntity.ok(adminMemberService.getPendingApplications());
-    }
-
-    /**
-     *  승인된 셀러 신청 목록 조회
-     */
-    @GetMapping("/seller-applications/approved")
-    public ResponseEntity<List<SellerResponseDTO>> getApprovedApplications() {
-        return ResponseEntity.ok(adminMemberService.getApprovedApplications());
-    }
-
-    /**
-     *  셀러 신청 승인 API
-     */
-    @PostMapping("/approve-seller/{applicationId}")
-    public ResponseEntity<SellerResponseDTO> approveSeller(@PathVariable Long applicationId) {
-        SellerResponseDTO approvedApplication = adminMemberService.approveSeller(applicationId);
-        return ResponseEntity.ok(approvedApplication);
-    }
 
 
 }

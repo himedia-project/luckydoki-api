@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.member.entity;
 
+import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,15 +26,20 @@ public class SellerApplication extends BaseEntity {
     private String nickName;
 
     @Column(nullable = false)
-    private String profileImage;
+    private String shopImage;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 100)
     private String introduction;
 
     @Column(nullable = false)
-    private boolean isApproved;
+    @Enumerated(EnumType.STRING)
+    private ShopApproved approved;
+
+    public void changeApproved(ShopApproved approved) {
+        this.approved = approved;
+    }
 
     public void approve() {
-        this.isApproved = true;
+        this.approved = ShopApproved.Y;
     }
 }
