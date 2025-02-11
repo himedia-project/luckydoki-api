@@ -85,6 +85,9 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         if (path.startsWith("/favicon.ico")) {
             return true;
         }
+        if (path.startsWith("/api/category")) {
+            return true;
+        }
 
         return false;
     }
@@ -98,7 +101,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         String autHeaderStr = request.getHeader("Authorization");
         log.info("autHeaderStr Authorization: {}", autHeaderStr);
 
-        if ((Objects.equals(autHeaderStr, "Bearer null") || autHeaderStr == null ) && (
+        if ((Objects.equals(autHeaderStr, "Bearer null") || autHeaderStr == null) && (
                 request.getServletPath().startsWith("/api/product/list")
                         || (request.getServletPath().startsWith("/api/product/") && request.getServletPath().endsWith("/detail"))
                         || (request.getServletPath().startsWith("/api/product/") && request.getServletPath().endsWith("/tag/list"))

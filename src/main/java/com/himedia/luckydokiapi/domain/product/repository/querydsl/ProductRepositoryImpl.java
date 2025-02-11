@@ -143,10 +143,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         return queryFactory
                 .selectFrom(product)
+                .distinct()
                 .join(product.categoryBridges, categoryBridge)
                 .join(categoryBridge.category, category)
-                .where(eqChildCategoryId(categoryId))
-//                        .or(eqSubCategoryId(categoryId))
+                .where(eqChildCategoryId(categoryId).or
+                        (eqSubCategoryId(categoryId)))
                 .fetch();
         //파라미터로 받은 카테고리 아이디가 child 카테고리 일때 (최하위 카테고리 아이디로 product 조회)
     }
@@ -160,18 +161,17 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 category.lastType.eq(Y));
     }
 
-    // false/true
-//    private BooleanExpression eqSubCategoryId(Long subCategoryId) {
-//        if (subCategoryId == null) {
-//            return null;
-//        }
-//        return category.parent.isNotNull().and(
-//                categoryBridge.category.parent.id.eq(subCategoryId).and(
-//                        category.lastType.eq(N))
-//        );
+
+    private BooleanExpression eqSubCategoryId(Long subCategoryId) {
+        if (subCategoryId == null) {
+            return null;
+        }
+        return category.parent.isNotNull().and(
+                category.parent.id.eq(subCategoryId)
+        );
 
 
-
+    }
 
 
     private BooleanExpression eqCategory(Long categoryId) {
