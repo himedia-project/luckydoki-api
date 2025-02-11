@@ -43,6 +43,7 @@ public class ProductExcelDataExtractor {
                         .description(row.getCell(5).getStringCellValue().trim())
                         .tagStrList(getExcelTagList(row.getCell(6).getStringCellValue().trim()))
                         .imagePathList(getExcelImageList(row.getCell(7).getStringCellValue().trim()))
+                        .reviewList(getExcelTagList(row.getCell(8).getStringCellValue().trim()))
                         .build();
 
                 validateValue(dto);

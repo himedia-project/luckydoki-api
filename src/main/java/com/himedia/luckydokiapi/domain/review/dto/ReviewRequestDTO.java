@@ -13,7 +13,7 @@ public class ReviewRequestDTO {
     //리뷰 등록
     private double rating;
     private String email;
-    private Long shopId;
+//    private Long shopId;
     private Long productId;
     private String content;
     private MultipartFile image;

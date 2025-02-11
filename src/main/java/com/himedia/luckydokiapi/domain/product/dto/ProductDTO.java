@@ -42,6 +42,7 @@ public class ProductDTO {
         // 상품 엑셀 업로드시 사용
         private List<String> imagePathList;
         private List<String> tagStrList;
+        private List<String> reviewList;
     }
 
     @NoArgsConstructor

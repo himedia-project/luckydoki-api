@@ -53,11 +53,14 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void createReview(String email, ReviewRequestDTO reviewRequestDTO) {
         Member member = this.getMember(email);
-        Shop shop = this.getShop(member.getEmail());
         Product product = this.getProduct(reviewRequestDTO.getProductId());
+        Shop shop = product.getShop();
         Review review = dtoToEntity(reviewRequestDTO, member, shop, product);
-        String reviewImage = customFileUtil.uploadS3File(reviewRequestDTO.getImage());
-        review.addImage(reviewImage);
+        // 만약 리뷰 이미지가 있으면 s3에 업로드
+        if(reviewRequestDTO.getImage() != null) {
+            String reviewImage = customFileUtil.uploadS3File(reviewRequestDTO.getImage());
+            review.addImage(reviewImage);
+        }
         reviewRepository.save(review);
 
     }
