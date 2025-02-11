@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.community.service;
 
 import com.himedia.luckydokiapi.domain.community.DTO.CommunityRequestDTO;
 import com.himedia.luckydokiapi.domain.community.DTO.CommunityResponseDTO;
+import com.himedia.luckydokiapi.domain.community.DTO.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
@@ -24,8 +25,8 @@ public class CommunityService {
     private final MemberService memberService;
 
     @Transactional(readOnly = true)
-    public List<CommunityResponseDTO> getAllCommunities() {
-        return communityRepository.findAllByOrderByCreatedAtDesc()
+    public List<CommunityResponseDTO> getAllCommunities(CommunitySearchDTO request) {
+        return communityRepository.findByDTO(request)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());

@@ -34,7 +34,7 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
     @Column(name = "image_url", nullable = true)
     private List<String> imageList = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
     @Builder.Default
     private List<CommunityProduct> communityProductList = new ArrayList<>();
 }

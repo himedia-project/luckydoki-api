@@ -3,23 +3,17 @@ package com.himedia.luckydokiapi.domain.product.repository.querydsl;
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
-import com.himedia.luckydokiapi.domain.product.entity.QCategory;
-import com.himedia.luckydokiapi.domain.product.entity.QCategoryBridge;
-import com.himedia.luckydokiapi.domain.product.entity.QProduct;
-import com.himedia.luckydokiapi.domain.product.enums.LastType;
 import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
 import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +26,8 @@ import static com.himedia.luckydokiapi.domain.product.entity.QCategory.category;
 import static com.himedia.luckydokiapi.domain.product.entity.QCategoryBridge.categoryBridge;
 import static com.himedia.luckydokiapi.domain.product.entity.QProduct.product;
 import static com.himedia.luckydokiapi.domain.product.entity.QProductImage.productImage;
-import static com.himedia.luckydokiapi.domain.product.enums.LastType.N;
+import static com.himedia.luckydokiapi.domain.product.entity.QProductTag.productTag;
+import static com.himedia.luckydokiapi.domain.product.entity.QTag.tag;
 import static com.himedia.luckydokiapi.domain.product.enums.LastType.Y;
 import static com.himedia.luckydokiapi.domain.shop.entity.QShop.shop;
 
@@ -98,6 +93,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         return queryFactory
                 .selectFrom(product)
+                .leftJoin(product.productTagList, productTag).fetchJoin()
+                .leftJoin(productTag.tag, tag).fetchJoin()
                 .where(
                         product.delFlag.eq(false),
                         eqCategory(requestDTO.getCategoryId()),
@@ -226,7 +223,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
             return null;
         }
         return product.name.contains(searchKeyword)
-                .or(product.category.name.contains(searchKeyword));
+                .or(product.category.name.contains(searchKeyword))
+                .or(tag.name.contains(searchKeyword));
 
     }
 
