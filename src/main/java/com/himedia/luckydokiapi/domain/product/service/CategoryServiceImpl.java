@@ -1,7 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
 
-import com.himedia.luckydokiapi.domain.member.dto.AdminCategoriesDTO;
+import com.himedia.luckydokiapi.domain.product.dto.AdminCategoriesDTO;
 import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Category;
@@ -26,10 +26,43 @@ public class CategoryServiceImpl implements CategoryService {
     private final ProductServiceImpl productServiceImpl;
     ;
 
-    //member 용 카테고리 리스트
+    //파라미터 없이 최상위 카테고리들만 조회
+    @Override
+    public List<CategoryDTO> getParentCategories() {
+        List<Category> mainCategories = categoryRepository.findMainCategories();
+        return mainCategories.stream().map(this::entityToCategoriesDTO).toList();
+    }
+
+
+    //main -> sub
+    @Override
+    public List<CategoryDTO> getSubCategoryList(Long mainCategoryId) {
+        List<Category> subCategories = categoryRepository.findSubCategories(mainCategoryId);
+        return subCategories.stream().map(this::entityToCategoriesDTO).toList();
+    }
+
+    //sub -> child
+    @Override
+    public List<CategoryDTO> getChildCategoryList(Long subCategoryId) {
+        List<Category> childCategories = categoryRepository.findChildCategories(subCategoryId);
+        return childCategories.stream().map(this::entityToCategoriesDTO).toList();
+    }
+
+
+//카테고리 아이디 조건식
+    @Override
+    public List<ProductDTO.Response> getProductCategoryId(Long categoryId) {
+        List<Product> productList = productRepository.findByProductCategoryId(categoryId);
+        return productList.stream().map(product -> productServiceImpl.entityToDTO(product)).toList();
+    } // 람다식을 사용하여 각각의 요소들을 전달하여 하나씩 dto 로 변환 후 list 로 수집
+
+
+
+
+    //admin 용 카테고리 리스트
     @Transactional(readOnly = true)
     @Override
-    public List<CategoryDTO> getCategory(Long categoryId) {
+    public List<AdminCategoriesDTO> getCategory(Long categoryId) {
         List<Category> dtoLists = categoryRepository.findByCategoryId(categoryId);
         return dtoLists.stream()
                 .map(this::entityToDTO) // Product를 ProductDTO로 변환
@@ -37,32 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    //파라미터 없이 최상위 카테고리들만 조회
-    @Override
-    public List<AdminCategoriesDTO> getAdminParentCategories() {
-        List<Category> mainCategories = categoryRepository.findMainCategories();
-        return mainCategories.stream().map(this::entityToAdminCategoriesDTO).toList();
-    }
 
-//main -> sub
-    @Override
-    public List<AdminCategoriesDTO> getAdminSubCategoryList(Long mainCategoryId) {
-        List<Category> subCategories = categoryRepository.findSubCategories(mainCategoryId);
-        return subCategories.stream().map(this::entityToAdminCategoriesDTO).toList();
-    }
-//sub -> child
-    @Override
-    public List<AdminCategoriesDTO> getAdminChildCategoryList(Long subCategoryId) {
-        List<Category> childCategories = categoryRepository.findChildCategories(subCategoryId);
-        return childCategories.stream().map(this::entityToAdminCategoriesDTO).toList();
-    }
-
-//child ->product
-    @Override
-    public List<ProductDTO.Response> getProductsByChildCategoryId(Long childCategoryId) {
-        List<Product> productList = productRepository.findByChildCategoryId(childCategoryId);
-        return productList.stream().map(product ->productServiceImpl.entityToDTO(product)).toList();
-    } // 람다식을 사용하여 각각의 요소들을 전달하여 하나씩 dto로 변환 후 list로 수집
 //    @Override
 //    public List<ProductDTO> getCategoryProducts(Long categoryId) {
 //        List<Product> productList = categoryRepository.findListByCategory(categoryId);

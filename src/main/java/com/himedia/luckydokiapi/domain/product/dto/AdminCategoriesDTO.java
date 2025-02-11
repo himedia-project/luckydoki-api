@@ -1,6 +1,5 @@
-package com.himedia.luckydokiapi.domain.member.dto;
+package com.himedia.luckydokiapi.domain.product.dto;
 
-import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,9 +13,11 @@ import java.util.Set;
 @Builder
 @ToString
 public class AdminCategoriesDTO {
-
     private Long categoryId;
     private String name;
+
+    @Builder.Default
+    private Set<AdminCategoriesDTO> children = new HashSet<>();
     private String logo;
 
     // 등록시 이미지 업로드
