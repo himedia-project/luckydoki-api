@@ -3,13 +3,13 @@ package com.himedia.luckydokiapi.domain.member.service;
 
 import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
 import com.himedia.luckydokiapi.domain.member.dto.SellerRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.SellerResponseDTO;
+import com.himedia.luckydokiapi.domain.member.dto.UpdateMemberDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
+import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.repository.SellerApplicationRepository;
-import com.himedia.luckydokiapi.domain.member.dto.UpdateMemberDTO;
 import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.security.CustomUserDetailService;
 import com.himedia.luckydokiapi.security.MemberDTO;
@@ -21,10 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -119,7 +116,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member getEntity(String email) {
         return memberRepository.getWithRoles(email)
-                .orElseThrow(() -> new EntityNotFoundException("해당하는 회원이 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 회원이 없습니다. email: "+ email));
     }
 
     @Transactional(readOnly = true)
@@ -151,11 +148,11 @@ public class MemberServiceImpl implements MemberService {
     /**
      *  셀러 신청과 동시에 DB에 저장
      */
-    public SellerResponseDTO upgradeToSeller(SellerRequestDTO requestDTO) {
-        Member member = memberRepository.findById(requestDTO.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("해당 회원이 존재하지 않습니다. email: " + requestDTO.getEmail()));
+    public Long upgradeToSeller(String email, SellerRequestDTO requestDTO) {
+        Member member = memberRepository.findById(email)
+                .orElseThrow(() -> new EntityNotFoundException("해당 회원이 존재하지 않습니다. email: " + email));
 
-        boolean alreadyExists = sellerApplicationRepository.findByEmail(requestDTO.getEmail()).isPresent();
+        boolean alreadyExists = sellerApplicationRepository.findByEmail(email).isPresent();
         if (alreadyExists) {
             throw new IllegalStateException("이미 셀러 신청을 완료한 회원입니다.");
         }
@@ -163,23 +160,25 @@ public class MemberServiceImpl implements MemberService {
         SellerApplication application = SellerApplication.builder()
                 .email(member.getEmail())
                 .nickName(member.getNickName())
-                .profileImage(requestDTO.getProfileImage())
+                .shopImage(requestDTO.getProfileImage())
                 .introduction(requestDTO.getIntroduction())
-                .isApproved(false)
+                .approved(ShopApproved.N)
                 .build();
 
-        sellerApplicationRepository.save(application);
+        SellerApplication saved = sellerApplicationRepository.save(application);
 
-        return SellerResponseDTO.builder()
-                .id(application.getId())
-                .email(application.getEmail())
-                .nickName(application.getNickName())
-                .profileImage(application.getProfileImage())
-                .introduction(application.getIntroduction())
-                .isApproved(application.isApproved())
-                .statusDescription(application.isApproved() ? "승인 완료" : "승인 대기")
-                .build();
+        return saved.getId();
     }
 
+
+//    SellerResponseDTO.builder()
+//            .id(application.getId())
+//            .email(application.getEmail())
+//            .nickName(application.getNickName())
+//            .shopImage(application.getShopImage())
+//            .introduction(application.getIntroduction())
+//            .approved(application.getApproved())
+//            .statusDescription(application.getApproved() == ShopApproved.Y ? "승인 완료" : "승인 대기")
+//            .build();
 
 }

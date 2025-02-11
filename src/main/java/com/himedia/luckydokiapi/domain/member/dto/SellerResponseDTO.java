@@ -1,6 +1,6 @@
 package com.himedia.luckydokiapi.domain.member.dto;
 
-import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
+import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -14,9 +14,9 @@ public class SellerResponseDTO {
     private Long id;
     private String email;
     private String nickName;
-    private boolean isApproved;
+    private ShopApproved approved;
     private String statusDescription;
-    private String profileImage;
+    private String shopImage;
     private String introduction;
 
 

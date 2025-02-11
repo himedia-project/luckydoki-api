@@ -23,11 +23,17 @@ public class Shop extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String image;
+
+    @Column(nullable = false, length = 100)
+    private String introduction;
+
     @OneToOne
     @JoinColumn(name = "email")
     private Member member;
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<ShopLike> shopLikes = new ArrayList<>();
 
 
