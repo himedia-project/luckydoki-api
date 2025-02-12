@@ -182,13 +182,6 @@ public class CustomControllerAdvice {
     }
 
 
-    @ExceptionHandler(ExcelFailException.class)
-    public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {
-        String msg = e.getMessage();
-        log.error("handleExcelFailException: {}", msg);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
-    }
 
     /**
      * 나머지 exception 서버오류 500 에러로 통일
@@ -202,6 +195,16 @@ public class CustomControllerAdvice {
         log.error("handleGeneralException: {}", msg);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(getErrorMessage(e.getMessage()));
+    }
+
+
+
+    @ExceptionHandler(ExcelFailException.class)
+    public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {
+        String msg = e.getMessage();
+        log.error("handleExcelFailException: {}", msg);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
     }
 
     private static Map<String, String> getErrorMessage(String msg) {
