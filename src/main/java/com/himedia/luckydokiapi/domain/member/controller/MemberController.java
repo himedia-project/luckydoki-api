@@ -102,3 +102,4 @@ public class MemberController {
 
 
 }
+//true -> adult , false -> 잼민이 ㅋ
