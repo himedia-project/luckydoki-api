@@ -5,8 +5,6 @@ import com.himedia.luckydokiapi.domain.community.dto.CommunityRequestDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.service.CommunityService;
-import com.himedia.luckydokiapi.domain.member.entity.Member;
-import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
