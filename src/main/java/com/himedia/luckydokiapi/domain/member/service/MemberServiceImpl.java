@@ -14,6 +14,7 @@ import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.security.CustomUserDetailService;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import com.himedia.luckydokiapi.util.JWTUtil;
+import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,8 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final CustomFileUtil fileUtil;
 
 
     @Transactional(readOnly = true)
@@ -160,25 +163,18 @@ public class MemberServiceImpl implements MemberService {
         SellerApplication application = SellerApplication.builder()
                 .email(member.getEmail())
                 .nickName(member.getNickName())
-                .shopImage(requestDTO.getProfileImage())
                 .introduction(requestDTO.getIntroduction())
                 .approved(ShopApproved.N)
                 .build();
+
+        // 프로필 이미지가 있을 경우 S3에 업로드 후 URL 저장
+        if(requestDTO.getProfileImage() != null) {;
+            application.changeShopImage(fileUtil.uploadS3File(requestDTO.getProfileImage()));
+        }
 
         SellerApplication saved = sellerApplicationRepository.save(application);
 
         return saved.getId();
     }
-
-
-//    SellerResponseDTO.builder()
-//            .id(application.getId())
-//            .email(application.getEmail())
-//            .nickName(application.getNickName())
-//            .shopImage(application.getShopImage())
-//            .introduction(application.getIntroduction())
-//            .approved(application.getApproved())
-//            .statusDescription(application.getApproved() == ShopApproved.Y ? "승인 완료" : "승인 대기")
-//            .build();
 
 }

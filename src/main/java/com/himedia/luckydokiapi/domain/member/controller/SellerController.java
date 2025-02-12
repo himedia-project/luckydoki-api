@@ -63,7 +63,7 @@ public class SellerController {
 
 
     @PostMapping("/upgrade-to-seller")
-    public ResponseEntity<Long> upgradeToSeller(@AuthenticationPrincipal MemberDTO memberDTO, @Valid @RequestBody SellerRequestDTO requestDTO) {
+    public ResponseEntity<Long> upgradeToSeller(@AuthenticationPrincipal MemberDTO memberDTO, @Valid SellerRequestDTO requestDTO) {
         log.info("셀러 승급 신청 요청 memberDTO: {}, requestDTO: {}", memberDTO, requestDTO);
 
         return ResponseEntity.ok(memberService.upgradeToSeller(memberDTO.getEmail(), requestDTO));

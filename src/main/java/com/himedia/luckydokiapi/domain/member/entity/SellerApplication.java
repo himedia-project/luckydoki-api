@@ -42,4 +42,8 @@ public class SellerApplication extends BaseEntity {
     public void approve() {
         this.approved = ShopApproved.Y;
     }
+
+    public void changeShopImage(String uploadS3File) {
+        this.shopImage = uploadS3File;
+    }
 }
