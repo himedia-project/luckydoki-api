@@ -1,13 +1,13 @@
 package com.himedia.luckydokiapi.domain.shop.controller;
 
 import com.himedia.luckydokiapi.domain.member.dto.SellerResponseDTO;
+import com.himedia.luckydokiapi.domain.shop.dto.SellerSearchDTO;
 import com.himedia.luckydokiapi.domain.shop.service.AdminShopService;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequestMapping("/api/admin/shop")
 @Slf4j
@@ -27,19 +27,13 @@ public class AdminShopController {
     }
 
     /**
-     *  승인되지 않은 셀러 신청 목록 조회
+     * 승인되지 않은 셀러 신청 목록 조회
      */
-    @GetMapping("/seller-applications/pending")
-    public ResponseEntity<List<SellerResponseDTO>> getPendingApplications() {
-        return ResponseEntity.ok(adminShopService.getPendingApplications());
+    @GetMapping("/seller-application/list")
+    public ResponseEntity<PageResponseDTO<SellerResponseDTO>> getPendingApplications(SellerSearchDTO request) {
+        log.info("getPendingApplications request: {}", request);
+        return ResponseEntity.ok(adminShopService.getPendingApplications(request));
     }
 
-    /**
-     *  승인된 셀러 신청 목록 조회
-     */
-    @GetMapping("/seller-applications/approved")
-    public ResponseEntity<List<SellerResponseDTO>> getApprovedApplications() {
-        return ResponseEntity.ok(adminShopService.getApprovedApplications());
-    }
 
 }

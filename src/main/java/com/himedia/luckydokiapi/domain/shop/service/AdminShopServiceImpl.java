@@ -6,13 +6,19 @@ import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
-import com.himedia.luckydokiapi.domain.member.repository.SellerApplicationRepository;
+import com.himedia.luckydokiapi.domain.shop.repository.SellerApplicationRepository;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
+import com.himedia.luckydokiapi.domain.shop.dto.SellerSearchDTO;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,12 +75,25 @@ public class AdminShopServiceImpl implements AdminShopService {
      */
 
     @Transactional(readOnly = true)
-    public List<SellerResponseDTO> getPendingApplications() {
-        return sellerApplicationRepository.findByIsApproved(ShopApproved.N)
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    @Override
+    public PageResponseDTO<SellerResponseDTO> getPendingApplications(SellerSearchDTO requestDTO) {
+
+        Pageable pageable = PageRequest.of(
+                requestDTO.getPage() - 1,  //페이지 시작 번호가 0부터 시작하므로
+                requestDTO.getSize(),
+                "asc".equals(requestDTO.getSort()) ?  // 정렬 조건
+                        Sort.by("id").ascending() : Sort.by("id").descending()
+        );
+
+        Page<SellerApplication> pageList = sellerApplicationRepository.findListBy(requestDTO, pageable);
+
+        return PageResponseDTO.<SellerResponseDTO>withAll()
+                .dtoList(pageList.stream().map(this::convertToDTO).toList())
+                .totalCount(pageList.getTotalElements())
+                .pageRequestDTO(requestDTO)
+                .build();
     }
+
 
 
     /**

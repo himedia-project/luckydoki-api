@@ -3,6 +3,8 @@ package com.himedia.luckydokiapi.domain.shop.service;
 import com.himedia.luckydokiapi.domain.member.dto.SellerResponseDTO;
 import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
+import com.himedia.luckydokiapi.domain.shop.dto.SellerSearchDTO;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
 
 import java.util.List;
 
@@ -10,7 +12,7 @@ public interface AdminShopService {
 
     Long approveSeller(Long applicationId);
 
-    List<SellerResponseDTO> getPendingApplications();
+    PageResponseDTO<SellerResponseDTO> getPendingApplications(SellerSearchDTO request);
 
     List<SellerResponseDTO> getApprovedApplications();
 
