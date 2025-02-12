@@ -15,6 +15,7 @@ public interface ReviewService {
     List<ReviewResponseDTO> getReviewByMember(String email);
 
     default ReviewResponseDTO entityToDTO(Review review) {
+
         ReviewResponseDTO reviewResponseDTO = ReviewResponseDTO.builder()
                 .id(review.getId())
                 .email(review.getMember().getEmail())

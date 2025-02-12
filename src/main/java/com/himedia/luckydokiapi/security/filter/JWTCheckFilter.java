@@ -66,6 +66,16 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         if (path.startsWith("/api/category")) {
             return true;
         }
+        if (path.startsWith("/api/event")) {
+            return true;
+        }
+        if (path.startsWith("/api/community")) {
+            return true;
+        }
+        //productId 에 따른 리뷰를 볼때는 필터 안타게
+        if (path.startsWith("/api/review")) {
+            return true;
+        }
 
 
         // -----
