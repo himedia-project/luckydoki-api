@@ -2,10 +2,7 @@ package com.himedia.luckydokiapi.domain.member.controller;
 
 
 
-import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.LoginRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.MemberRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.MemberResDTO;
+import com.himedia.luckydokiapi.domain.member.dto.*;
 import com.himedia.luckydokiapi.domain.member.service.AdminMemberService;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
@@ -149,4 +146,7 @@ public class AdminMemberController {
         long leftMin = gap / (1000 * 60);
         return leftMin < 60;
     }
+
+
+
 }

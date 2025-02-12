@@ -1,7 +1,6 @@
 package com.himedia.luckydokiapi.domain.community.entity;
 
-
-import com.himedia.luckydokiapi.domain.shop.entity.Shop;
+import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,28 +11,30 @@ import java.util.List;
 
 @SuperBuilder
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@ToString(exclude = "imageList")
 @Table(name = "community")
-public class Community extends BaseEntity {        // 커뮤니티 게시글글
+public class Community extends BaseEntity { // 커뮤니티 게시글
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shop_id")
-    private Shop shop;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member; // 게시글 작성자
 
-    @Builder.Default
-    @ElementCollection
-    List<CommunityImage> imageList = new ArrayList<>();
-
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @ElementCollection
+    @CollectionTable(name = "community_images", joinColumns = @JoinColumn(name = "community_id"))
+    @Column(name = "image_url", nullable = true)
+    private List<String> imageList = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CommunityProduct> communityProductList = new ArrayList<>();
 }

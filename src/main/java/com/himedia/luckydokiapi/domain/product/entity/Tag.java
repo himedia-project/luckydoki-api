@@ -13,7 +13,9 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tag")
+@Table(name = "tag", indexes = {
+        @Index(name = "idx_tag_name", columnList = "name")
+})
 @ToString
 public class Tag extends BaseEntity {
 

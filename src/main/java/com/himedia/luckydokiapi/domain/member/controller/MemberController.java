@@ -1,17 +1,17 @@
 package com.himedia.luckydokiapi.domain.member.controller;
 
 
-import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.LoginRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.LoginResponseDTO;
+import com.himedia.luckydokiapi.domain.member.dto.*;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.props.JwtProps;
+import com.himedia.luckydokiapi.security.MemberDTO;
 import com.himedia.luckydokiapi.util.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,14 +38,14 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody
                                                   LoginRequestDTO loginRequestDTO,
-                                                  HttpServletResponse resposnse) {
+                                                  HttpServletResponse response) {
         log.info("Login request: {}", loginRequestDTO);
         Map<String, Object> loginClaims = memberService.login(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
 
         String refreshToken = loginClaims.get("refresh_token").toString();
         String accessToken = loginClaims.get("access_token").toString();
 
-        CookieUtil.setTokenCookie(resposnse, "refresh_token", refreshToken, jwtProps.getRefreshTokenExpirationPeriod());
+        CookieUtil.setTokenCookie(response, "refresh_token", refreshToken, jwtProps.getRefreshTokenExpirationPeriod());
 
 /*        // 웹 클라이언트인 경우 쿠키 설정
         if ("web".equals(clientType)) {
@@ -79,6 +79,26 @@ public class MemberController {
         return ResponseEntity.ok("logout success!");
     }
 
+    @PostMapping("/upgrade-to-seller")
+    public ResponseEntity<Long> upgradeToSeller(@AuthenticationPrincipal MemberDTO memberDTO, @Valid @RequestBody SellerRequestDTO requestDTO) {
+        log.info("셀러 승급 신청 요청 memberDTO: {}, requestDTO: {}", memberDTO, requestDTO);
+
+        return ResponseEntity.ok(memberService.upgradeToSeller(memberDTO.getEmail(), requestDTO));
+
+    }
+
+    @GetMapping("/me")
+    public MemberDTO getMyInfo(@AuthenticationPrincipal MemberDTO member) {
+        return memberService.getMyInfo(member.getEmail());
+    }
+
+
+    @PutMapping("/me")
+    public MemberDTO updateMyInfo(
+            @AuthenticationPrincipal MemberDTO member,
+            @RequestBody UpdateMemberDTO request) {
+        return memberService.updateMyInfo(member.getEmail(), request);
+    }
 
 }
 //true -> adult , false -> 잼민이 ㅋ

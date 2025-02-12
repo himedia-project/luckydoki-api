@@ -1,6 +1,8 @@
 package com.himedia.luckydokiapi.domain.member.service;
 
 import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
+import com.himedia.luckydokiapi.domain.member.dto.SellerRequestDTO;
+import com.himedia.luckydokiapi.domain.member.dto.UpdateMemberDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import jakarta.validation.Valid;
@@ -9,6 +11,11 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.Map;
 
 public interface MemberService {
+    Long upgradeToSeller(String email, SellerRequestDTO requestDTO);
+
+    MemberDTO getMyInfo(String email);
+
+    MemberDTO updateMyInfo(String email, UpdateMemberDTO request);
 
     Member getEntity(String email);
 
