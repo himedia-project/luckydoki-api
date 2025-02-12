@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/test/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/chat/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/crawl/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/heart/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/community/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/event/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/review/**")).permitAll()
