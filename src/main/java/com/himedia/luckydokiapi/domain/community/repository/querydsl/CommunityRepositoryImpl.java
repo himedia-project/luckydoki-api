@@ -1,7 +1,7 @@
 package com.himedia.luckydokiapi.domain.community.repository.querydsl;
 
 
-import com.himedia.luckydokiapi.domain.community.DTO.CommunitySearchDTO;
+import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;

@@ -1,8 +1,8 @@
 package com.himedia.luckydokiapi.domain.community.service;
 
-import com.himedia.luckydokiapi.domain.community.DTO.CommunityRequestDTO;
-import com.himedia.luckydokiapi.domain.community.DTO.CommunityResponseDTO;
-import com.himedia.luckydokiapi.domain.community.DTO.CommunitySearchDTO;
+import com.himedia.luckydokiapi.domain.community.dto.CommunityRequestDTO;
+import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
+import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 
 import java.util.ArrayList;

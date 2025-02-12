@@ -1,14 +1,12 @@
 package com.himedia.luckydokiapi.domain.community.service;
 
-import com.himedia.luckydokiapi.domain.community.DTO.CommunityRequestDTO;
-import com.himedia.luckydokiapi.domain.community.DTO.CommunityResponseDTO;
-import com.himedia.luckydokiapi.domain.community.DTO.CommunitySearchDTO;
+import com.himedia.luckydokiapi.domain.community.dto.CommunityRequestDTO;
+import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
+import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
-import com.himedia.luckydokiapi.domain.community.entity.CommunityProduct;
 import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
-import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.service.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
