@@ -43,7 +43,6 @@ public class SecurityConfig {
     }
 
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.info("security config...............");
@@ -59,7 +58,6 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/product/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/content/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/test/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/chat/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/crawl/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/community/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/event/**")).permitAll()
@@ -75,6 +73,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/health/**")).permitAll()
                         // api path에 admin 포함되면 ROLE_ADMIN 권한이 있어야 접근 가능,
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/api/seller/**")).hasRole("SELLER")
                         // 정적 리소스에 대한 접근 허용
                         .requestMatchers(new AntPathRequestMatcher("/favicon.ico")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/v2/api-docs")).permitAll()
@@ -85,7 +84,6 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
                         .anyRequest().authenticated()
         );
-
 
 
         http.cors(httpSecurityCorsConfigurer -> {
@@ -126,7 +124,6 @@ public class SecurityConfig {
     }
 
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -135,10 +132,10 @@ public class SecurityConfig {
         // 출처 설정 (모든 출처 허용)
 //        configuration.setAllowedOriginPatterns(Arrays.asList("*"));  // localhost:3000 -> 허용
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001",
-                "http://43.200.239.220","http://43.200.239.220:3000", "http://43.200.239.220:3001", // EC2 퍼블릭 IP 3000, 3001 포트 허용
+                "http://43.200.239.220", "http://43.200.239.220:3000", "http://43.200.239.220:3001", // EC2 퍼블릭 IP 3000, 3001 포트 허용
                 "https://openapi.map.naver.com",
-                "http://friendzoo.shop","http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
-                "http://www.friendzoo.shop","http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
+                "http://friendzoo.shop", "http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
+                "http://www.friendzoo.shop", "http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
                 "http://friendzoo.store", "http://friendzoo.store:3000", "http://friendzoo.store:3001",
                 "http://www.friendzoo.store", "http://www.friendzoo.store:3000", "http://www.friendzoo.store:3001",
                 "http://www.admin.friendzoo.store", "http://admin.friendzoo.store"
