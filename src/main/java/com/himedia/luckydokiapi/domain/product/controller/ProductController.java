@@ -27,16 +27,19 @@ public class ProductController {
 
     @GetMapping("/{id}/detail")
     public ResponseEntity<ProductDTO.Response> getProduct(@PathVariable Long id) {
+        log.info("getProduct: {}", id);
         return ResponseEntity.ok(productService.getProduct(id));
     }
 
     @GetMapping("/list")
     public ResponseEntity<List<ProductDTO.Response>> searchProducts(ProductSearchDTO requestDTO) {
+        log.info("searchProducts: {}", requestDTO);
         return ResponseEntity.ok(productService.list(requestDTO));
     }
 
     @GetMapping("/{id}/tag/list")
     public ResponseEntity<List<TagDTO>> searchProducts(@PathVariable Long id) {
+        log.info("searchProductsTag: {}", id);
         return ResponseEntity.ok(productService.tagList(id));
     }
 
