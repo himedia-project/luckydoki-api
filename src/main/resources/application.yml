@@ -98,7 +98,7 @@ spring:
       on-profile: prod # 운영 환경
   jpa:
     hibernate:
-      ddl-auto: update # 테이블 생성 및 업데이트 전략 (create, create-drop, update, validate, none)
+      ddl-auto: none # 테이블 생성 및 업데이트 전략 (create, create-drop, update, validate, none)
   sql:
     init:
       platform: mysql # SQL 초기화 플랫폼 (mysql, h2, postgresql, oracle, sqlserver)
