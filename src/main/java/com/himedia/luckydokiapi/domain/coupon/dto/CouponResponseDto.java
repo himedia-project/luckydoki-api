@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @Builder
-public class CouponDto {
+public class CouponResponseDto {
 	private Long id;
 	private String code;
 	private String name;

@@ -29,11 +29,13 @@ public class EventBridgeServiceImpl implements EventBridgeService {
 		Event event = eventRepository.findById(eventId)
 				.orElseThrow(() -> new EventNotFoundException(eventId));
 		Product product = productRepository.findById(productId)
-				.orElseThrow(() -> new EntityNotFoundException(String.valueOf(productId)));
+				.orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
 		
-		EventBridge eventBridge = new EventBridge();
-		eventBridge.setEvent(event);
-		eventBridge.setProduct(product);
+		// 🔥 Builder 패턴 적용
+		EventBridge eventBridge = EventBridge.builder()
+				.event(event)
+				.product(product)
+				.build();
 		
 		EventBridge savedBridge = eventBridgeRepository.save(eventBridge);
 		return convertToDto(savedBridge);
@@ -44,8 +46,6 @@ public class EventBridgeServiceImpl implements EventBridgeService {
 	public void removeProductFromEvent(Long eventId, Long productId) {
 		eventBridgeRepository.deleteByEventIdAndProductId(eventId, productId);
 	}
-	
-	
 	
 	@Override
 	public List<EventBridgeDto> getProductsByEventId(Long eventId) {

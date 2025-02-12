@@ -57,6 +57,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/category/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/product/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/content/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/coupon/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/test/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/crawl/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/community/**")).permitAll()
@@ -69,6 +70,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/refresh")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/product/view/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/content/view/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/admin/coupon")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/product/excel/download")).permitAll()
                         // health check
                         .requestMatchers(new AntPathRequestMatcher("/health/**")).permitAll()
