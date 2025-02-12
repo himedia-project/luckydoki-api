@@ -20,7 +20,7 @@ public class AdminShopController {
     /**
      *  셀러 신청 승인 API
      */
-    @PostMapping("/application/{applicationId}")
+    @PostMapping("/approve-seller/{applicationId}")
     public ResponseEntity<?> approve(@PathVariable Long applicationId) {
         log.info("approve applicationId: {}", applicationId);
         return ResponseEntity.ok(adminShopService.approveSeller(applicationId));
