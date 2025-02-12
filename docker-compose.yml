@@ -13,5 +13,5 @@ services:
     ports:
       - "3308:3306"
     volumes:
-      - /Users/rjy/docker/mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/conf.d:/etc/mysql/conf.d
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
