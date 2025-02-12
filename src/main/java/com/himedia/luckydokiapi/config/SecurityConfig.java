@@ -62,7 +62,6 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/test/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/chat/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/crawl/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/heart/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/community/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/event/**")).permitAll()
                         // /api/admin/join, /api/admin/login,logout 모두 접근 가능
@@ -73,7 +72,6 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/image/view/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/product/view/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/content/view/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/admin/coupon")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/product/excel/download")).permitAll()
                         // health check
                         .requestMatchers(new AntPathRequestMatcher("/health/**")).permitAll()
@@ -141,10 +139,10 @@ public class SecurityConfig {
         // 출처 설정 (모든 출처 허용)
 //        configuration.setAllowedOriginPatterns(Arrays.asList("*"));  // localhost:3000 -> 허용
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001",
-                "http://43.200.239.220", "http://43.200.239.220:3000", "http://43.200.239.220:3001", // EC2 퍼블릭 IP 3000, 3001 포트 허용
+                "http://43.200.239.220","http://43.200.239.220:3000", "http://43.200.239.220:3001", // EC2 퍼블릭 IP 3000, 3001 포트 허용
                 "https://openapi.map.naver.com",
-                "http://friendzoo.shop", "http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
-                "http://www.friendzoo.shop", "http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
+                "http://friendzoo.shop","http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
+                "http://www.friendzoo.shop","http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
                 "http://friendzoo.store", "http://friendzoo.store:3000", "http://friendzoo.store:3001",
                 "http://www.friendzoo.store", "http://www.friendzoo.store:3000", "http://www.friendzoo.store:3001",
                 "http://www.admin.friendzoo.store", "http://admin.friendzoo.store"
