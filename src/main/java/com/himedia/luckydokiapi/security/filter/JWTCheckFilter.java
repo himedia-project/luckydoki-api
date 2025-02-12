@@ -67,6 +67,8 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return true;
         }
 
+
+        // -----
         // health check
         if (path.startsWith("/health")) {
             return true;
@@ -85,9 +87,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         if (path.startsWith("/favicon.ico")) {
             return true;
         }
-        if (path.startsWith("/api/category")) {
-            return true;
-        }
+
 
         return false;
     }

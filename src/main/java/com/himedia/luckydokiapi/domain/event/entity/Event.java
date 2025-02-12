@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuperBuilder
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -39,4 +39,6 @@ public class Event extends BaseEntity {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     @Builder.Default
     private List<EventBridge> eventBridgeList = new ArrayList<>();
+
+    //
 }
