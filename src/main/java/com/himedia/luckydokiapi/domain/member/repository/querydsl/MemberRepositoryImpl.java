@@ -16,12 +16,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 import static com.himedia.luckydokiapi.domain.member.entity.QMember.member;
 
 @Slf4j
+@Repository
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
@@ -29,7 +31,6 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
     @Override
     public Page<Member> findAllBy(MemberRequestDTO requestDTO) {
-
         Pageable pageable = PageRequest.of(
                 requestDTO.getPage() - 1,  // 페이지 시작 번호가 0부터 시작하므로
                 requestDTO.getSize(),
@@ -43,10 +44,11 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         List<Member> list = queryFactory
                 .select(member)
                 .from(member)
+                .leftJoin(member.memberRoleList).fetchJoin()
                 .where(
                         containsKeyword(requestDTO.getSearchKeyword())
                 )
-                .orderBy(member.createdAt.desc())
+                .orderBy(member.createdAt.desc())  // pk 가 email 이므로 createdAt 으로 대체
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -55,6 +57,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
         JPAQuery<Member> countQuery = queryFactory
                 .selectFrom(member)
+                .leftJoin(member.memberRoleList).fetchJoin()
                 .where(
                         containsKeyword(requestDTO.getSearchKeyword())
                 );
@@ -81,8 +84,8 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         if(keyword == null || keyword.isBlank()) {
             return null;
         }
-        return member.email.like("%" + keyword + "%")
-                .or(member.nickName.like("%" + keyword + "%"));
+        return member.email.contains(keyword)
+                .or(member.nickName.contains(keyword));
     }
 
 }

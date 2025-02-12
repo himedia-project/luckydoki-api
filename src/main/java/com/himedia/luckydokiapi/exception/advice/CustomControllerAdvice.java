@@ -177,8 +177,11 @@ public class CustomControllerAdvice {
      * @return ResponseEntity
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
+    public ResponseEntity<?> handleGeneralException(Exception e) {
+        String msg = e.getMessage();
+        log.error("handleGeneralException: {}", msg);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(getErrorMessage(e.getMessage()));
     }
 
     @ExceptionHandler(OrderMemberNotFoundException.class)

@@ -7,10 +7,12 @@ import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 @Service
@@ -24,6 +26,7 @@ public class AdminMemberServiceImpl implements AdminMemberService {
     public PageResponseDTO<MemberResDTO> getList(MemberRequestDTO requestDTO) {
 
         Page<Member> result = memberRepository.findAllBy(requestDTO);
+        log.info("result: {}", result);
 
         return PageResponseDTO.<MemberResDTO>withAll()
                 .dtoList(result.stream().map(this::entityToDTO).toList())
