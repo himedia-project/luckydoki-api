@@ -43,6 +43,7 @@ public class SecurityConfig {
     }
 
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.info("security config...............");
@@ -59,10 +60,11 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/content/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/coupon/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/test/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/chat/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/crawl/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/heart/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/community/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/event/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/review/**")).permitAll()
                         // /api/admin/join, /api/admin/login,logout 모두 접근 가능
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/join")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/login")).permitAll()
@@ -89,6 +91,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
                         .anyRequest().authenticated()
         );
+
 
 
         http.cors(httpSecurityCorsConfigurer -> {
@@ -127,6 +130,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
 
     @Bean
