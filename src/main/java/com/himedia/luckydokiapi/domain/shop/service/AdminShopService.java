@@ -25,6 +25,7 @@ public interface AdminShopService {
                 .introduction(application.getIntroduction())
                 .approved(application.getApproved())
                 .statusDescription(application.getApproved() == ShopApproved.Y ? "승인 완료" : "승인 대기")
+                .requestAt(application.getCreatedAt())
                 .build();
     }
 

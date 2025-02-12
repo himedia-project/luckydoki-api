@@ -1,8 +1,11 @@
 package com.himedia.luckydokiapi.domain.member.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
 
 @Data
 @SuperBuilder
@@ -18,6 +21,8 @@ public class SellerResponseDTO {
     private String statusDescription;
     private String shopImage;
     private String introduction;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime requestAt;
 
 
 }
