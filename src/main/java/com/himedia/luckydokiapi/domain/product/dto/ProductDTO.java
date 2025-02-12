@@ -32,7 +32,7 @@ public class ProductDTO {
         private String description;
         private Long shopId;
         private Integer stockNumber;
-        
+
         @Builder.Default
         private List<MultipartFile> files = new ArrayList<>();
 
@@ -69,15 +69,15 @@ public class ProductDTO {
         private Integer stockNumber;
         private String nickName;
         private String email;
-        
+
         @Builder.Default
         private List<String> uploadFileNames = new ArrayList<>();
 
         private List<String> tagStrList;
-        
+
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
-        
+
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime modifiedAt;
     }
