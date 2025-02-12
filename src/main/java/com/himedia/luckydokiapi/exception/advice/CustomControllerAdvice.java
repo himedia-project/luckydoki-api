@@ -165,24 +165,10 @@ public class CustomControllerAdvice {
 
     /**
      * 엑셀 파일 업로드 실패시 처리
-     *
      * @param e ExcelFailException
      * @return ResponseEntity
      */
-    @ExceptionHandler(OrderMemberNotFoundException.class)
-    public ResponseEntity<?> handleOrderNotFoundException(OrderMemberNotFoundException e) {
-        String msg = e.getMessage();
-        log.error("OrderMemberNotFoundException: {}", msg);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorMessage(msg));
-    }
 
-    @ExceptionHandler(ExcelFailException.class)
-    public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {
-        String msg = e.getMessage();
-        log.error("handleExcelFailException: {}", msg);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
-    }
 
     /**
      * 나머지 exception 서버오류 500 에러로 통일
@@ -196,6 +182,19 @@ public class CustomControllerAdvice {
         log.error("handleGeneralException: {}", msg);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(getErrorMessage(e.getMessage()));
+    }
+
+    @ExceptionHandler(OrderMemberNotFoundException.class)
+    public ResponseEntity<String> handleOrderNotFoundException(OrderMemberNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("리뷰 작성은 구매한 상품만 가능합니다.");
+    }
+
+    @ExceptionHandler(ExcelFailException.class)
+    public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {
+        String msg = e.getMessage();
+        log.error("handleExcelFailException: {}", msg);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
     }
 
     private static Map<String, String> getErrorMessage(String msg) {
