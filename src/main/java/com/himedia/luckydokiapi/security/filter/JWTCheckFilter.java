@@ -74,8 +74,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         }
 
 
-
-        // -----
         // health check
         if (path.startsWith("/health")) {
             return true;
