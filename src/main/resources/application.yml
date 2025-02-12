@@ -26,7 +26,7 @@ spring:
   jpa:
     open-in-view: false # open in view 설정
     hibernate:
-      ddl-auto: update # 테이블 생성 및 업데이트 전략 (create, create-drop, update, validate, none)
+      ddl-auto: none # 테이블 생성 및 업데이트 전략 (create, create-drop, update, validate, none)
 #    defer-datasource-initialization: true # true일시, DataSource 초기화 지연
     properties:
       hibernate:
