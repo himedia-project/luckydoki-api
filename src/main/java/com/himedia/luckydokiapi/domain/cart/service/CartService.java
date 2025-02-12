@@ -12,16 +12,18 @@ public interface CartService {
 
     List<CartItemListDTO> getCartItemList(String email);
 
-    List<CartItemListDTO> addCartItem(CartItemDTO cartItemDTO);
+    List<CartItemListDTO> addCartItem(String email, CartItemDTO cartItemDTO);
 
-    List<CartItemListDTO> removeCartItem(Long cartItemId);
+    List<CartItemListDTO> removeCartItem(String email, Long cartItemId);
 
     default CartItemListDTO entityToDTO(CartItem cartItem) {
         return CartItemListDTO.builder()
                 .cartItemId(cartItem.getId())
                 .productId(cartItem.getProduct().getId())
                 .productName(cartItem.getProduct().getName())
-                .price(cartItem.getProduct().getPrice()) // discountPrice 필드 제거
+                .price(cartItem.getPrice())
+                .discountPrice(cartItem.getDiscountPrice())
+                .discountRate(cartItem.getDiscountRate())
                 .imageName(cartItem.getProduct().getImageList().get(0).getImageName())
                 .build();
     }

@@ -31,11 +31,26 @@ public class CartItem extends BaseEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
     private Integer price;
+
+    private Integer discountPrice;
+
+    private Integer discountRate;
+
+
+    public static CartItem from(Product product, Cart cart) {
+        return CartItem.builder()
+                .product(product)
+                .cart(cart)
+                .price(product.getPrice())
+                .discountPrice(product.getDiscountPrice())
+                .discountRate(product.getDiscountRate())
+                .build();
+    }
 
 
 }

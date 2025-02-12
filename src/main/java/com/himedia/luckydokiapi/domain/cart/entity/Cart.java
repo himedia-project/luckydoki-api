@@ -31,4 +31,11 @@ public class Cart extends BaseEntity {
     private Member member;
 
 
+    public static Cart from(Member member) {
+        return Cart.builder()
+                .member(member)
+                .build();
+    }
+
+
 }

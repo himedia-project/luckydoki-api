@@ -25,28 +25,27 @@ public class CartController {
     @GetMapping("/item/list")
     public List<CartItemListDTO> getCartItems(@AuthenticationPrincipal MemberDTO memberDTO) {
         String email = memberDTO.getEmail();
-        log.info("--------------------------------------------");
-        log.info("email: " + email);
+        log.info("email: {}", email);
         return cartService.getCartItemList(email); // 장바구니 아이템 목록 조회
     }
 
     // 장바구니에 상품 추가
-    @PostMapping("/add")
+    @PostMapping
     public List<CartItemListDTO> addCartItem(
             @AuthenticationPrincipal MemberDTO memberDTO,
             @Valid @RequestBody CartItemDTO itemDTO
     ) {
         log.info("addCartItem.......... memberDTO: {}, itemDTO: {}", memberDTO, itemDTO);
-        itemDTO.setEmail(memberDTO.getEmail()); // 이메일 설정
-        return cartService.addCartItem(itemDTO); // 아이템 추가
+        return cartService.addCartItem(memberDTO.getEmail(), itemDTO); // 아이템 추가
     }
 
     // 장바구니 상품 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{cartItemId}")
     public List<CartItemListDTO> removeFromCart(
-            @PathVariable("id") Long id
+            @PathVariable Long cartItemId,
+            @AuthenticationPrincipal MemberDTO memberDTO
     ) {
-        log.info("Removing cart item no: " + id);
-        return cartService.removeCartItem(id); // 아이템 삭제
+        log.info("Removing member memberDTO: {} , cart item id: {}", memberDTO, cartItemId);
+        return cartService.removeCartItem(memberDTO.getEmail(), cartItemId); // 아이템 삭제
     }
 }

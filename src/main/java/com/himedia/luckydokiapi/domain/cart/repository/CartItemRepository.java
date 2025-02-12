@@ -18,8 +18,8 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     CartItem getItemOfPno(@Param("email") String email, @Param("productId") Long productId);
 
     // 특정 장바구니 아이템의 장바구니 ID를 조회하는 메소드
-    @Query("select ci.cart.id from CartItem ci where ci.id = :cino")
-    Long getCartFromItem(@Param("cino") Long cino);
+    @Query("select ci.cart.id from CartItem ci where ci.id = :cartItemId")
+    Long getCartFromItem(@Param("cartItemId") Long cartItemId);
 
     // 특정 장바구니 ID로 장바구니 아이템을 조회하는 메소드
     @Query("select ci from CartItem ci where ci.cart.id = :cartId")

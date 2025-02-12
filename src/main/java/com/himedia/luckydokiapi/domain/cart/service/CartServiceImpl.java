@@ -8,8 +8,10 @@ import com.himedia.luckydokiapi.domain.cart.entity.CartItem;
 import com.himedia.luckydokiapi.domain.cart.repository.CartItemRepository;
 import com.himedia.luckydokiapi.domain.cart.repository.CartRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
+import com.himedia.luckydokiapi.domain.product.service.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,8 @@ public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final ProductRepository productRepository;
+    private final MemberService memberService;
+    private final ProductService productService;
 
 
     @Transactional(readOnly = true)
@@ -40,43 +43,36 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CartItemListDTO> addCartItem(CartItemDTO cartItemDTO) {
+    public List<CartItemListDTO> addCartItem(String email, CartItemDTO cartItemDTO) {
         log.info("addCartItem..........");
-        String email = cartItemDTO.getEmail();
-        Long pno = cartItemDTO.getProductId();
+        Long productId = cartItemDTO.getProductId();
 
         // 장바구니 가져오기
         Cart cart = this.getCart(email);
-        CartItem cartItem = cartItemRepository.getItemOfPno(email, pno);
+        CartItem cartItem = cartItemRepository.getItemOfPno(email, productId);
 
         if (cartItem == null) {
             // 상품 정보를 데이터베이스에서 가져오기
-            Product product = productRepository.findById(pno)
-                    .orElseThrow(() -> new EntityNotFoundException("해당 상품이 존재하지 않습니다. productId: " + pno));
+            Product product = productService.getEntity(productId);
 
             // 새로운 CartItem 생성
-            cartItem = CartItem.builder()
-                    .product(product)
-                    .cart(cart)
-                    .price(product.getPrice()) // 가격 설정
-                    .build();
-
-            cartItemRepository.save(cartItem);
+            cartItemRepository.save(CartItem.from(product, cart));
         } else {
-            log.info("이미 장바구니에 존재하는 상품입니다. 상품 ID: " + pno);
+            log.info("이미 장바구니에 존재하는 상품입니다. 상품 ID: " + productId);
         }
 
-        return getCartItemList(email);
+        return this.getCartItemList(email);
     }
 
 
     @Override
-    public List<CartItemListDTO> removeCartItem(Long cartItemId) {
+    public List<CartItemListDTO> removeCartItem(String email, Long cartItemId) {
         log.info("removeCartItem..........");
+        memberService.getEntity(email);
         Long cartId = cartItemRepository.getCartFromItem(cartItemId);
+        log.info("cart id: {}", cartId);
 
-        log.info("cart id: " + cartId);
-
+        // cart_item에서 해당상품 삭제
         cartItemRepository.deleteById(cartItemId);
 
         return cartItemRepository.getItemsOfCartByCartId(cartId).stream()
@@ -84,16 +80,22 @@ public class CartServiceImpl implements CartService {
                 .toList();
     }
 
+
+    /**
+     * 이메일을 통해, Cart 객체 가져오기
+     * @param email 이메일
+     * @return Cart 객체
+     */
     private Cart getCart(String email) {
         Cart cart = null;
 
         Optional<Cart> result = cartRepository.getCartOfMember(email);
         if (result.isEmpty()) {
             log.info("Cart of the member is not exist!!");
-            Member member = Member.builder().email(email).build();
-            Cart tempCart = Cart.builder().member(member).build();
-            cart = cartRepository.save(tempCart);
+            Member member = memberService.getEntity(email);
+            cart = cartRepository.save(Cart.from(member));
         } else {
+            log.info("Cart of the member already exist!!");
             cart = result.get();
         }
 
