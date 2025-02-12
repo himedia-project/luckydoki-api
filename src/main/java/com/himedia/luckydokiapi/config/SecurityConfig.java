@@ -60,6 +60,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/crawl/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/community/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/event/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/review/**")).permitAll()
                         // /api/admin/join, /api/admin/login,logout 모두 접근 가능
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/join")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/login")).permitAll()
@@ -72,6 +73,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/health/**")).permitAll()
                         // api path에 admin 포함되면 ROLE_ADMIN 권한이 있어야 접근 가능,
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
+                        //seller api 는 seller 만 접근 가능
                         .requestMatchers(new AntPathRequestMatcher("/api/seller/**")).hasRole("SELLER")
                         // 정적 리소스에 대한 접근 허용
                         .requestMatchers(new AntPathRequestMatcher("/favicon.ico")).permitAll()
