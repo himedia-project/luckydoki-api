@@ -79,26 +79,6 @@ public class MemberController {
         return ResponseEntity.ok("logout success!");
     }
 
-    @PostMapping("/upgrade-to-seller")
-    public ResponseEntity<Long> upgradeToSeller(@AuthenticationPrincipal MemberDTO memberDTO, @Valid @RequestBody SellerRequestDTO requestDTO) {
-        log.info("셀러 승급 신청 요청 memberDTO: {}, requestDTO: {}", memberDTO, requestDTO);
-
-        return ResponseEntity.ok(memberService.upgradeToSeller(memberDTO.getEmail(), requestDTO));
-
-    }
-
-    @GetMapping("/me")
-    public MemberDTO getMyInfo(@AuthenticationPrincipal MemberDTO member) {
-        return memberService.getMyInfo(member.getEmail());
-    }
-
-
-    @PutMapping("/me")
-    public MemberDTO updateMyInfo(
-            @AuthenticationPrincipal MemberDTO member,
-            @RequestBody UpdateMemberDTO request) {
-        return memberService.updateMyInfo(member.getEmail(), request);
-    }
 
 }
 //true -> adult , false -> 잼민이 ㅋ

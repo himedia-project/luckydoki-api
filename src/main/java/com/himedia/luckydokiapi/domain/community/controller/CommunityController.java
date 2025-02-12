@@ -5,6 +5,7 @@ import com.himedia.luckydokiapi.domain.community.DTO.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.community.DTO.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.service.CommunityService;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,24 +34,28 @@ public class CommunityController {
     }
 
     @PostMapping("/post")
-    public ResponseEntity<?> postCommunity(@AuthenticationPrincipal MemberDTO memberDTO, @Valid @RequestBody CommunityRequestDTO request) {
+    public ResponseEntity<?> postCommunity(
+            @AuthenticationPrincipal MemberDTO memberDTO,
+            @Valid @RequestBody CommunityRequestDTO request) {
         log.info("postCommunity memberDTO: {}, request: {}", memberDTO, request);
         return ResponseEntity.ok(communityService.postCommunity(memberDTO.getEmail(), request));
     }
 
 
-    @PutMapping("/update/{communityId}")
+    @PutMapping("/{communityId}")
     public ResponseEntity<CommunityResponseDTO> updateCommunity(
             @AuthenticationPrincipal MemberDTO memberDTO,
-            @PathVariable Long communityId, @Valid @RequestBody CommunityRequestDTO request) {
+            @PathVariable Long communityId,
+            @Valid @RequestBody CommunityRequestDTO request) {
         log.info("updateCommunity communityId: {}, memberDTO: {}, request: {}", communityId, memberDTO, request);
         return ResponseEntity.ok(communityService.updateCommunity(communityId, memberDTO.getEmail(), request));
     }
 
-    @DeleteMapping("/delete/{communityId}")
-    public ResponseEntity<Void> deleteCommunity(@PathVariable Long communityId, @RequestParam String email) {
-        Member member = Member.builder().email(email).build();
-        communityService.deleteCommunity(communityId, email);
+    @DeleteMapping("/{communityId}")
+    public ResponseEntity<Void> deleteCommunity(
+            @AuthenticationPrincipal MemberDTO memberDTO,
+            @PathVariable Long communityId) {
+        communityService.deleteCommunity(communityId, memberDTO.getEmail());
         return ResponseEntity.noContent().build();
     }
 

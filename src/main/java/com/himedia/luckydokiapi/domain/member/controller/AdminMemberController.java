@@ -42,16 +42,7 @@ public class AdminMemberController {
     }
 
 
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    static class LoginResponseDTO {
-        private String email;
-        private String nickName;
-        private List<String> roles;
-        private String accessToken;
-    }
+
 
     // login security에서 가져옴
     @PostMapping("/login")
@@ -146,7 +137,6 @@ public class AdminMemberController {
         long leftMin = gap / (1000 * 60);
         return leftMin < 60;
     }
-
 
 
 }
