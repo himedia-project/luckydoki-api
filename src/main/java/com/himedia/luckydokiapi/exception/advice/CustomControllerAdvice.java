@@ -165,6 +165,7 @@ public class CustomControllerAdvice {
 
     /**
      * 엑셀 파일 업로드 실패시 처리
+     *
      * @param e ExcelFailException
      * @return ResponseEntity
      */
@@ -176,6 +177,9 @@ public class CustomControllerAdvice {
 
     @ExceptionHandler(NotAccessChatRoom.class)
     public ResponseEntity<?> NotAccessChattingRoom(NotAccessChatRoom e) {
+
+    @ExceptionHandler(ExcelFailException.class)
+    public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {
         String msg = e.getMessage();
         log.error("NotAccessChattingRoom: {}", msg);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
@@ -206,6 +210,8 @@ public class CustomControllerAdvice {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
     }
+
+
 
     private static Map<String, String> getErrorMessage(String msg) {
         return Map.of("errMsg", msg);
