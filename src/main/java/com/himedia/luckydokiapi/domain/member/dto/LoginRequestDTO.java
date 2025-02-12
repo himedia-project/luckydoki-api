@@ -2,9 +2,15 @@ package com.himedia.luckydokiapi.domain.member.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @Schema(description = "로그인 요청 DTO")
 public class LoginRequestDTO {
     @Schema(description = "이메일",
