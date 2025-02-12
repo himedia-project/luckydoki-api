@@ -165,12 +165,15 @@ public class CustomControllerAdvice {
 
     /**
      * 엑셀 파일 업로드 실패시 처리
+     *
      * @param e ExcelFailException
      * @return ResponseEntity
      */
     @ExceptionHandler(OrderMemberNotFoundException.class)
-    public ResponseEntity<String> handleOrderNotFoundException(OrderMemberNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("리뷰 작성은 구매한 상품만 가능합니다.");
+    public ResponseEntity<?> handleOrderNotFoundException(OrderMemberNotFoundException e) {
+        String msg = e.getMessage();
+        log.error("OrderMemberNotFoundException: {}", msg);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorMessage(msg));
     }
 
     @ExceptionHandler(ExcelFailException.class)

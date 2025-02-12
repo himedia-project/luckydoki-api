@@ -83,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
                 .map(this::entityToDTO).collect(Collectors.toList());
     }
 
-    //member 의 상품 등록
+    //seller 의 상품 등록
     @Override
     public Long createProduct(String email, ProductDTO.Request dto) {
 

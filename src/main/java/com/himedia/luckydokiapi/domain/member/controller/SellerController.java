@@ -31,6 +31,7 @@ public class SellerController {
 
     @GetMapping("/product/{productId}")
     public ResponseEntity<ProductDTO.Response> getProductDetail(@PathVariable Long productId) {
+        log.info("Get product detail for productId: {}", productId);
         return ResponseEntity.ok(productService.getProduct(productId));
     }
 

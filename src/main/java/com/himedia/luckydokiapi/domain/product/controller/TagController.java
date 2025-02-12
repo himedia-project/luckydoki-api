@@ -22,6 +22,7 @@ public class TagController {
 
     @GetMapping("/{id}/product/list")
     public ResponseEntity<List<ProductDTO.Response>> list(@PathVariable Long id) {
+        log.info("Listing product with id {}", id);
         List<ProductDTO.Response> productDTOs = tagService.list(id);
         return ResponseEntity.ok(productDTOs);
     }

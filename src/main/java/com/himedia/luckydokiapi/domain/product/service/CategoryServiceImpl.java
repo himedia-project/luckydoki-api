@@ -27,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     ;
 
     //파라미터 없이 최상위 카테고리들만 조회
+    @Transactional(readOnly = true)
     @Override
     public List<CategoryDTO> getParentCategories() {
         List<Category> mainCategories = categoryRepository.findMainCategories();
@@ -35,6 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     //main -> sub
+    @Transactional(readOnly = true)
     @Override
     public List<CategoryDTO> getSubCategoryList(Long mainCategoryId) {
         List<Category> subCategories = categoryRepository.findSubCategories(mainCategoryId);
@@ -42,6 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     //sub -> child
+    @Transactional(readOnly = true)
     @Override
     public List<CategoryDTO> getChildCategoryList(Long subCategoryId) {
         List<Category> childCategories = categoryRepository.findChildCategories(subCategoryId);
@@ -49,14 +52,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-//카테고리 아이디 조건식
+    //카테고리 아이디 조건식
+    @Transactional(readOnly = true)
     @Override
     public List<ProductDTO.Response> getProductCategoryId(Long categoryId) {
         List<Product> productList = productRepository.findByProductCategoryId(categoryId);
         return productList.stream().map(product -> productServiceImpl.entityToDTO(product)).toList();
     } // 람다식을 사용하여 각각의 요소들을 전달하여 하나씩 dto 로 변환 후 list 로 수집
-
-
 
 
     //admin 용 카테고리 리스트
@@ -68,7 +70,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .map(this::entityToDTO) // Product를 ProductDTO로 변환
                 .toList();
     }
-
 
 
 //    @Override
