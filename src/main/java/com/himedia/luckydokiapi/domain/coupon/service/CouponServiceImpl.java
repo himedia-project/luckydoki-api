@@ -3,9 +3,13 @@ package com.himedia.luckydokiapi.domain.coupon.service;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRequestDto;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
 import com.himedia.luckydokiapi.domain.coupon.entity.Coupon;
+import com.himedia.luckydokiapi.domain.coupon.enums.CouponStatus;
 import com.himedia.luckydokiapi.domain.coupon.repository.CouponRepository;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
+import com.himedia.luckydokiapi.util.NumberGenerator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,12 +22,16 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CouponServiceImpl implements CouponService {
 	private final CouponRepository couponRepository;
-	
+
 	@Override
-	public List<CouponResponseDto> getAllCoupons() {
-		return couponRepository.findAll().stream()
-				.map(this::convertToResponseDto)
-				.collect(Collectors.toList());
+	public PageResponseDTO<CouponResponseDto> getAllCoupons(CouponRequestDto requestDto) {
+		Page<Coupon> result = couponRepository.findListBy(requestDto);
+
+		return PageResponseDTO.<CouponResponseDto>withAll()
+				.dtoList(result.getContent().stream().map(this::convertToResponseDto).toList())
+				.totalCount(result.getTotalElements())
+				.pageRequestDTO(requestDto)
+				.build();
 	}
 	
 	@Override
@@ -51,18 +59,18 @@ public class CouponServiceImpl implements CouponService {
 	
 	@Override
 	@Transactional
-	public CouponResponseDto createCoupon(CouponRequestDto requestDto) {
+	public Long createCoupon(CouponRequestDto requestDto) {
 		Coupon coupon = Coupon.builder()
-				.code(requestDto.getCode())
+				.code(NumberGenerator.generateRandomNumber(10)) // ✅ 랜덤 코드 생성
 				.name(requestDto.getName())
 				.content(requestDto.getContent())
-				.status(requestDto.getStatus())
+				.status(CouponStatus.ACTIVE) // ✅ 활성화 상태로 자동 설정
 				.startDate(LocalDate.now()) // ✅ 현재 날짜 자동 설정
 				.endDate(LocalDate.now().plusMonths(3)) // ✅ 3개월 후 자동 설정
 				.build();
 		
 		Coupon savedCoupon = couponRepository.save(coupon);
-		return convertToResponseDto(savedCoupon);
+		return savedCoupon.getId();
 	}
 	
 	@Override

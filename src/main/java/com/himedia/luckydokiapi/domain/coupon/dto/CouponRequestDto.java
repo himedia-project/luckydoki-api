@@ -1,18 +1,22 @@
 package com.himedia.luckydokiapi.domain.coupon.dto;
 
 import com.himedia.luckydokiapi.domain.coupon.enums.CouponStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.himedia.luckydokiapi.dto.PageRequestDTO;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@Builder
-public class CouponRequestDto {
-	private String code;
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+public class CouponRequestDto extends PageRequestDTO {
+
 	private String name;
 	private String content;
 	private CouponStatus status;
+
+	// 검색 키워드
+	private String searchKeyword;
 }

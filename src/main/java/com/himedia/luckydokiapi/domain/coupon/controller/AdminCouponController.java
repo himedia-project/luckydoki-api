@@ -3,6 +3,8 @@ package com.himedia.luckydokiapi.domain.coupon.controller;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRequestDto;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
 import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +18,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminCouponController {
 	private final CouponService couponService;
-	
+
 	// 모든 쿠폰 목록 조회
-	@GetMapping
-	public ResponseEntity<List<CouponResponseDto>> getAllCoupons() {
-		List<CouponResponseDto> coupons = couponService.getAllCoupons();
+	@GetMapping("/list")
+	public ResponseEntity<PageResponseDTO<CouponResponseDto>> getAllCoupons(CouponRequestDto requestDto) {
+		log.info("getAllCoupons requestDto: {}", requestDto);
+		PageResponseDTO<CouponResponseDto> coupons = couponService.getAllCoupons(requestDto);
 		return ResponseEntity.ok(coupons);
 	}
 	
@@ -33,10 +36,10 @@ public class AdminCouponController {
 	
 	// 새로운 쿠폰 생성
 	@PostMapping
-	public ResponseEntity<CouponResponseDto> createCoupon(@RequestBody CouponRequestDto couponRequestDto) {
+	public ResponseEntity<Long> createCoupon(@Valid @RequestBody CouponRequestDto couponRequestDto) {
 		log.info("createCoupon: {}", couponRequestDto);
-		CouponResponseDto createdCoupon = couponService.createCoupon(couponRequestDto);
-		return ResponseEntity.ok(createdCoupon);
+		Long couponId = couponService.createCoupon(couponRequestDto);
+		return ResponseEntity.ok(couponId);
 	}
 	
 	// 쿠폰 아이디로 조회
