@@ -30,7 +30,6 @@ public class SellerApplicationRepositoryImpl implements SellerApplicationReposit
         List<SellerApplication> list = queryFactory
                 .selectFrom(sellerApplication)
                 .where(
-                        sellerApplication.approved.eq(ShopApproved.N),
                         containsSearchKeyword(requestDTO.getSearchKeyword())
                 )
                 .orderBy(sellerApplication.id.desc())
@@ -41,7 +40,6 @@ public class SellerApplicationRepositoryImpl implements SellerApplicationReposit
         JPAQuery<SellerApplication> countQuery = queryFactory
                 .selectFrom(sellerApplication)
                 .where(
-                        sellerApplication.approved.eq(ShopApproved.N),
                         containsSearchKeyword(requestDTO.getSearchKeyword())
                 );
 
