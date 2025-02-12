@@ -2,7 +2,7 @@ package com.himedia.luckydokiapi.domain.event.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -14,6 +14,6 @@ public class EventDto {
 	private String title;
 	private String content;
 	private String image;
-	private LocalDateTime startAt;
-	private LocalDateTime endAt;
+	private LocalDate startAt;
+	private LocalDate endAt;
 }

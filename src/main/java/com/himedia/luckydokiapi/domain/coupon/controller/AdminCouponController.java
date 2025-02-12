@@ -37,7 +37,7 @@ public class AdminCouponController {
 	// 새로운 쿠폰 생성
 	@PostMapping
 	public ResponseEntity<Long> createCoupon(@Valid @RequestBody CouponRequestDto couponRequestDto) {
-		log.info("createCoupon: {}", couponRequestDto);
+		log.info("createCoupon couponRequestDto: {}", couponRequestDto);
 		Long couponId = couponService.createCoupon(couponRequestDto);
 		return ResponseEntity.ok(couponId);
 	}

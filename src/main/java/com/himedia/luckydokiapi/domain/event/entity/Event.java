@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,11 +30,11 @@ public class Event extends BaseEntity {
     @Column(columnDefinition = "LONGTEXT")
     private String image;
 
-    @Column(name = "start_at", nullable = false, columnDefinition = "TIMESTAMP")
-    private LocalDateTime startAt;
+    @Column(name = "start_at", nullable = false, columnDefinition = "DATE")
+    private LocalDate startAt;
 
-    @Column(name = "end_at", nullable = false, columnDefinition = "TIMESTAMP")
-    private LocalDateTime endAt;
+    @Column(name = "end_at", nullable = false, columnDefinition = "DATE")
+    private LocalDate endAt;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     @Builder.Default

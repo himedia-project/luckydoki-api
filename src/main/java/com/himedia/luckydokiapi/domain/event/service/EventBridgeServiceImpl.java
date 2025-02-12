@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.event.service;
 import com.himedia.luckydokiapi.domain.event.dto.EventBridgeDto;
 import com.himedia.luckydokiapi.domain.event.entity.Event;
 import com.himedia.luckydokiapi.domain.event.entity.EventBridge;
+import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.exception.EventNotFoundException;
 import com.himedia.luckydokiapi.domain.event.repository.EventBridgeRepository;
 import com.himedia.luckydokiapi.domain.event.repository.EventRepository;
@@ -30,7 +31,9 @@ public class EventBridgeServiceImpl implements EventBridgeService {
 				.orElseThrow(() -> new EventNotFoundException(eventId));
 		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
-		
+		// 이벤트 상품여부 변경
+		product.changeEvent(ProductEvent.Y);
+
 		// 🔥 Builder 패턴 적용
 		EventBridge eventBridge = EventBridge.builder()
 				.event(event)

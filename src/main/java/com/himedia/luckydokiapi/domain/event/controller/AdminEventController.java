@@ -3,8 +3,10 @@ package com.himedia.luckydokiapi.domain.event.controller;
 import com.himedia.luckydokiapi.domain.event.dto.EventBridgeDto;
 import com.himedia.luckydokiapi.domain.event.dto.EventDto;
 import com.himedia.luckydokiapi.domain.event.dto.EventRequestDto;
+import com.himedia.luckydokiapi.domain.event.dto.EventSearchDto;
 import com.himedia.luckydokiapi.domain.event.service.EventBridgeService;
 import com.himedia.luckydokiapi.domain.event.service.EventService;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +19,19 @@ import org.springframework.web.bind.annotation.*;
 public class AdminEventController {
 	private final EventService eventService;
 	private final EventBridgeService eventBridgeService;
-	
+
+
+	// 이벤트 리스트
+	@GetMapping("/list")
+	public ResponseEntity<PageResponseDTO<EventDto>> getEvents(EventSearchDto requestDto) {
+		log.info("getEvents requestDto: {}", requestDto);
+		return ResponseEntity.ok(eventService.getEvents(requestDto));
+	}
+
 	// ✅ 이벤트 생성 (관리자 전용)
 	@PostMapping
-	public ResponseEntity<EventDto> createEvent(@RequestBody EventRequestDto eventRequestDto) {
-		log.info("createEvent: {}", eventRequestDto);
+	public ResponseEntity<Long> createEvent(EventRequestDto eventRequestDto) {
+		log.info("createEvent eventRequestDto: {}", eventRequestDto);
 		return ResponseEntity.ok(eventService.createEvent(eventRequestDto));
 	}
 	

@@ -5,6 +5,8 @@ import com.himedia.luckydokiapi.dto.PageRequestDTO;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -16,6 +18,9 @@ public class CouponRequestDto extends PageRequestDTO {
 	private String name;
 	private String content;
 	private CouponStatus status;
+
+	private LocalDate startDate;
+	private LocalDate endDate;
 
 	// 검색 키워드
 	private String searchKeyword;
