@@ -19,6 +19,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@ToString(exclude = {"memberRoleList"})
 @Table(name = "member")
 public class Member extends BaseEntity {
 

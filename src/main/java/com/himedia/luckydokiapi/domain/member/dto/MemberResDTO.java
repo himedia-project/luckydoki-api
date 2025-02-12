@@ -18,7 +18,6 @@ public class MemberResDTO {
     private String email;
     private String nickName;
     private String phone;
-    private String address;
     private List<MemberRole> roles;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
