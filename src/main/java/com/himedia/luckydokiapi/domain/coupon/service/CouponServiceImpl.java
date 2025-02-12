@@ -4,7 +4,6 @@ import com.himedia.luckydokiapi.domain.coupon.dto.CouponRequestDto;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
 import com.himedia.luckydokiapi.domain.coupon.entity.Coupon;
 import com.himedia.luckydokiapi.domain.coupon.repository.CouponRepository;
-import com.himedia.luckydokiapi.domain.coupon.repository.querydsl.CouponRepositoryCustom;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
