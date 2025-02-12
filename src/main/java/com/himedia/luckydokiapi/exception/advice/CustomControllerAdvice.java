@@ -173,6 +173,15 @@ public class CustomControllerAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("리뷰 작성은 구매한 상품만 가능합니다.");
     }
 
+
+    @ExceptionHandler(NotAccessChatRoom.class)
+    public ResponseEntity<?> NotAccessChattingRoom(NotAccessChatRoom e) {
+        String msg = e.getMessage();
+        log.error("NotAccessChattingRoom: {}", msg);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
+    }
+
+
     @ExceptionHandler(ExcelFailException.class)
     public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {
         String msg = e.getMessage();

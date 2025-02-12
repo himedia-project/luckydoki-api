@@ -23,11 +23,13 @@ spring:
       max-request-size: 30MB # 최대 요청 크기
       max-file-size: 10MB # 최대 파일 크기
 
+
+
   jpa:
     open-in-view: false # open in view 설정
     hibernate:
       ddl-auto: update # 테이블 생성 및 업데이트 전략 (create, create-drop, update, validate, none)
-#    defer-datasource-initialization: true # true일시, DataSource 초기화 지연
+    #    defer-datasource-initialization: true # true일시, DataSource 초기화 지연
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect # Hibernate Dialect 설정
@@ -79,6 +81,12 @@ spring:
     username: luckydoki
     password: luckydoki
 
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: chatdb
+
 app:
   props:
     social:
@@ -117,6 +125,9 @@ spring:
       idle-timeout: 300000 # 유휴 시간 (밀리초)
       connection-timeout: 30000 # 연결 시간 초과 (밀리초)
 
+
+
+
 app:
   props:
     social:
@@ -126,3 +137,19 @@ app:
 logging:
   level:
     org.hibernate.SQL: error # Hibernate SQL 로그 레벨
+
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: docker
+  data:
+    mongodb:
+      host: mongodb
+      port: 27017
+      database: chatdb
+      username: luckydoki
+      password: luckydoki
+      authentication-database: admin
