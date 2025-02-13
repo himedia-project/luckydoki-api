@@ -11,10 +11,13 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
 
+//트랜젝셔널에 걸린 피드만 수정하게 해주는 어노테인션
+@DynamicUpdate
 @SuperBuilder
 @Getter
 @AllArgsConstructor

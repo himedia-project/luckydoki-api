@@ -94,5 +94,8 @@ public interface AdminProductService {
         return productDTO;
     }
 
+    void modifyProductBest(List<Long> modifyProductIdList);
+
+    void modifyProductIsNew(List<Long> modifyProductIdList);
 
 }

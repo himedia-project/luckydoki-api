@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.product.controller;
 
+import com.himedia.luckydokiapi.domain.product.dto.ModifyProductIdsDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.service.AdminProductService;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -67,6 +70,21 @@ public class AdminProductController {
         return fileUtil.getFile(fileName);
 
     }
+
+    @PatchMapping("/is-new")
+    public ResponseEntity<?> changeIsNew(@RequestBody ModifyProductIdsDTO modifyProductIdsDTO) {
+        log.info("isNew: {}", modifyProductIdsDTO);
+        productService.modifyProductIsNew(modifyProductIdsDTO.getProductIds());
+        return ResponseEntity.ok("변경 완료");
+    }
+
+    @PatchMapping("/best")
+    public ResponseEntity<?> changeBest(@RequestBody ModifyProductIdsDTO modifyProductIdsDTO) {
+        log.info("best: {}", modifyProductIdsDTO);
+        productService.modifyProductBest(modifyProductIdsDTO.getProductIds());
+        return ResponseEntity.ok("변경 완료");
+    }
+
 
     //TODO : member 권한 변경 (seller)  + 상품 노출 display , approval  변경 -> 찬엽이가 만들기 ㅎㅎ
 }
