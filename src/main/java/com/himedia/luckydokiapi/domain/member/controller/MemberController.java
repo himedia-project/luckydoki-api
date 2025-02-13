@@ -79,6 +79,8 @@ public class MemberController {
         return ResponseEntity.ok("logout success!");
     }
 
+
+
     @PostMapping("/upgrade-to-seller")
     public ResponseEntity<Long> upgradeToSeller(@AuthenticationPrincipal MemberDTO memberDTO, @Valid SellerRequestDTO requestDTO) {
         log.info("셀러 승급 신청 요청 memberDTO: {}, requestDTO: {}", memberDTO, requestDTO);

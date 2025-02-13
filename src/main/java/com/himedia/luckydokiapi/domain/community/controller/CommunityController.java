@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,23 +34,35 @@ public class CommunityController {
         return ResponseEntity.ok(communityService.getCommunityById(communityId));
     }
 
-    @PostMapping("/post")
+    @PostMapping(value = "/post", consumes = {"multipart/form-data"})
     public ResponseEntity<?> postCommunity(
             @AuthenticationPrincipal MemberDTO memberDTO,
-            @Valid @RequestBody CommunityRequestDTO request) {
-        log.info("postCommunity memberDTO: {}, request: {}", memberDTO, request);
+            @RequestPart("data") @Valid CommunityRequestDTO request,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+
+        if (images != null) {
+            request.setFiles(images);
+        }
+
         return ResponseEntity.ok(communityService.postCommunity(memberDTO.getEmail(), request));
     }
 
 
-    @PutMapping("/{communityId}")
-    public ResponseEntity<CommunityResponseDTO> updateCommunity(
-            @AuthenticationPrincipal MemberDTO memberDTO,
-            @PathVariable Long communityId,
-            @Valid @RequestBody CommunityRequestDTO request) {
-        log.info("updateCommunity communityId: {}, memberDTO: {}, request: {}", communityId, memberDTO, request);
-        return ResponseEntity.ok(communityService.updateCommunity(communityId, memberDTO.getEmail(), request));
-    }
+//    @PutMapping(value = "/{communityId}", consumes = {"multipart/form-data"})
+//    public ResponseEntity<CommunityResponseDTO> updateCommunity(
+//            @AuthenticationPrincipal MemberDTO memberDTO,
+//            @PathVariable Long communityId,
+//            @RequestPart("data") @Valid CommunityRequestDTO request, // `@RequestPart`로 DTO 받기
+//            @RequestPart(value = "images", required = false) List<MultipartFile> images) { // 이미지도 함께 받기
+//
+//        // 이미지가 들어오면 DTO에 추가
+//        if (images != null) {
+//            request.setFiles(images);
+//        }
+//
+//        return ResponseEntity.ok(communityService.updateCommunity(communityId, memberDTO.getEmail(), request));
+//    }
+
 
     @DeleteMapping("/{communityId}")
     public ResponseEntity<Void> deleteCommunity(

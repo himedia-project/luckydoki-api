@@ -24,15 +24,17 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
-    private Member member; // 게시글 작성자
+    private Member member;
+
+    @Column(nullable = false, length = 100) // 제목 추가
+    private String title;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @ElementCollection
-    @CollectionTable(name = "community_images", joinColumns = @JoinColumn(name = "community_id"))
-    @Column(name = "image_url", nullable = true)
-    private List<String> imageList = new ArrayList<>();
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CommunityImage> imageList = new ArrayList<>();
 
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
     @Builder.Default
