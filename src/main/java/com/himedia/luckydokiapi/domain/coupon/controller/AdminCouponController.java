@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.coupon.controller;
 
+import com.himedia.luckydokiapi.domain.coupon.dto.CouponIssueRequestDTO;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRequestDto;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
 import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
@@ -64,5 +65,13 @@ public class AdminCouponController {
 		log.info("deleteCoupon: {}", id);
 		couponService.deleteCoupon(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	// 쿠폰 발급
+	@PostMapping("/{couponId}/issue")
+	public ResponseEntity<Void> issueCoupon(@PathVariable Long couponId, @RequestBody CouponIssueRequestDTO requestDTO) {
+		log.info("issueCoupon: {}", couponId);
+		couponService.issueCoupon(couponId, requestDTO.getEmails());
+		return ResponseEntity.ok().build();
 	}
 }

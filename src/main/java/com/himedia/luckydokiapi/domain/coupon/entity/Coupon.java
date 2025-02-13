@@ -33,6 +33,8 @@ public class Coupon extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "discount_price")
+    private Integer discountPrice;
 
     @Column(name = "start_date", nullable = false, columnDefinition = "DATE")
     private LocalDate startDate;

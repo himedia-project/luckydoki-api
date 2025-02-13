@@ -1,5 +1,7 @@
 package com.himedia.luckydokiapi.domain.coupon.service;
 
+import com.himedia.luckydokiapi.domain.coupon.dto.CouponRecordResponseDTO;
+import com.himedia.luckydokiapi.domain.coupon.dto.CouponRecordSearchDTO;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRequestDto;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
@@ -14,4 +16,8 @@ public interface CouponService {
 	Long createCoupon(CouponRequestDto couponRequestDto);
 	CouponResponseDto updateCoupon(Long id, CouponRequestDto couponRequestDto);
 	void deleteCoupon(Long id);
+
+	PageResponseDTO<CouponRecordResponseDTO> getCouponRecords(CouponRecordSearchDTO requestDto);
+
+	void issueCoupon(Long couponId, List<String> memberEmails);
 }

@@ -18,6 +18,7 @@ public class CouponRequestDto extends PageRequestDTO {
 	private String name;
 	private String content;
 	private CouponStatus status;
+	private Integer discountPrice;
 
 	private LocalDate startDate;
 	private LocalDate endDate;
