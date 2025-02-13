@@ -152,7 +152,7 @@ public class SecurityConfig {
                 "http://www.admin.friendzoo.store", "http://admin.friendzoo.store"
         ));
         // 허용할 메서드 설정
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         // 허용할 헤더 설정
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         // 자격 증명 허용 설정 (쿠키 등)

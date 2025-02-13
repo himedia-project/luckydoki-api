@@ -75,14 +75,14 @@ public class AdminProductController {
     public ResponseEntity<?> changeIsNew(@RequestBody ModifyProductIdsDTO modifyProductIdsDTO) {
         log.info("isNew: {}", modifyProductIdsDTO);
         productService.modifyProductIsNew(modifyProductIdsDTO.getProductIds());
-        return ResponseEntity.ok("변경 완료");
+        return ResponseEntity.ok("변경 완료 productIds: " + modifyProductIdsDTO.getProductIds());
     }
 
     @PatchMapping("/best")
     public ResponseEntity<?> changeBest(@RequestBody ModifyProductIdsDTO modifyProductIdsDTO) {
         log.info("best: {}", modifyProductIdsDTO);
         productService.modifyProductBest(modifyProductIdsDTO.getProductIds());
-        return ResponseEntity.ok("변경 완료");
+        return ResponseEntity.ok("변경 완료 productIds: " + modifyProductIdsDTO.getProductIds());
     }
 
 
