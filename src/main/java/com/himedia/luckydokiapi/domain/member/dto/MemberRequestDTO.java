@@ -16,6 +16,5 @@ public class MemberRequestDTO extends PageRequestDTO {
     private String nickName;
     private String phone;
     private String birthday;
-
     private String searchKeyword;
 }
