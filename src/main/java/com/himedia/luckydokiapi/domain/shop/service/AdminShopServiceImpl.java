@@ -9,7 +9,7 @@ import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.shop.dto.SellerSearchDTO;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
-import com.himedia.luckydokiapi.domain.shop.repository.SellerApplicationRepository;
+import com.himedia.luckydokiapi.domain.member.service.SellerApplicationRepository;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import jakarta.persistence.EntityNotFoundException;

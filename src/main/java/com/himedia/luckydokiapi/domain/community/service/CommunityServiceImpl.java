@@ -7,9 +7,11 @@ import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.community.entity.CommunityProduct;
 import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
-import com.himedia.luckydokiapi.domain.product.service.ProductService;
+import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
+import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,9 @@ public class CommunityServiceImpl implements CommunityService {
 
     private final CommunityRepository communityRepository;
     private final MemberService memberService;
-    private final ProductService productService;
+    private final CustomFileUtil fileUtil;
+    private final MemberRepository memberRepository;
+    private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
     public List<CommunityResponseDTO> getAllCommunities(CommunitySearchDTO request) {
@@ -58,60 +62,131 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
 
+    @Override
     public CommunityResponseDTO postCommunity(String email, CommunityRequestDTO request) {
-        log.info("🔹 postCommunity 요청 email: {}, request: {}", email, request);
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
-        if (email == null) {
-            log.error("오류 발생: email이 null입니다!");
-            throw new IllegalArgumentException("email은 필수 입력값입니다.");
+        // ✅ 제목과 내용 필수 검증
+        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("제목은 필수 입력 항목입니다.");
         }
-
-        Member member = this.getMember(email);
-        if (member == null) {
-            log.error("오류 발생: 사용자를 찾을 수 없음 (email: {})", email);
-            throw new EntityNotFoundException("사용자를 찾을 수 없습니다.");
+        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
+            throw new IllegalArgumentException("내용은 필수 입력 항목입니다.");
         }
 
         Community community = Community.builder()
                 .member(member)
+                .title(request.getTitle()) // 제목 저장
                 .content(request.getContent())
-                .imageList(request.getImageList())
                 .build();
+
         communityRepository.save(community);
 
-
-//        if (request.getProductIds() != null && !request.getProductIds().isEmpty()) {
-//            List<Product> products = productService.findProductsByIds(request.getProductIds()); // 상품 조회
-//            List<CommunityProduct> communityProducts = products.stream()
-//                    .map(product -> CommunityProduct.from(community, product))
-//                    .collect(Collectors.toList());
-//            community.getCommunityProductList().addAll(communityProducts);
-//        }
-
-        log.info("게시글 저장 완료! ID: {}", community.getId());
-
-        return toDTO(community);
-    }
-
-
-
-    public CommunityResponseDTO updateCommunity(Long communityId, String email, CommunityRequestDTO request) {
-
-        Community community = communityRepository.findById(communityId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
-
-        Member member = this.getMember(email);
-
-        if (!community.getMember().getEmail().equals(member.getEmail())) {
-            throw new IllegalArgumentException("본인의 게시글만 수정할 수 있습니다.");
+        // 이미지 업로드 (선택 사항)
+        if (request.getFiles() != null && !request.getFiles().isEmpty()) {
+            List<String> uploadedUrls = fileUtil.uploadS3Files(request.getFiles());
+            request.setUploadFileNames(uploadedUrls);
         }
 
-        community.setContent(request.getContent());
-        community.setImageList(request.getImageList());
+        // 사용자가 등록한 상품인지 검증 후 추가
+        if (request.getProductIds() != null && !request.getProductIds().isEmpty()) {
+            List<Product> userProducts = productRepository.findProductByShopMemberEmail(email);
+            List<Long> userProductIds = userProducts.stream().map(Product::getId).toList();
 
-        log.info(" 게시글 수정 완료: communityId={}", communityId);
-        return toDTO(community);
+            for (Long productId : request.getProductIds()) {
+                if (!userProductIds.contains(productId)) {
+                    throw new IllegalArgumentException("본인이 등록한 상품만 게시물에 추가할 수 있습니다.");
+                }
+
+                Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new RuntimeException("존재하지 않는 상품입니다."));
+
+                CommunityProduct communityProduct = CommunityProduct.builder()
+                        .community(community)
+                        .product(product)
+                        .build();
+
+                community.getCommunityProductList().add(communityProduct);
+            }
+        }
+
+        communityRepository.save(community);
+        return new CommunityResponseDTO(community);
     }
+
+//    @Override
+//    public CommunityResponseDTO updateCommunity(Long communityId, String email, CommunityRequestDTO request) {
+//        Community community = communityRepository.findById(communityId)
+//                .orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
+//
+//        Member member = memberRepository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+//
+//        if (!community.getMember().getEmail().equals(member.getEmail())) {
+//            throw new IllegalArgumentException("본인의 게시글만 수정할 수 있습니다.");
+//        }
+//
+//        // 제목과 내용 필수 검증 추가
+//        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+//            throw new IllegalArgumentException("제목은 필수 입력 항목입니다.");
+//        }
+//        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
+//            throw new IllegalArgumentException("내용은 필수 입력 항목입니다.");
+//        }
+//
+//        // 게시글 제목 및 내용 업데이트
+//        community.setTitle(request.getTitle());
+//        community.setContent(request.getContent());
+//
+//        // 이미지 업데이트 (기존 이미지 삭제 후 새 이미지 추가)
+//        community.getImageList().clear();
+//        if (request.getFiles() != null && !request.getFiles().isEmpty()) {
+//            List<String> uploadedUrls = fileUtil.uploadS3Files(request.getFiles());
+//            request.setUploadFileNames(uploadedUrls);
+//        }
+//
+//        if (request.getUploadFileNames() != null && !request.getUploadFileNames().isEmpty()) {
+//            int order = 1;
+//            for (String imageUrl : request.getUploadFileNames()) {
+//                CommunityImage communityImage = CommunityImage.builder()
+//                        .community(community)
+//                        .imageName(imageUrl)
+//                        .ord(order++)
+//                        .build();
+//                community.getImageList().add(communityImage);
+//            }
+//        }
+//
+//        // ✅ 기존 상품 삭제
+//        community.getCommunityProductList().clear();
+//
+//        // ✅ 사용자가 등록한 상품인지 검증 후 추가
+//        if (request.getProductIds() != null && !request.getProductIds().isEmpty()) {
+//            List<Product> userProducts = productRepository.findProductByShopMemberEmail(email);
+//            List<Long> userProductIds = userProducts.stream().map(Product::getId).toList();
+//
+//            for (Long productId : request.getProductIds()) {
+//                if (!userProductIds.contains(productId)) {
+//                    throw new IllegalArgumentException("본인이 등록한 상품만 게시물에 추가할 수 있습니다.");
+//                }
+//
+//                Product product = productRepository.findById(productId)
+//                        .orElseThrow(() -> new RuntimeException("존재하지 않는 상품입니다."));
+//
+//                CommunityProduct communityProduct = CommunityProduct.builder()
+//                        .community(community)
+//                        .product(product)
+//                        .build();
+//
+//                community.getCommunityProductList().add(communityProduct);
+//            }
+//        }
+//
+//        communityRepository.save(community);
+//        return new CommunityResponseDTO(community);
+//    }
+
 
 
     public void deleteCommunity(Long communityId, String email) {

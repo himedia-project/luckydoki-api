@@ -73,6 +73,10 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return true;
         }
 
+        if (path.startsWith("/api/shop")) {
+            return true;
+        }
+
 //websocket handshake 요청 필터  안타게
         if (path.startsWith("/ws-stomp")) {
             return true;

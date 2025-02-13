@@ -1,4 +1,4 @@
-package com.himedia.luckydokiapi.domain.shop.repository;
+package com.himedia.luckydokiapi.domain.member.service;
 
 import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
