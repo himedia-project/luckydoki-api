@@ -50,4 +50,7 @@ public class Coupon extends BaseEntity {
     @Builder.Default
     private List<CouponRecord> couponRecordList = new ArrayList<>();
 
+    public void changeStatus(CouponStatus couponStatus) {
+        this.status = couponStatus;
+    }
 }

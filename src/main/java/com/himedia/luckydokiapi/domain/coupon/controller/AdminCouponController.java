@@ -70,7 +70,7 @@ public class AdminCouponController {
 	// 쿠폰 발급
 	@PostMapping("/{couponId}/issue")
 	public ResponseEntity<Void> issueCoupon(@PathVariable Long couponId, @RequestBody CouponIssueRequestDTO requestDTO) {
-		log.info("issueCoupon: {}", couponId);
+		log.info("issueCoupon couponId: {}", couponId);
 		couponService.issueCoupon(couponId, requestDTO.getEmails());
 		return ResponseEntity.ok().build();
 	}

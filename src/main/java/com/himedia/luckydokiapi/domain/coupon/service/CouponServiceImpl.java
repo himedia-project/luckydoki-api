@@ -138,6 +138,8 @@ public class CouponServiceImpl implements CouponService {
 					.build();
 			couponRecordRepository.save(couponRecord);
 		});
+		// 쿠폰 발급상태로 변경
+		coupon.changeStatus(CouponStatus.ISSUED);
 	}
 
 	/**
