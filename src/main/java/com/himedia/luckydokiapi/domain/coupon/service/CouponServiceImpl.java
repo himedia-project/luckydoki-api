@@ -96,8 +96,15 @@ public class CouponServiceImpl implements CouponService {
 	
 	@Override
 	@Transactional
-	public void deleteCoupon(Long id) {
-		Coupon coupon = getCoupon(id);
+	public void deleteCoupon(Long couponId) {
+		Coupon coupon = getCoupon(couponId);
+
+		// 해당 쿠폰이 발급되어 있다면 예외처리
+		if (couponRecordRepository.existsByCouponId(couponId)) {
+			throw new IllegalArgumentException("Coupon issued to members, couponId: " + couponId);
+		}
+
+		// ✅ 쿠폰 삭제 시 쿠폰 발급 내역 삭제
 		couponRepository.delete(coupon);
 	}
 

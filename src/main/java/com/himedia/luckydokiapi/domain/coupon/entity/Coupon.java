@@ -3,13 +3,12 @@ package com.himedia.luckydokiapi.domain.coupon.entity;
 import com.himedia.luckydokiapi.domain.coupon.enums.CouponStatus;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuperBuilder
 @Getter
@@ -45,5 +44,10 @@ public class Coupon extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private CouponStatus status;
+
+
+    @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CouponRecord> couponRecordList = new ArrayList<>();
 
 }
