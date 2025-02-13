@@ -49,6 +49,7 @@ public interface MemberService {
                 member.getEmail(),
                 member.getPassword(),
                 member.getNickName(),
+                member.getPhone(),
                 member.getMemberRoleList().stream()
                         .map(Enum::name).toList());
     }

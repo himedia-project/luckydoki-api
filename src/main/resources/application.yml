@@ -68,6 +68,8 @@ app:
         bucket-name: ${AWS_S3_BUCKET_NAME}
         region: ${AWS_REGION}
 
+toss:
+  secret-key: ${TOSS_SECRET_KEY}
 
 ---
 spring:

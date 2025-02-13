@@ -4,6 +4,7 @@ import com.himedia.luckydokiapi.domain.event.dto.EventDto;
 import com.himedia.luckydokiapi.domain.event.dto.EventRequestDto;
 import com.himedia.luckydokiapi.domain.event.dto.EventSearchDto;
 import com.himedia.luckydokiapi.domain.event.entity.Event;
+import com.himedia.luckydokiapi.domain.event.repository.EventBridgeRepository;
 import com.himedia.luckydokiapi.domain.event.repository.EventRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.exception.EventNotFoundException;
@@ -27,6 +28,7 @@ public class EventServiceImpl implements EventService {
 	private final EventBridgeService eventBridgeService;
 
 	private final CustomFileUtil fileUtil;
+	private final EventBridgeRepository eventBridgeRepository;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -63,8 +65,7 @@ public class EventServiceImpl implements EventService {
 	@Transactional(readOnly = true)
 	@Override
 	public EventDto getEventById(Long id) {
-		Event event = eventRepository.findById(id)
-				.orElseThrow(() -> new EventNotFoundException(id));
+		Event event = getEvent(id);
 		return convertToDto(event);
 	}
 
@@ -102,8 +103,7 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public EventDto updateEvent(Long id, EventRequestDto eventRequestDto) {
 		eventRequestDto.sanitize();
-		Event existingEvent = eventRepository.findById(id)
-				.orElseThrow(() -> new EventNotFoundException(id));
+		Event existingEvent = getEvent(id);
 
 		Event updatedEvent = Event.builder()
 				.id(existingEvent.getId())
@@ -122,14 +122,21 @@ public class EventServiceImpl implements EventService {
 
 
 	@Override
-	public void deleteEvent(Long id) {
-		if (!eventRepository.existsById(id)) {
-			throw new EventNotFoundException(id);
-		}
-		eventRepository.deleteById(id);
+	public void deleteEvent(Long eventId) {
+		getEvent(eventId);
+		eventRepository.deleteById(eventId);
 	}
 
 
+	/**
+	 * 이벤트 조회
+	 * @param id 이벤트 ID
+	 * @return 이벤트
+	 */
+	private Event getEvent(Long id) {
+		return eventRepository.findById(id)
+				.orElseThrow(() -> new EventNotFoundException(id));
+	}
 
 	private EventDto convertToDto(Event event) {
 		return EventDto.builder()

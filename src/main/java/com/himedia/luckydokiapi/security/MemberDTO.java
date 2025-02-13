@@ -19,12 +19,12 @@ public class MemberDTO extends User {
 
     private String email;
     private String password;
-    private String nickName;
     private String phone;
+    private String nickName;
     private List<String> roleNames = new ArrayList<>();
 
 
-    public MemberDTO(String email, String password,String phone, String nickName, List<String> roleNames) {
+    public MemberDTO(String email, String password, String phone,String nickName, List<String> roleNames) {
         // ROLE_ 접두사를 붙여서 권한을 부여
         super(email, password, roleNames.stream().map(str -> new SimpleGrantedAuthority("ROLE_" + str)).collect(Collectors.toList()));
         this.email = email;

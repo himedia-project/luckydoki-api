@@ -38,6 +38,7 @@ public interface LikesService {
                 .isNew(product.getIsNew())
                 .best(product.getBest())
                 .event(product.getEvent())
+                .likes(true)
                 .productImageUrl(fileNameList.get(0))
                 .build();
         return likesProductDTO;
@@ -55,6 +56,7 @@ public interface LikesService {
                 .shopImageUrl(shopLike.getShop().getImage())
                 .sellerNickname(shopLike.getShop().getMember().getNickName())
                 .sellerEmail(shopLike.getShop().getMember().getEmail())
+                .likes(true)
                 .build();
         return likesShopDTO;
 

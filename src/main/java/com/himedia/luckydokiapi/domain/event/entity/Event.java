@@ -36,9 +36,7 @@ public class Event extends BaseEntity {
     @Column(name = "end_at", nullable = false, columnDefinition = "DATE")
     private LocalDate endAt;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<EventBridge> eventBridgeList = new ArrayList<>();
-
-    //
 }

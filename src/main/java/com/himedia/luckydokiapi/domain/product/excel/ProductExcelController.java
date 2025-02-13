@@ -46,7 +46,7 @@ public class ProductExcelController {
         List<ProductDataDTO> dtoList = excelService.getExcelDataList(requestDto);
         ByteArrayResource dataListFile = ExcelGenerator.generateExcelFile(dtoList, "콘텐츠 목록");
 
-        return ExcelGenerator.createResponseEntity(dataListFile, "luckidoki_관리자_콘텐츠_목록_" + getNowTimeStr("yyyyMMddHHmmss") + ".xlsx");
+        return ExcelGenerator.createResponseEntity(dataListFile, "luckidoki_관리자_상품_목록_" + getNowTimeStr("yyyyMMddHHmmss") + ".xlsx");
     }
 
 

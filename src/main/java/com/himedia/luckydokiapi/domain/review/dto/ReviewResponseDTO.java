@@ -17,5 +17,5 @@ public class ReviewResponseDTO {
     private Long productId;
     private String productName;
     private String content;
-    private String imageUrl;
+    private String imageName;
 }

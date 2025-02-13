@@ -96,6 +96,7 @@ public class MemberServiceImpl implements MemberService {
         return new MemberDTO(
                 member.getEmail(),
                 member.getPassword(),
+                member.getPhone(),
                 member.getNickName(),
                 member.getPhone(),
                 member.getMemberRoleList().stream()

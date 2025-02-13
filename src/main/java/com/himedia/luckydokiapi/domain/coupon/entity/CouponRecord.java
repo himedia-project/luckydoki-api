@@ -4,6 +4,7 @@ import com.himedia.luckydokiapi.domain.coupon.enums.CouponRecordStatus;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 
@@ -28,8 +29,9 @@ public class CouponRecord {
     @JoinColumn(name = "email")
     private Member member;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @ColumnDefault("'UNUSED'")
     private CouponRecordStatus status;
 
     @Column(name = "used_datetime", columnDefinition = "TIMESTAMP")

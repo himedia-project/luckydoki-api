@@ -29,4 +29,5 @@ public class LikesProductDTO {
     private ProductIsNew isNew;
     private ProductBest best;
     private ProductEvent event;
+    private Boolean likes;
 }

@@ -11,4 +11,7 @@ public interface CouponRecordRepository extends JpaRepository<CouponRecord, Long
 
     @Query("SELECT COUNT(cr) > 0 FROM CouponRecord cr WHERE cr.coupon.id = :couponId AND cr.member.email = :email")
     boolean existsByCouponIdAndMemberEmail(@Param("couponId") Long couponId, @Param("email") String email);
+
+    @Query("SELECT COUNT(cr) > 0 FROM CouponRecord cr WHERE cr.coupon.id = :couponId")
+    boolean existsByCouponId(@Param("couponId") Long couponId);
 }

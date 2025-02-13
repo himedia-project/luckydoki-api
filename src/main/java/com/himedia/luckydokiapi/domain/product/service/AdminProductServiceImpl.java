@@ -4,6 +4,8 @@ import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
+import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
+import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.himedia.luckydokiapi.domain.product.repository.*;
 import com.himedia.luckydokiapi.domain.review.dto.ReviewRequestDTO;
 import com.himedia.luckydokiapi.domain.review.service.ReviewService;
@@ -22,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.himedia.luckydokiapi.domain.product.enums.ProductBest.N;
+import static com.himedia.luckydokiapi.domain.product.enums.ProductBest.Y;
 
 
 @Slf4j
@@ -90,7 +94,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         log.info("product result: {}", result);
 
         // 카테고리 처리
-        if(dto.getCategoryId() != null) {
+        if (dto.getCategoryId() != null) {
             categoryBridgeRepository.save(CategoryBridge.from(category, result));
         }
 
@@ -201,13 +205,38 @@ public class AdminProductServiceImpl implements AdminProductService {
         // 해당 참조한 태그 삭제
         List<ProductTag> productTags = product.getProductTagList();
         log.info("productTags: {}", productTags);
-        if(productTags != null && !productTags.isEmpty()) {
+        if (productTags != null && !productTags.isEmpty()) {
             // deleteAll && clear 모두 해야 삭제된다.
             productTagRepository.deleteAll(productTags);
             product.clearTagList();
         }
 
         productRepository.modifyDeleteFlag(product.getId());
+    }
+
+
+    @Override
+    public void modifyProductBest(List<Long> modifyProductIdList) {
+        List<Product> idList = productRepository.findByIdList(modifyProductIdList);
+        idList.forEach(this::changeEnumBest);
+    }
+
+
+    @Override
+    public void modifyProductIsNew(List<Long> modifyProductIdList) {
+        List<Product> idList = productRepository.findByIdList(modifyProductIdList);
+        idList.forEach(this::changeEnumIsNew);
+    }
+
+//enums 값 변경
+
+    public void changeEnumBest(Product product) {
+        product.changeBest(product.getBest().equals(Y) ? N : Y);
+    }
+
+
+    public void changeEnumIsNew(Product product) {
+product.changeIsNew(product.getIsNew().equals(ProductIsNew.Y)?ProductIsNew.N:ProductIsNew.Y);
     }
 
     /**

@@ -5,16 +5,19 @@ import com.himedia.luckydokiapi.domain.cart.dto.CartItemDTO;
 import com.himedia.luckydokiapi.domain.cart.repository.CartItemRepository;
 import com.himedia.luckydokiapi.domain.cart.service.CartService;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
-import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
+import com.himedia.luckydokiapi.domain.member.service.MemberService;
+import com.himedia.luckydokiapi.domain.order.controllor.AdminOrderController;
 import com.himedia.luckydokiapi.domain.order.dto.OrderHistDTO;
 import com.himedia.luckydokiapi.domain.order.entity.Order;
 import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
 import com.himedia.luckydokiapi.domain.order.repository.OrderRepository;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +32,37 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final CartItemRepository cartItemRepository;
     private final CartService cartService;
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public PageResponseDTO<OrderHistDTO> list(AdminOrderController.OrderHisRequestDTO requestDTO) {
+        log.info("list..............");
+
+        Page<Order> result = orderRepository.findListBy(requestDTO);
+
+        List<OrderHistDTO> dtoList = new ArrayList<>();
+
+        for (Order order : result) {
+            OrderHistDTO orderHistDTO = this.createOrderHistDTO(order);
+            dtoList.add(orderHistDTO);
+        }
+
+        return PageResponseDTO.<OrderHistDTO>withAll()
+                .dtoList(dtoList)
+                .totalCount(result.getTotalElements())
+                .pageRequestDTO(requestDTO)
+                .build();
+    }
+
 
     @Override
     public Long order(List<CartItemDTO> cartItemDTOs, String email) {
         // 회원 정보 조회
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("해당 회원이 없습니다. email: " + email));
+        Member member = memberService.getEntity(email);
 
         List<OrderItem> orderItemList = new ArrayList<>();
 
@@ -81,8 +106,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void validateOrder(Long orderId, String email) {
         Order order = findOrder(orderId);
-        Member curMember = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("해당 회원이 없습니다."));
+        Member curMember = memberService.getEntity(email);
         if (!curMember.getEmail().equals(order.getMember().getEmail())) {
             throw new IllegalArgumentException("해당 주문한 고객이 아닙니다!");
         }
