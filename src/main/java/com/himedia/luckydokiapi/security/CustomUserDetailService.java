@@ -31,7 +31,6 @@ public class CustomUserDetailService implements UserDetailsService {
                 member.getPassword(),
                 member.getPhone(),
                 member.getNickName(),
-                member.getPhone(),
                 member.getMemberRoleList().stream().map(Enum::name).toList());
 
         log.info("loadUserByUsername result memberDTO: {}", memberDTO);
