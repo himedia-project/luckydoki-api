@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.product.service;
 
 import com.himedia.luckydokiapi.domain.product.dto.AdminCategoriesDTO;
 import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ChildCategoryDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Category;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
@@ -32,6 +33,21 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDTO> getParentCategories() {
         List<Category> mainCategories = categoryRepository.findMainCategories();
         return mainCategories.stream().map(this::entityToCategoriesDTO).toList();
+    }
+
+
+    /**
+     * 해당 카테고리의 하위 카테고리들을 조회
+     * @param categoryId 해당 카테고리 아이디
+     * @return 하위 카테고리 리스트
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<ChildCategoryDTO> getChildCategories(Long categoryId) {
+        return categoryRepository.findChildCategories(categoryId).stream()
+                .map(this::entityToChildCategoryDTO)
+                .toList();
+
     }
 
 

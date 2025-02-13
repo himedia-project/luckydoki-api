@@ -19,7 +19,8 @@ import java.util.List;
 public class ProductSearchDTO extends PageRequestDTO {
 //검색용 dto
     private Long id;
-    private Long categoryId;
+    private Long categoryId; // 해당 상품의 카테고리 pk
+
     private String releaseDate;
     private String searchKeyword;
     private ProductBest best;

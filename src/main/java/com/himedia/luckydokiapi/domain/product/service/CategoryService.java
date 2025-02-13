@@ -4,6 +4,7 @@ package com.himedia.luckydokiapi.domain.product.service;
 
 import com.himedia.luckydokiapi.domain.product.dto.AdminCategoriesDTO;
 import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
+import com.himedia.luckydokiapi.domain.product.dto.ChildCategoryDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Category;
 
@@ -14,6 +15,8 @@ public interface CategoryService {
 
 
     List<CategoryDTO> getParentCategories();
+
+    List<ChildCategoryDTO> getChildCategories(Long categoryId);
 
     List<CategoryDTO> getSubCategoryList(Long mainCategoryId);
 
@@ -45,4 +48,11 @@ public interface CategoryService {
         return dto;
     }
 
+    default ChildCategoryDTO entityToChildCategoryDTO(Category category) {
+        return ChildCategoryDTO.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .logo(category.getLogo())
+                .build();
+    }
 }
