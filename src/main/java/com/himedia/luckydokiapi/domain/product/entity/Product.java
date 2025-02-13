@@ -22,7 +22,10 @@ import java.util.List;
 @Entity
 @Setter
 @ToString(exclude = {"imageList", "shop", "category", "productTagList"})
-@Table(name = "product")
+@Table(name = "product", indexes = {
+    @Index(name = "idx_product_name", columnList = "name"),
+    @Index(name = "idx_product_code", columnList = "code")
+})
 public class Product extends BaseEntity {
 
     @Id
