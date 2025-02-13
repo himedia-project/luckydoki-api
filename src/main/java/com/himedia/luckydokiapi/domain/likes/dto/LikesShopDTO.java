@@ -18,4 +18,5 @@ public class LikesShopDTO {
     private String sellerEmail;
     private String sellerNickname;
     private String shopImageUrl;
+    private Boolean likes;
 }
