@@ -5,6 +5,7 @@
     import com.himedia.luckydokiapi.domain.cart.dto.CartItemDTO;
     import com.himedia.luckydokiapi.domain.order.controllor.AdminOrderController;
     import com.himedia.luckydokiapi.domain.order.dto.OrderHistDTO;
+    import com.himedia.luckydokiapi.domain.product.entity.Product;
     import com.himedia.luckydokiapi.dto.PageResponseDTO;
 
     import java.util.List;
@@ -46,4 +47,11 @@
          * @param email 회원 이메일
          */
         void cancelOrder(Long orderId, String email);
+
+        /**
+         * 상품 주문 가능 여부 확인
+         * @param product 상품
+         * @return 주문 가능 여부
+         */
+        boolean checkProductOrder(Product product);
     }

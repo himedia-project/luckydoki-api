@@ -8,6 +8,8 @@ import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.shop.dto.SellerSearchDTO;
+import com.himedia.luckydokiapi.domain.shop.dto.ShopResponseDTO;
+import com.himedia.luckydokiapi.domain.shop.dto.ShopSearchDTO;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.member.service.SellerApplicationRepository;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
@@ -36,6 +38,18 @@ public class AdminShopServiceImpl implements AdminShopService {
     private final SellerApplicationRepository sellerApplicationRepository;
     private final MemberService memberService;
     private final MemberRepository memberRepository;
+
+    @Transactional(readOnly = true)
+    @Override
+    public PageResponseDTO<ShopResponseDTO> list(ShopSearchDTO request) {
+
+        Page<Shop> result = shopRepository.findListBy(request);
+        return PageResponseDTO.<ShopResponseDTO>withAll()
+                .dtoList(result.stream().map(this::convertToDTO).toList())
+                .totalCount(result.getTotalElements())
+                .pageRequestDTO(request)
+                .build();
+    }
 
     /**
      * 셀러 신청 승인

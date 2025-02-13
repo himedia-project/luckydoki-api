@@ -67,6 +67,15 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    public void deleteByProduct(Product product) {
+        List<Review> reviews = reviewRepository.findByProductId(product.getId());
+        for (Review review : reviews) {
+            customFileUtil.deleteS3File(review.getImage());
+            reviewRepository.delete(review);
+        }
+    }
+
+    @Override
     public Long deleteReview(String email, Long reviewId) {
         Member member = this.getMember(email);
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 review 입니다"));

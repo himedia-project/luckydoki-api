@@ -57,8 +57,8 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = jwtUtil.generateToken(memberClaims, jwtProps.getAccessTokenExpirationPeriod());
         String refreshToken = jwtUtil.generateToken(memberClaims, jwtProps.getRefreshTokenExpirationPeriod());
 
-        memberClaims.put("access_token", accessToken);
-        memberClaims.put("refresh_token", refreshToken);
+        memberClaims.put("accessToken", accessToken);
+        memberClaims.put("refreshToken", refreshToken);
 
         return memberClaims;
     }

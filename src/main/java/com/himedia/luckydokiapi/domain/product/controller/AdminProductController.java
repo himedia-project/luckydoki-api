@@ -12,7 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+
 
 @Slf4j
 @RestController
@@ -60,7 +60,7 @@ public class AdminProductController {
     public ResponseEntity<String> remove(@PathVariable Long id) {
         log.info("remove id: {}", id);
         productService.remove(id);
-        return ResponseEntity.ok("success");
+        return ResponseEntity.ok("delete success productId: " + id);
     }
 
 

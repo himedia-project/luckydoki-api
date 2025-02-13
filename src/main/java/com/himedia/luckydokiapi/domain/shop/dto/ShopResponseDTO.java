@@ -1,10 +1,6 @@
 package com.himedia.luckydokiapi.domain.shop.dto;
 
-import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
-import com.himedia.luckydokiapi.entity.BaseEntity;
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @Setter

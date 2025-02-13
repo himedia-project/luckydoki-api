@@ -1,10 +1,10 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
-import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
+import com.himedia.luckydokiapi.domain.order.service.OrderService;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
-import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
+import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.himedia.luckydokiapi.domain.product.repository.*;
 import com.himedia.luckydokiapi.domain.review.dto.ReviewRequestDTO;
@@ -45,6 +45,7 @@ public class AdminProductServiceImpl implements AdminProductService {
 
     private final ProductService productService;
     private final ReviewService reviewService;
+    private final OrderService orderService;
 
 
     @Transactional(readOnly = true)
@@ -195,21 +196,29 @@ public class AdminProductServiceImpl implements AdminProductService {
     public void remove(Long id) {
         Product product = this.getEntity(id);
 
+        // 만약 이벤트 상품이라면 삭제 불가
+        if(product.getEvent() == ProductEvent.Y){
+            throw new IllegalStateException("이벤트 상품은 삭제할 수 없습니다.");
+        }
+
+        // 만약 주문된 이력이 있는 상품이라면 삭제 불가
+        if(orderService.checkProductOrder(product)){
+            throw new IllegalStateException("주문된 상품은 삭제할 수 없습니다.");
+        }
+
         // 파일 삭제
         fileUtil.deleteS3Files(product.getImageList().stream()
                 .map(ProductImage::getImageName)
                 .collect(Collectors.toList()));
 
-        // 파일 삭제
+        // 이미지 삭제
         product.clearImageList();
+        // 해당 참조한 카테고리 삭제
+        categoryBridgeRepository.deleteByProduct(product);
         // 해당 참조한 태그 삭제
-        List<ProductTag> productTags = product.getProductTagList();
-        log.info("productTags: {}", productTags);
-        if (productTags != null && !productTags.isEmpty()) {
-            // deleteAll && clear 모두 해야 삭제된다.
-            productTagRepository.deleteAll(productTags);
-            product.clearTagList();
-        }
+        productTagRepository.deleteByProduct(product);
+        // 해당 참조한 리뷰 삭제
+        reviewService.deleteByProduct(product);
 
         productRepository.modifyDeleteFlag(product.getId());
     }

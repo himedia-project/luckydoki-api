@@ -53,6 +53,7 @@ public interface CategoryService {
                 .id(category.getId())
                 .name(category.getName())
                 .logo(category.getLogo())
+                .lastType(category.getLastType())
                 .build();
     }
 }

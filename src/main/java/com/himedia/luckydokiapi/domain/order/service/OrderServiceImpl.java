@@ -10,6 +10,7 @@ import com.himedia.luckydokiapi.domain.order.controllor.AdminOrderController;
 import com.himedia.luckydokiapi.domain.order.dto.OrderHistDTO;
 import com.himedia.luckydokiapi.domain.order.entity.Order;
 import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
+import com.himedia.luckydokiapi.domain.order.repository.OrderItemRepository;
 import com.himedia.luckydokiapi.domain.order.repository.OrderRepository;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
@@ -31,6 +32,8 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
+
     private final ProductRepository productRepository;
     private final MemberService memberService;
     private final CartItemRepository cartItemRepository;
@@ -116,6 +119,11 @@ public class OrderServiceImpl implements OrderService {
     public void cancelOrder(Long orderId, String email) {
         Order order = findOrder(orderId);
         order.cancelOrder(); // 주문 취소
+    }
+
+    @Override
+    public boolean checkProductOrder(Product product) {
+        return orderItemRepository.existByProduct(product);
     }
 
     // 주문 조회

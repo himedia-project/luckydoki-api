@@ -4,11 +4,16 @@ import com.himedia.luckydokiapi.domain.member.dto.SellerResponseDTO;
 import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.shop.dto.SellerSearchDTO;
+import com.himedia.luckydokiapi.domain.shop.dto.ShopResponseDTO;
+import com.himedia.luckydokiapi.domain.shop.dto.ShopSearchDTO;
+import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 
 import java.util.List;
 
 public interface AdminShopService {
+
+    PageResponseDTO<ShopResponseDTO> list(ShopSearchDTO request);
 
     Long approveSeller(Long applicationId);
 
@@ -28,5 +33,17 @@ public interface AdminShopService {
                 .requestAt(application.getCreatedAt())
                 .build();
     }
+
+
+    default ShopResponseDTO convertToDTO(Shop shop) {
+        return ShopResponseDTO.builder()
+                .id(shop.getId())
+                .email(shop.getMember().getEmail())
+                .nickName(shop.getMember().getNickName())
+                .image(shop.getImage())
+                .introduction(shop.getIntroduction())
+                .build();
+    }
+
 
 }

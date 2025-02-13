@@ -32,6 +32,8 @@ public interface ReviewService {
 
     void createReview(String email, ReviewRequestDTO reviewRequestDTO);
 
+    void deleteByProduct(Product product);
+
 
     default Review dtoToEntity(ReviewRequestDTO reviewRequestDTO, Member member, Shop shop, Product product, String image) {
         Review review = Review.builder()
@@ -46,6 +48,4 @@ public interface ReviewService {
     }
 
     Long deleteReview(String email, Long reviewId);
-
-
 }
