@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Component
@@ -120,8 +121,8 @@ public class JWTCheckFilter extends OncePerRequestFilter {
                 request.getServletPath().startsWith("/api/product/list")
                         || (request.getServletPath().startsWith("/api/product/") && request.getServletPath().endsWith("/detail"))
                         || (request.getServletPath().startsWith("/api/product/") && request.getServletPath().endsWith("/tag/list"))
-                        || (request.getServletPath().startsWith("/api/review/") && request.getServletPath().endsWith("/{productId}"))
-
+                        //리뷰 관련 api 상품 별 리뷰는 필터 안타게
+                        || request.getServletPath().matches("^/api/review/list/\\d+$")
         )) {
             filterChain.doFilter(request, response);
             return;

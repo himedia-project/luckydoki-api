@@ -82,6 +82,8 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
                         //seller api 는 seller 만 접근 가능
                         .requestMatchers(new AntPathRequestMatcher("/api/seller/**")).hasRole("SELLER")
+                        //review product 별 list 보기 허용
+                        .requestMatchers("/api/review/list/*").permitAll()
                         // WebSocket handshake만 허용 ,초기 http 연결이 필요하므로 권한 허용을 해주어야 함( 자세히 보면 엔드포인트가 다릅니다)
                         .requestMatchers("/ws-stomp/**").permitAll()
                         // 정적 리소스에 대한 접근 허용

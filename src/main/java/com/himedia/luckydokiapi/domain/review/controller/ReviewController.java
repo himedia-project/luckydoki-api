@@ -22,7 +22,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     //모든 리뷰 보기
-    @GetMapping("/{productId}")
+    @GetMapping("/list/{productId}")
     public ResponseEntity<List<ReviewResponseDTO>> getAllReviews(@PathVariable Long productId) {
         log.info("Get all reviews for {}", productId);
         List<ReviewResponseDTO> reviewDTOS = reviewService.findAll(productId);
@@ -30,7 +30,7 @@ public class ReviewController {
     }
 
     //해당 유저의 리뷰 보기(유저 마이페이지에 넣릉거면 쓰시면 됩니당)
-    @GetMapping("/member")
+    @GetMapping("/member/list")
     public ResponseEntity<List<ReviewResponseDTO>> getReviewByMember(@AuthenticationPrincipal MemberDTO memberDTO) {
         log.info("Get reviews for member {}", memberDTO.getUsername());
         List<ReviewResponseDTO> reviewDTOSMember = reviewService.getReviewByMember(memberDTO.getEmail());
