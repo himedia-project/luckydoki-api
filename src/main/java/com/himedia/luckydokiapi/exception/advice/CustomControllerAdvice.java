@@ -170,22 +170,28 @@ public class CustomControllerAdvice {
      * @return ResponseEntity
      */
     @ExceptionHandler(OrderMemberNotFoundException.class)
-    public ResponseEntity<String> handleOrderNotFoundException(OrderMemberNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("리뷰 작성은 구매한 상품만 가능합니다.");
+    public ResponseEntity<?> handleOrderNotFoundException(OrderMemberNotFoundException e) {
+        String msg = e.getMessage();
+        log.error("OrderMemberNotFoundException: {}", msg);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorMessage(msg));
     }
 
 
     @ExceptionHandler(NotAccessChatRoom.class)
     public ResponseEntity<?> NotAccessChattingRoom(NotAccessChatRoom e) {
-
-    @ExceptionHandler(ExcelFailException.class)
-    public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {
         String msg = e.getMessage();
         log.error("NotAccessChattingRoom: {}", msg);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
     }
 
 
+    @ExceptionHandler(ExcelFailException.class)
+    public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {
+        String msg = e.getMessage();
+        log.error("handleExcelFailException: {}", msg);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
+    }
 
     /**
      * 나머지 exception 서버오류 500 에러로 통일
@@ -200,18 +206,6 @@ public class CustomControllerAdvice {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(getErrorMessage(e.getMessage()));
     }
-
-
-
-    @ExceptionHandler(ExcelFailException.class)
-    public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {
-        String msg = e.getMessage();
-        log.error("handleExcelFailException: {}", msg);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
-    }
-
-
 
     private static Map<String, String> getErrorMessage(String msg) {
         return Map.of("errMsg", msg);

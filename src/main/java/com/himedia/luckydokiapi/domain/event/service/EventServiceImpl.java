@@ -2,8 +2,10 @@ package com.himedia.luckydokiapi.domain.event.service;
 
 import com.himedia.luckydokiapi.domain.event.dto.EventDto;
 import com.himedia.luckydokiapi.domain.event.dto.EventRequestDto;
+import com.himedia.luckydokiapi.domain.event.dto.EventSearchDto;
 import com.himedia.luckydokiapi.domain.event.entity.Event;
 import com.himedia.luckydokiapi.domain.event.repository.EventRepository;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.exception.EventNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -87,8 +89,13 @@ public class EventServiceImpl implements EventService {
 		}
 		eventRepository.deleteById(id);
 	}
-	
-	private EventDto convertToDto(Event event) {
+
+    @Override
+    public PageResponseDTO<EventDto> getEvents(EventSearchDto requestDto) {
+        return null;
+    }
+
+    private EventDto convertToDto(Event event) {
 		return EventDto.builder()
 				.id(event.getId())
 				.title(event.getTitle())

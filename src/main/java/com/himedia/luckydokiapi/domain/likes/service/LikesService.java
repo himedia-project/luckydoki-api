@@ -31,6 +31,7 @@ public interface LikesService {
                 .email(productLike.getMember().getEmail())
                 .productName(productLike.getProduct().getName())
                 .productCode(productLike.getProduct().getCode())
+                .discountRate(product.getDiscountRate())
                 .price(productLike.getProduct().getPrice())
                 .discountPrice(productLike.getProduct().getDiscountPrice())
                 .likesCount(product.productLikesCount(productLike))

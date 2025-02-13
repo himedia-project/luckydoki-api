@@ -11,7 +11,7 @@ public interface EventService {
 	List<EventDto> getAllEvents();
 	List<EventDto> getActiveEvents();
 	EventDto getEventById(Long id);
-	Long createEvent(EventRequestDto eventRequestDto);
+	EventDto createEvent(EventRequestDto eventRequestDto);
 	EventDto updateEvent(Long id, EventRequestDto eventRequestDto);
 	void deleteEvent(Long id);
 
