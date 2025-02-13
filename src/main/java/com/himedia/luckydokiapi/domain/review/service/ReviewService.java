@@ -17,14 +17,14 @@ public interface ReviewService {
     default ReviewResponseDTO entityToDTO(Review review) {
 
         ReviewResponseDTO reviewResponseDTO = ReviewResponseDTO.builder()
-                .id(review.getId())
-                .email(review.getMember().getEmail())
+                .memberNickname(review.getMember().getNickName())
                 .rating(review.getRating())
                 .content(review.getContent())
                 .shopId(review.getShop().getId())
                 .productId(review.getProduct().getId())
                 .productName(review.getProduct().getName())
                 .imageName(review.getImage())
+                .createdAt(review.getCreatedAt())
                 .build();
         return reviewResponseDTO;
 
