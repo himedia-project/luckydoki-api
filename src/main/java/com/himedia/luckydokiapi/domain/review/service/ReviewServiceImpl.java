@@ -55,12 +55,13 @@ public class ReviewServiceImpl implements ReviewService {
         Member member = this.getMember(email);
         Product product = this.getProduct(reviewRequestDTO.getProductId());
         Shop shop = product.getShop();
-        Review review = dtoToEntity(reviewRequestDTO, member, shop, product);
+
         // 만약 리뷰 이미지가 있으면 s3에 업로드
-        if(reviewRequestDTO.getImage() != null) {
-            String reviewImage = customFileUtil.uploadS3File(reviewRequestDTO.getImage());
-            review.addImage(reviewImage);
+        String reviewImage = null;
+        if (reviewRequestDTO.getImage() != null && !reviewRequestDTO.getImage().isEmpty()) {
+            reviewImage = customFileUtil.uploadS3File(reviewRequestDTO.getImage());
         }
+        Review review = dtoToEntity(reviewRequestDTO, member, shop, product, reviewImage);
         reviewRepository.save(review);
 
     }

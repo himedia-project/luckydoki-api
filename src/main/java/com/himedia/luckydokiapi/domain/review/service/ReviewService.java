@@ -24,7 +24,7 @@ public interface ReviewService {
                 .shopId(review.getShop().getId())
                 .productId(review.getProduct().getId())
                 .productName(review.getProduct().getName())
-                .imageUrl(review.getImage())
+                .imageName(review.getImage())
                 .build();
         return reviewResponseDTO;
 
@@ -33,13 +33,14 @@ public interface ReviewService {
     void createReview(String email, ReviewRequestDTO reviewRequestDTO);
 
 
-    default Review dtoToEntity(ReviewRequestDTO reviewRequestDTO, Member member, Shop shop, Product product) {
+    default Review dtoToEntity(ReviewRequestDTO reviewRequestDTO, Member member, Shop shop, Product product, String image) {
         Review review = Review.builder()
                 .rating(reviewRequestDTO.getRating())
                 .content(reviewRequestDTO.getContent())
                 .shop(shop)
                 .member(member)
                 .product(product)
+                .image(image != null && !image.isEmpty() ? image : null)
                 .build();
         return review;
     }
