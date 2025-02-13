@@ -3,11 +3,20 @@
 
 
     import com.himedia.luckydokiapi.domain.cart.dto.CartItemDTO;
+    import com.himedia.luckydokiapi.domain.order.controllor.AdminOrderController;
     import com.himedia.luckydokiapi.domain.order.dto.OrderHistDTO;
+    import com.himedia.luckydokiapi.dto.PageResponseDTO;
 
     import java.util.List;
 
     public interface OrderService {
+
+        /**
+         * 주문 내역 조회
+         * @param orderHisRequestDTO 주문 내역 조회 요청 DTO
+         * @return 주문 내역 목록
+         */
+        PageResponseDTO<OrderHistDTO> list(AdminOrderController.OrderHisRequestDTO orderHisRequestDTO);
 
         /**
          * 주문 처리

@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder // 빌더 패턴 사용
 @Entity
+@ToString(exclude = {"member", "orderItems"})
 @Table(name = "orders")
 public class Order {
     @Id

@@ -1,0 +1,10 @@
+package com.himedia.luckydokiapi.domain.order.repository.querydsl;
+
+import com.himedia.luckydokiapi.domain.order.controllor.AdminOrderController;
+import com.himedia.luckydokiapi.domain.order.entity.Order;
+import org.springframework.data.domain.Page;
+
+public interface OrderRepositoryCustom {
+
+    Page<Order> findListBy(AdminOrderController.OrderHisRequestDTO requestDTO);
+}
