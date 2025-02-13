@@ -19,8 +19,7 @@ public class ShopResponseDTO {
     private String email;         // 샵 주인의 이메일
     private String nickName;      // 샵 주인의 닉네임
 
-    // 상품 리스트
-    private List<ProductDTO.Response> productList;
+
 
 
 }

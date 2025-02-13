@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.shop.controller;
 
+import com.himedia.luckydokiapi.domain.shop.dto.ShopProductResponseDTO;
 import com.himedia.luckydokiapi.domain.shop.dto.ShopResponseDTO;
 import com.himedia.luckydokiapi.domain.shop.service.ShopService;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,18 @@ public class ShopController {
 
     private final ShopService shopService;
 
-    // 특정 샵(셀러) 조회 API (shopId 기준)
+    // 특정 샵(셀러) 정보 조회 API
     @GetMapping("/{shopId}")
     public ResponseEntity<ShopResponseDTO> findById(@PathVariable Long shopId) {
         log.info("shopId: {}", shopId);
         return ResponseEntity.ok(shopService.getShopProfileById(shopId));
     }
+
+    // 특정 샵(셀러)의 상품 리스트 조회 API
+    @GetMapping("/{shopId}/products")
+    public ResponseEntity<ShopProductResponseDTO> findShopProducts(@PathVariable Long shopId) {
+        log.info("shopId: {}", shopId);
+        return ResponseEntity.ok(shopService.getShopProducts(shopId));
+    }
 }
+
