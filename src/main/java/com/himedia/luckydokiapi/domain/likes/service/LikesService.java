@@ -31,7 +31,12 @@ public interface LikesService {
                 .email(productLike.getMember().getEmail())
                 .productName(productLike.getProduct().getName())
                 .productCode(productLike.getProduct().getCode())
+                .price(productLike.getProduct().getPrice())
+                .discountPrice(productLike.getProduct().getDiscountPrice())
                 .likesCount(product.productLikesCount(productLike))
+                .isNew(product.getIsNew())
+                .best(product.getBest())
+                .event(product.getEvent())
                 .productImageUrl(fileNameList.get(0))
                 .build();
         return likesProductDTO;
@@ -42,13 +47,13 @@ public interface LikesService {
     List<LikesShopDTO> getShopLikesByMember(String email);
 
     default LikesShopDTO EntityToDTOShop(ShopLike shopLike) {
-        Shop shop = shopLike.getShop();
         LikesShopDTO likesShopDTO = LikesShopDTO.builder()
                 .id(shopLike.getId())
                 .email(shopLike.getMember().getEmail())
                 .shopId(shopLike.getShop().getId())
+                .shopImageUrl(shopLike.getShop().getImage())
+                .sellerNickname(shopLike.getShop().getMember().getNickName())
                 .sellerEmail(shopLike.getShop().getMember().getEmail())
-                .likesCount(shop.shopLikesCount(shopLike))
                 .build();
         return likesShopDTO;
 

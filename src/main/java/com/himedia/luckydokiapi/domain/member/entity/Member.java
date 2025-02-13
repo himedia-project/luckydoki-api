@@ -1,7 +1,7 @@
 package com.himedia.luckydokiapi.domain.member.entity;
 
 
-import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
+//import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.PushActive;
@@ -55,13 +55,13 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<MemberRole> memberRoleList = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
-    private List<ChatRoom> sellerChatRooms = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL)
-    private List<ChatRoom> buyerChatRooms = new ArrayList<>();
+//    @Builder.Default
+//    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
+//    private List<ChatRoom> sellerChatRooms = new ArrayList<>();
+//
+//    @Builder.Default
+//    @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL)
+//    private List<ChatRoom> buyerChatRooms = new ArrayList<>();
 
     public void addRole(MemberRole memberRole) {
         memberRoleList.add(memberRole);

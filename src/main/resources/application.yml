@@ -81,11 +81,11 @@ spring:
     username: luckydoki
     password: luckydoki
 
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      database: chatdb
+#  data:
+#    mongodb:
+#      host: localhost
+#      port: 27017
+#      database: chatdb
 
 app:
   props:
@@ -141,15 +141,15 @@ logging:
 
 ---
 
-spring:
-  config:
-    activate:
-      on-profile: docker
-  data:
-    mongodb:
-      host: mongodb
-      port: 27017
-      database: chatdb
-      username: luckydoki
-      password: luckydoki
-      authentication-database: admin
+#spring:
+#  config:
+#    activate:
+#      on-profile: docker
+#  data:
+#    mongodb:
+#      host: mongodb
+#      port: 27017
+#      database: chatdb
+#      username: luckydoki
+#      password: luckydoki
+#      authentication-database: admin

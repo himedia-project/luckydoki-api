@@ -16,5 +16,6 @@ public class LikesShopDTO {
     private String email;
     private Long shopId;
     private String sellerEmail;
-    private Integer likesCount;
+    private String sellerNickname;
+    private String shopImageUrl;
 }
