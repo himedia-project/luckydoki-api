@@ -8,7 +8,6 @@ import com.himedia.luckydokiapi.security.MemberDTO;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -36,14 +35,14 @@ public class CommunityController {
         return ResponseEntity.ok(communityService.getAllCommunities(requestDTO));
     }
 
-//    @PostMapping("/post")
-//    public ResponseEntity<CommunityResponseDTO> postCommunity(
-//            @AuthenticationPrincipal MemberDTO memberDTO,
-//            @RequestBody CommunityRequestDTO requestDTO) {
-//
-//        log.info("postCommunity: {}", requestDTO);
-//        return ResponseEntity.ok(communityService.postCommunity(memberDTO.getEmail(), requestDTO));
-//    }
+    @PostMapping("/post")
+    public ResponseEntity<CommunityResponseDTO> postCommunity(
+            @AuthenticationPrincipal MemberDTO memberDTO,
+            @RequestBody CommunityRequestDTO requestDTO) {
+
+        log.info("postCommunity: {}", requestDTO);
+        return ResponseEntity.ok(communityService.postCommunity(memberDTO.getEmail(), requestDTO));
+    }
 
 //    @PutMapping("/{id}")
 //    public ResponseEntity<CommunityResponseDTO> updateCommunity(

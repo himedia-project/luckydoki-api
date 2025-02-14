@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.shop.service;
 
+import com.himedia.luckydokiapi.domain.likes.repository.ProductLikeRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.shop.dto.ShopProductResponseDTO;
 import com.himedia.luckydokiapi.domain.shop.dto.ShopResponseDTO;
@@ -13,36 +14,39 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 
-    @Service
-    @RequiredArgsConstructor
-    public class ShopServiceImpl implements ShopService {
+@Service
+@RequiredArgsConstructor
+public class ShopServiceImpl implements ShopService {
 
-        private final ShopRepository shopRepository;
-
-        @Override
-        @Transactional(readOnly = true)
-        public ShopResponseDTO getShopProfileById(Long shopId) {
-            Shop shop = shopRepository.findByIdWithProducts(shopId)
-                    .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 샵이 존재하지 않습니다: " + shopId));
+    private final ShopRepository shopRepository;
+    private final ProductLikeRepository productLikeRepository;
 
 
-            return ShopResponseDTO.builder()
-                    .id(shop.getId())
-                    .image(shop.getImage()) // S3 저장된 샵 이미지
-                    .introduction(shop.getIntroduction()) // 샵 소개글
-                    .email(shop.getMember().getEmail())
-                    .nickName(shop.getMember().getNickName())
-                    .build();
-        }
+    @Override
+    @Transactional(readOnly = true)
+    public ShopResponseDTO getShopProfileById(Long shopId) {
+        Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 샵이 존재하지 않습니다: " + shopId));
 
-        @Override
-        @Transactional(readOnly = true)
-        public ShopProductResponseDTO getShopProducts(Long shopId) {
-            Shop shop = shopRepository.findByIdWithProducts(shopId)
-                    .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 샵이 존재하지 않습니다: " + shopId));
+        return ShopResponseDTO.builder()
+                .id(shop.getId())
+                .image(shop.getImage())
+                .introduction(shop.getIntroduction())
+                .email(shop.getMember().getEmail())
+                .nickName(shop.getMember().getNickName())
+                .build();
+    }
 
-            List<ProductDTO.Response> productDTOList = shop.getProductList().stream()
-                    .map(product -> ProductDTO.Response.builder()
+    @Override
+    @Transactional(readOnly = true)
+    public ShopProductResponseDTO getShopProducts(Long shopId, String email) {
+        Shop shop = shopRepository.findByIdWithProducts(shopId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 샵이 존재하지 않습니다: " + shopId));
+
+        List<ProductDTO.Response> productDTOList = shop.getProductList().stream()
+                .map(product -> {
+                    boolean isLiked = (email != null) && productLikeRepository.existsByMember_EmailAndProduct_Id(email, product.getId());
+
+                    return ProductDTO.Response.builder()
                             .id(product.getId())
                             .code(product.getCode())
                             .categoryId(product.getCategory().getId())
@@ -65,16 +69,18 @@ import java.util.List;
                             .tagStrList(product.getProductTagList().stream().map(tag -> tag.getTag().getName()).toList())
                             .createdAt(product.getCreatedAt())
                             .modifiedAt(product.getModifiedAt())
-                            .build()
-                    ).toList();
+                            .isLiked(isLiked)
+                            .build();
+                }).toList();
 
-            return ShopProductResponseDTO.builder()
-                    .shopId(shop.getId())
-                    .shopName(shop.getMember().getNickName())
-                    .productList(productDTOList)
-                    .build();
-        }
-
-
-
+        return ShopProductResponseDTO.builder()
+                .shopId(shop.getId())
+                .shopName(shop.getMember().getNickName())
+                .productList(productDTOList)
+                .build();
     }
+}
+
+
+
+

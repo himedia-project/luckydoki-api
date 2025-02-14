@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/shop")
 @Slf4j
@@ -23,11 +25,13 @@ public class ShopController {
         return ResponseEntity.ok(shopService.getShopProfileById(shopId));
     }
 
-    // 특정 샵(셀러)의 상품 리스트 조회 API
     @GetMapping("/{shopId}/product/list")
-    public ResponseEntity<ShopProductResponseDTO> findShopProducts(@PathVariable Long shopId) {
-        log.info("shopId: {}", shopId);
-        return ResponseEntity.ok(shopService.getShopProducts(shopId));
+    public ResponseEntity<ShopProductResponseDTO> findShopProducts(
+            @PathVariable Long shopId,
+            @RequestParam(value = "email", required = false) Optional<String> email) { // Optional 처리
+
+        log.info("shopId: {}, email: {}", shopId, email.orElse("Guest"));
+        return ResponseEntity.ok(shopService.getShopProducts(shopId, email.orElse(null))); // Optional을 null 처리
     }
 }
 

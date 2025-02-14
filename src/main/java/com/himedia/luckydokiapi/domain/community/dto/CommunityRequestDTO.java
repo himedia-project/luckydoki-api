@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,4 +28,8 @@ public class CommunityRequestDTO {
 
     @Builder.Default
     private List<Long> productIds = new ArrayList<>();
+
+    @Builder.Default
+    private List<MultipartFile> files = new ArrayList<>();
+
 }

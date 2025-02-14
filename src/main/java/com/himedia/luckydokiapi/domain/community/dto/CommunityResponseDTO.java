@@ -3,7 +3,6 @@ package com.himedia.luckydokiapi.domain.community.dto;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.community.entity.CommunityImage;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -21,6 +20,7 @@ public class CommunityResponseDTO {
     private String title;
     private String content;
     private List<String> uploadFileNames;
+    private List<Long> productIds;
     private LocalDateTime createdAt;
 
     public CommunityResponseDTO(Community community) {
@@ -32,5 +32,14 @@ public class CommunityResponseDTO {
         this.uploadFileNames = community.getImageList().stream()
                 .map(CommunityImage::getImageName)
                 .toList();
+
+        this.productIds =
+                community.getCommunityProductList().stream()
+                        .map(communityProduct -> communityProduct.getProduct().getId())
+                        .toList();
+
+
     }
+
+
 }

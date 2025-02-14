@@ -1,12 +1,15 @@
 package com.himedia.luckydokiapi.domain.community.service;
 
+import com.himedia.luckydokiapi.domain.community.dto.CommunityRequestDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.community.entity.CommunityImage;
+import com.himedia.luckydokiapi.domain.community.entity.CommunityProduct;
 import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
+import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,7 +29,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final CommunityRepository communityRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
-    private final CustomFileUtil fileUtil;
+    private final CustomFileUtil customFileUtil;
 
     @Transactional(readOnly = true)
     @Override
@@ -35,6 +38,7 @@ public class CommunityServiceImpl implements CommunityService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
         return toDTO(community);
     }
+
 
     @Transactional(readOnly = true)
     @Override
@@ -52,31 +56,33 @@ public class CommunityServiceImpl implements CommunityService {
                 .collect(Collectors.toList());
     }
 
-//    @Override
-//    public CommunityResponseDTO postCommunity(String email, CommunityRequestDTO request) {
-//        Member member = memberRepository.findByEmail(email)
-//                .orElseThrow(() -> new RuntimeException("사용자 없음"));
-//
-//        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
-//            throw new IllegalArgumentException("제목은 필수 입력 항목입니다.");
-//        }
-//        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
-//            throw new IllegalArgumentException("내용은 필수 입력 항목입니다.");
-//        }
-//
-//        Community community = Community.builder()
-//                .member(member)
-//                .title(request.getTitle())
-//                .content(request.getContent())
-//                .build();
-//
-//        // 파일 업로드
-//        List<String> uploadFileNames = fileUtil.uploadS3Files(request.getFiles());
-//        request.setUploadFileNames(uploadFileNames);
-//
-//        communityRepository.save(community);
-//        return new CommunityResponseDTO(community);
-//    }
+    @Override
+    public CommunityResponseDTO postCommunity(String email, CommunityRequestDTO request) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+
+        Community community = Community.builder()
+                .member(member)
+                .title(request.getTitle())
+                .content(request.getContent())
+                .build();
+
+        // 파일 업로드는 서비스에서 처리 (Product와 동일)
+        List<String> uploadFileNames = customFileUtil.uploadS3Files(request.getFiles());
+        request.setUploadFileNames(uploadFileNames);
+
+        if (request.getProductIds() != null && !request.getProductIds().isEmpty()) {
+            request.getProductIds().forEach(productId -> {
+                Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new RuntimeException("존재하지 않는 상품입니다."));
+                community.getCommunityProductList().add(CommunityProduct.from(community, product));
+            });
+        }
+
+        communityRepository.save(community);
+        return new CommunityResponseDTO(community);
+    }
+
 
 
 //    @Override
@@ -158,11 +164,11 @@ public class CommunityServiceImpl implements CommunityService {
             throw new IllegalArgumentException("본인의 게시글만 삭제할 수 있습니다.");
         }
 
-        // ✅ S3 파일 삭제
+        // S3 파일 삭제
         List<String> deleteImages = community.getImageList().stream()
                 .map(CommunityImage::getImageName)
                 .collect(Collectors.toList());
-        fileUtil.deleteS3Files(deleteImages);
+        customFileUtil.deleteS3Files(deleteImages);
 
         communityRepository.delete(community);
     }
