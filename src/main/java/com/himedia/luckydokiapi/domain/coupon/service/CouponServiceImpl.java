@@ -147,7 +147,7 @@ public class CouponServiceImpl implements CouponService {
 	 * @param couponId 쿠폰 ID
 	 * @return 쿠폰
 	 */
-	private Coupon getCoupon(Long couponId) {
+	public Coupon getCoupon(Long couponId) {
 		return couponRepository.findById(couponId)
 				.orElseThrow(() -> new EntityNotFoundException("Coupon not found with id: " + couponId));
 	}

@@ -36,7 +36,7 @@ public class OrderController {
     ) {
         log.info("order orderDTO: {}", orderDTO);
         log.info("order memberDTO: {}", memberDTO);
-        Long orderId = orderService.order(orderDTO.getCartItems(), memberDTO.getEmail());
+        Long orderId = orderService.order(orderDTO.getCouponId(), orderDTO.getCartItems(), memberDTO.getEmail());
         return ResponseEntity.ok("success order id: " + orderId);
     }
 

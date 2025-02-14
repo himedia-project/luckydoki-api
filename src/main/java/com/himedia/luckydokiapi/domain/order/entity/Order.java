@@ -62,7 +62,6 @@ public class Order {
                 .build();
 
         orderItems.forEach(order::addOrderItem);
-        order.totalPrice = order.getCalcTotalPrice();
 
         return order;
     }
@@ -89,5 +88,9 @@ public class Order {
         String timestamp = sdf.format(new Date());
         long count = new AtomicLong(0).incrementAndGet();
         return String.format("%s%04d", timestamp, count);
+    }
+
+    public void changeTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

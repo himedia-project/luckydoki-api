@@ -4,6 +4,7 @@ import com.himedia.luckydokiapi.domain.coupon.dto.CouponRecordResponseDTO;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRecordSearchDTO;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRequestDto;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
+import com.himedia.luckydokiapi.domain.coupon.entity.Coupon;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface CouponService {
 	PageResponseDTO<CouponRecordResponseDTO> getCouponRecords(CouponRecordSearchDTO requestDto);
 
 	void issueCoupon(Long couponId, List<String> memberEmails);
+
+	Coupon getCoupon(Long couponId);
 }

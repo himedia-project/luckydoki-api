@@ -15,5 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDTO {
+
+    private Long couponId; // 쿠폰 적용 후, 쿠폰 번호
     private List<@Valid CartItemDTO> cartItems; // 장바구니 상품 목록 (수량 필드 없음)
 }

@@ -25,7 +25,7 @@
          * @param email 회원 이메일
          * @return 주문 ID
          */
-        Long order(List<CartItemDTO> cartItemDTOs, String email);
+        Long order(Long couponId, List<CartItemDTO> cartItemDTOs, String email);
 
         /**
          * 주문 내역 조회
