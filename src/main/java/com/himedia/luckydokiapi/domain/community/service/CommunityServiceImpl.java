@@ -8,6 +8,7 @@ import com.himedia.luckydokiapi.domain.community.entity.CommunityImage;
 import com.himedia.luckydokiapi.domain.community.entity.CommunityProduct;
 import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
@@ -65,38 +66,52 @@ public class CommunityServiceImpl implements CommunityService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
+        // 상품을 등록하는 경우에만 셀러인지 확인
+        if (request.getProductIds() != null && !request.getProductIds().isEmpty()) {
+            if (!member.getMemberRoleList().contains(MemberRole.SELLER)) {
+                throw new IllegalArgumentException("셀러만 상품을 등록할 수 있습니다.");
+            }
+        }
+
         Community community = Community.builder()
                 .member(member)
                 .title(request.getTitle())
                 .content(request.getContent())
                 .build();
 
-        // 파일 업로드는 서비스에서 처리 (Product와 동일)
+        // 파일 업로드 (누구나 가능)
         List<String> uploadFileNames = customFileUtil.uploadS3Files(request.getFiles());
         request.setUploadFileNames(uploadFileNames);
-
 
         List<CommunityImage> imageList = uploadFileNames.stream()
                 .map(fileName -> CommunityImage.builder()
                         .imageName(fileName)
-                        .ord(null) // 순서 필요 시 추가
+                        .ord(null)
                         .build())
                 .toList();
 
-        // 커뮤니티 객체에 이미지 리스트 추가
         community.setImageList(imageList);
 
+        // 사용자가 등록한 상품만 추가할 수 있도록 검증
         if (request.getProductIds() != null && !request.getProductIds().isEmpty()) {
-            request.getProductIds().forEach(productId -> {
-                Product product = productRepository.findById(productId)
-                        .orElseThrow(() -> new RuntimeException("존재하지 않는 상품입니다."));
-                community.getCommunityProductList().add(CommunityProduct.from(community, product));
-            });
+            List<Product> validProducts = productRepository.findProductByShopMemberEmail(email).stream()
+                    .filter(product -> request.getProductIds().contains(product.getId()))
+                    .toList();
+
+            if (validProducts.size() != request.getProductIds().size()) {
+                throw new IllegalArgumentException("본인이 등록한 상품만 올릴 수 있습니다.");
+            }
+
+            validProducts.forEach(product ->
+                    community.getCommunityProductList().add(CommunityProduct.from(community, product))
+            );
         }
 
         communityRepository.save(community);
         return CommunityResponseDTO.from(community);
     }
+
+
 
 
 
