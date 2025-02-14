@@ -43,7 +43,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .selectFrom(order)
                 .leftJoin(order.orderItems, orderItem)
                 .where(
-                        getSearchTermContains(requestDTO.getSearchKeyword()),
+                        containsSearchKeyword(requestDTO.getSearchKeyword()),
                         getEqOrderDateOfYear(requestDTO.getYear())
                 )
                 .limit(pageable.getPageSize())
@@ -55,7 +55,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .selectFrom(order)
                 .leftJoin(order.orderItems, orderItem)
                 .where(
-                        getSearchTermContains(requestDTO.getSearchKeyword()),
+                        containsSearchKeyword(requestDTO.getSearchKeyword()),
                         getEqOrderDateOfYear(requestDTO.getYear())
                 );
 
@@ -70,15 +70,13 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
      * @param searchKeyword 검색어
      * @return 검색 조건
      */
-    private BooleanExpression getSearchTermContains(String searchKeyword) {
-        if (StringUtils.hasText(searchKeyword)) {
-            // 상품명 검색
-            return order.orderItems.any().product.name.contains(searchKeyword.trim()).or(
-                    // 주문코드 검색
-                    order.code.contains(searchKeyword.trim())
-            );
+    private BooleanExpression containsSearchKeyword(String searchKeyword) {
+
+        if (searchKeyword == null || searchKeyword.isBlank()) {
+            return null;
         }
-        return null;
+        return order.code.contains(searchKeyword.trim())
+                .or(order.member.email.contains(searchKeyword.trim()));
     }
 
     /**
