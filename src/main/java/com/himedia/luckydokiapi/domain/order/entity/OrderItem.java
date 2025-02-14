@@ -42,9 +42,10 @@ public class OrderItem extends BaseEntity {
      * @return OrderItem
      */
     public static OrderItem from(Product product, int count) {
+        int orderPrice = product.getPrice();
         OrderItem orderItem = new OrderItem();
         orderItem.setProduct(product);
-        orderItem.setOrderPrice(product.getPrice());
+        orderItem.setOrderPrice(orderPrice);
         orderItem.setCount(count);
 
         return orderItem;

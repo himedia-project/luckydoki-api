@@ -5,6 +5,7 @@ import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,7 +34,12 @@ public class Coupon extends BaseEntity {
     private String content;
 
     @Column(name = "discount_price")
+    @ColumnDefault("0")
     private Integer discountPrice;
+
+    @Column(name = "minimum_usage_amount")
+    @ColumnDefault("0")
+    private Integer minimumUsageAmount;        // 쿠폰 사용 최소 금액
 
     @Column(name = "start_date", nullable = false, columnDefinition = "DATE")
     private LocalDate startDate;
