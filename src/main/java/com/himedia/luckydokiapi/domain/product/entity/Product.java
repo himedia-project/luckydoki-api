@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.entity;
 
 import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
+import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
 import com.himedia.luckydokiapi.domain.product.enums.*;
 import com.himedia.luckydokiapi.domain.review.entity.Review;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
@@ -116,11 +117,14 @@ public class Product extends BaseEntity {
     @Builder.Default
     private List<Review> productReviews = new ArrayList<>();
 
-
-
     @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
     @Builder.Default
     private List<CategoryBridge> categoryBridges = new ArrayList<>();
+
+    // order item 리스트
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<OrderItem> orderItems = new ArrayList<>();
 
 
     public Integer productLikesCount(ProductLike productLike) {

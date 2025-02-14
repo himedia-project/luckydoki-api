@@ -18,5 +18,6 @@ public class CartItemDTO {
 
     @NotNull(message = "상품 번호는 필수입니다.")
     private Long productId;
+    private int count;      // 상품수량
 
 }

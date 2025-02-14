@@ -45,8 +45,8 @@ public class OrderHistDTO {
 
         // 주문 아이템을 OrderItemDTO로 변환하여 추가
         for (OrderItem item : order.getOrderItems()) {
-            String imgUrl = item.getProduct().getImageList().isEmpty() ? null : item.getProduct().getImageList().get(0).getImageName();
-            dto.addOrderItemDto(OrderItemDTO.from(item, imgUrl));
+            String image = item.getProduct().getImageList().isEmpty() ? null : item.getProduct().getImageList().get(0).getImageName();
+            dto.addOrderItemDto(OrderItemDTO.from(item, image));
         }
 
         return dto;

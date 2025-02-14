@@ -14,16 +14,18 @@ public class OrderItemDTO {
 
     private Long productId;         // 상품 번호
     private String productName;     // 상품명
+    private int count;              // 상품 수량
     private int orderPrice;         // 상품 주문 가격
-    private String imgUrl;          // 상품 이미지 URL
+    private String image;           // 상품 이미지 이름
 
     // builder
-    public static OrderItemDTO from(OrderItem orderItem, String imgUrl) {
+    public static OrderItemDTO from(OrderItem orderItem, String image) {
         return OrderItemDTO.builder()
                 .productId(orderItem.getProduct().getId())
                 .productName(orderItem.getProduct().getName())
+                .count(orderItem.getProduct().getOrderItems().size())
                 .orderPrice(orderItem.getOrderPrice())
-                .imgUrl(imgUrl)
+                .image(image)
                 .build();
     }
 }
