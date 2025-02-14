@@ -63,10 +63,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return true;
         }
 
-        // /api/category 관련 api는 필터를 타지 않도록 설정
-        if (path.startsWith("/api/category")) {
-            return true;
-        }
+
         if (path.startsWith("/api/event")) {
             return true;
         }
@@ -121,8 +118,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
                         || request.getServletPath().startsWith("/api/shop/")
                         // community 관련 api
                         || request.getServletPath().startsWith("/api/community")
-                        // comment 관련 api
-                        || request.getServletPath().startsWith("/api/community/comment")
         )) {
             filterChain.doFilter(request, response);
             return;
