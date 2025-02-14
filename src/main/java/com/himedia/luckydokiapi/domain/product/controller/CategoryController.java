@@ -4,9 +4,11 @@ package com.himedia.luckydokiapi.domain.product.controller;
 import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.service.CategoryService;
+import com.himedia.luckydokiapi.security.MemberDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,9 +46,10 @@ public class CategoryController {
 
     // 카테고리 아이디(sub , child) 로 이에 해당하는 productList 가져오기
     @GetMapping("/{categoryId}/product/list")
-    public ResponseEntity<List<ProductDTO.Response>> getProductByCategoryId(@PathVariable Long categoryId) {
-        log.info("getProductByCategoryId {}", categoryId);
-        return ResponseEntity.ok(categoryService.getProductCategoryId(categoryId));
+    public ResponseEntity<List<ProductDTO.Response>> getProductByCategoryId(@AuthenticationPrincipal MemberDTO memberDTO, @PathVariable Long categoryId) {
+        String email = (memberDTO != null) ? memberDTO.getEmail() : null;
+        log.info("getProductByCategoryId {} , memberDTO:{}", categoryId ,memberDTO);
+        return ResponseEntity.ok(categoryService.getProductCategoryId(categoryId ,email));
     }
 
 

@@ -49,10 +49,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Map<String, Object> login(String email, String password) {
         MemberDTO memberAuthDTO = (MemberDTO) userDetailService.loadUserByUsername(email);
-        log.info("로그인 dto 어쩌구 깽꺵이: " + memberAuthDTO);
+        log.info("email :{} , password :{} ", email, password);
 
         if (!passwordEncoder.matches(password, memberAuthDTO.getPassword())) {
-            throw new RuntimeException("비번틀림");
+            throw new RuntimeException("비밀번호가 틀렸습니다.");
 
         }
 
@@ -75,17 +75,17 @@ public class MemberServiceImpl implements MemberService {
                     throw new IllegalArgumentException("이미 존재하는 회원입니다!");
                 });
 
-            Member member = Member.builder()
-                    .email(request.getEmail())
-                    .nickName(request.getNickName())
-                    .birthday(request.getBirthday())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .phone(request.getPhone())
-                    .build();
+        Member member = Member.builder()
+                .email(request.getEmail())
+                .nickName(request.getNickName())
+                .birthday(request.getBirthday())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .phone(request.getPhone())
+                .build();
 
-            member.addRole(MemberRole.USER);
+        member.addRole(MemberRole.USER);
 
-            memberRepository.save(member);
+        memberRepository.save(member);
     }
 
     /**
@@ -123,7 +123,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member getEntity(String email) {
         return memberRepository.getWithRoles(email)
-                .orElseThrow(() -> new EntityNotFoundException("해당하는 회원이 없습니다. email: "+ email));
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 회원이 없습니다. email: " + email));
     }
 
     @Transactional(readOnly = true)
@@ -133,7 +133,6 @@ public class MemberServiceImpl implements MemberService {
         Shop seller = getSeller(member.getEmail());
         return entityToMemberDetailDTO(member, seller);
     }
-
 
 
     @Override
@@ -156,9 +155,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-
     /**
-     *  셀러 신청과 동시에 DB에 저장
+     * 셀러 신청과 동시에 DB에 저장
      */
     public Long upgradeToSeller(String email, SellerRequestDTO requestDTO) {
         Member member = memberRepository.findById(email)
@@ -177,7 +175,8 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         // 프로필 이미지가 있을 경우 S3에 업로드 후 URL 저장
-        if(requestDTO.getProfileImage() != null) {;
+        if (requestDTO.getProfileImage() != null) {
+            ;
             application.changeShopImage(fileUtil.uploadS3File(requestDTO.getProfileImage()));
         }
 
@@ -185,7 +184,6 @@ public class MemberServiceImpl implements MemberService {
 
         return saved.getId();
     }
-
 
 
     private Shop getSeller(String email) {
