@@ -1,6 +1,8 @@
 package com.himedia.luckydokiapi.domain.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.himedia.luckydokiapi.domain.product.entity.Product;
+import com.himedia.luckydokiapi.domain.product.entity.ProductImage;
 import com.himedia.luckydokiapi.domain.product.enums.*;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -82,5 +84,43 @@ public class ProductDTO {
         private LocalDateTime modifiedAt;
 
         private Boolean likes;
+
+        public static Response from(Product product) {
+            ProductDTO.Response productDTO = ProductDTO.Response.builder()
+                    .id(product.getId())
+                    .code(product.getCode())
+                    .nickName(product.getShop().getMember().getNickName())  // shop name으로 사용
+                    .email(product.getShop().getMember().getEmail())
+                    .categoryId(product.getCategory().getId())
+                    .categoryName(product.getCategory().getName())
+                    .name(product.getName())
+                    .price(product.getPrice())
+                    .discountPrice(product.getDiscountPrice())
+                    .discountRate(product.getDiscountRate())
+                    .description(product.getDescription())
+                    .isNew(product.getIsNew())
+                    .best(product.getBest())
+                    .event(product.getEvent())
+                    .shopId(product.getShop().getId())
+                    .shopName(product.getShop().getMember().getNickName())
+                    .shopImage(product.getShop().getMember().getProfileImage())
+                    .stockNumber(product.getStockNumber())
+                    .createdAt(product.getCreatedAt())
+                    .modifiedAt(product.getModifiedAt())
+                    .build();
+
+            List<ProductImage> imageList = product.getImageList();
+
+            if (imageList == null || imageList.isEmpty()) {
+                return productDTO;
+            }
+
+            List<String> fileNameList = imageList.stream().map(ProductImage::getImageName).toList();
+
+            productDTO.setUploadFileNames(fileNameList);
+            productDTO.setCategoryId(product.getCategory().getId());
+
+            return productDTO;
+        }
     }
 }

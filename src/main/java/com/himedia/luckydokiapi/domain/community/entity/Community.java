@@ -33,7 +33,6 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
     private String content;
 
     @ElementCollection
-    @CollectionTable(name = "community_image", joinColumns = @JoinColumn(name = "community_id"))
     @Builder.Default
     private List<CommunityImage> imageList = new ArrayList<>();
 

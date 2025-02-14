@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.member.entity;
 
 
 //import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
+import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.PushActive;
@@ -54,6 +55,11 @@ public class Member extends BaseEntity {
     @Column(name = "role") // 해당 memberRoleList 를 저장할 컬럼명을 지정
     @Builder.Default
     private List<MemberRole> memberRoleList = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Community> communityList = new ArrayList<>();
 
 //    @Builder.Default
 //    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)

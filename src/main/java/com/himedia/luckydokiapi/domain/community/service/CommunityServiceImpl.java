@@ -91,7 +91,7 @@ public class CommunityServiceImpl implements CommunityService {
         }
 
         communityRepository.save(community);
-        return new CommunityResponseDTO(community);
+        return CommunityResponseDTO.from(community);
     }
 
 

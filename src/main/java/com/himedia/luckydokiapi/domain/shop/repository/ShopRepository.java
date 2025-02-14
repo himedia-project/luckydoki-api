@@ -16,5 +16,6 @@ public interface ShopRepository extends JpaRepository<Shop, Long>
     @Query("SELECT s FROM Shop s LEFT JOIN FETCH s.productList WHERE s.id = :shopId")
     Optional<Shop> findByIdWithProducts(@Param("shopId") Long shopId);
 
-
+    @Query("SELECT s FROM Shop s LEFT JOIN s.member.communityList WHERE s.id = :shopId")
+    Optional<Shop> findByIdWithCommunities(@Param("shopId") Long shopId);
 }

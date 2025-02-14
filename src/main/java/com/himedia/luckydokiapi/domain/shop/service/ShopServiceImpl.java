@@ -1,6 +1,8 @@
 package com.himedia.luckydokiapi.domain.shop.service;
 
+import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
+import com.himedia.luckydokiapi.domain.shop.dto.ShopCommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.shop.dto.ShopResponseDTO;
 import com.himedia.luckydokiapi.domain.shop.dto.ShopProductResponseDTO;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
@@ -85,4 +87,21 @@ public class ShopServiceImpl implements ShopService {
                 .productList(productDTOList)
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ShopCommunityResponseDTO getShopCommunities(Long shopId, String email) {
+        Shop shop = shopRepository.findByIdWithCommunities(shopId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 샵이 존재하지 않습니다: " + shopId));
+//        shop.getCommunityList() -> DTO mapping
+        List<CommunityResponseDTO> communityDTOList = shop.getMember().getCommunityList().stream()
+                .map(CommunityResponseDTO::from).toList();
+
+        return ShopCommunityResponseDTO.builder()
+                .shopId(shop.getId())
+                .shopName(shop.getMember().getNickName())
+                .communityList(communityDTOList)
+                .build();
+    }
+
 }

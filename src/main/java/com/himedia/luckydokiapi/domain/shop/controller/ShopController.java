@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.shop.controller;
 
+import com.himedia.luckydokiapi.domain.shop.dto.ShopCommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.shop.dto.ShopProductResponseDTO;
 import com.himedia.luckydokiapi.domain.shop.dto.ShopResponseDTO;
 import com.himedia.luckydokiapi.domain.shop.service.ShopService;
@@ -41,6 +42,17 @@ public class ShopController {
         log.info("shopId: {}, email: {}", shopId, email);
 
         return ResponseEntity.ok(shopService.getShopProducts(shopId, email));
+    }
+
+    @GetMapping("/{shopId}/community/list")
+    public ResponseEntity<ShopCommunityResponseDTO> findShopCommunities(
+            @PathVariable Long shopId,
+            @AuthenticationPrincipal MemberDTO memberDTO) { // 현재 로그인한 사용자 정보 가져오기
+
+        String email = (memberDTO != null) ? memberDTO.getEmail() : null;
+        log.info("shopId: {}, email: {}", shopId, email);
+
+        return ResponseEntity.ok(shopService.getShopCommunities(shopId, email));
     }
 }
 
