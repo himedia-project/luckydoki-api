@@ -23,4 +23,8 @@ public interface ProductLikeRepository extends JpaRepository<ProductLike, Long> 
     List<ProductLike> findByEmail(@Param("email") String email);
 
     Integer countByProduct(Product product);
+
+    @Query("SELECT COUNT(p) > 0 FROM ProductLike p WHERE p.member.email = :email AND p.product.id = :productId")
+    boolean likes(@Param("email") String email, @Param("productId") Long productId);
+
 }

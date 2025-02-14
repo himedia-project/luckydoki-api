@@ -22,4 +22,9 @@ public interface ShopLikeRepository extends JpaRepository<ShopLike, Long> {
 
     @Query("select m from ShopLike m where m.member.email =:email")
     List<ShopLike> findByEmail(@Param("email") String email);
+
+
+    @Query("SELECT COUNT(s) > 0 FROM ShopLike s WHERE s.member.email = :email AND s.shop.id = :shopId")
+    boolean likes(@Param("email") String email, @Param("shopId") Long shopId);
+
 }
