@@ -24,6 +24,8 @@ public interface AdminMemberService {
                 .nickName(member.getNickName())
                 .phone(member.getPhone())
                 .roles(member.getMemberRoleList())
+                .active(member.getActive())
+                .pushActive(member.getPushActive())
                 .createdAt(member.getCreatedAt())
                 .modifiedAt(member.getModifiedAt())
                 .build();
