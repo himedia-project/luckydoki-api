@@ -59,7 +59,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
         // /view 이미지 불러오기 api로 시작하는 요청은 필터를 타지 않도록 설정
         if (path.startsWith("/api/image/view")
-                || path.startsWith("/api/admin/product/view") || path.startsWith("/api/product/view")) {
+        ) {
             return true;
         }
 

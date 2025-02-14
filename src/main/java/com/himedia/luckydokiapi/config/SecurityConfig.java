@@ -72,8 +72,6 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/logout")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/refresh")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/image/view/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/admin/product/view/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/admin/content/view/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/coupon")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/product/excel/download")).permitAll()
                         // health check
