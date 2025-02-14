@@ -35,7 +35,7 @@ public class ShopController {
     @GetMapping("/{shopId}/product/list")
     public ResponseEntity<ShopProductResponseDTO> findShopProducts(
             @PathVariable Long shopId,
-            @AuthenticationPrincipal MemberDTO memberDTO) { // ✅ 현재 로그인한 사용자 정보 가져오기
+            @AuthenticationPrincipal MemberDTO memberDTO) { // 현재 로그인한 사용자 정보 가져오기
 
         String email = (memberDTO != null) ? memberDTO.getEmail() : null;
         log.info("shopId: {}, email: {}", shopId, email);
