@@ -186,6 +186,12 @@ public class CustomControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
     }
 
+    @ExceptionHandler(NotSellerAccessException.class)
+    public ResponseEntity<?> NotAccessSeller(NotSellerAccessException e) {
+        String msg = e.getMessage();
+        log.error("NotSellerAccessException: {}", msg);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(getErrorMessage(msg));
+    }
 
     @ExceptionHandler(ExcelFailException.class)
     public ResponseEntity<?> handleExcelFailException(ExcelFailException e) {

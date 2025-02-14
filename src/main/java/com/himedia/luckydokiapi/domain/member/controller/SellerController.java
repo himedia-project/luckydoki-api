@@ -5,6 +5,7 @@ import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.member.dto.SellerRequestDTO;
 import com.himedia.luckydokiapi.domain.member.dto.UpdateMemberDTO;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
+import com.himedia.luckydokiapi.domain.member.service.SellerService;
 import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.service.CategoryService;
@@ -30,6 +31,7 @@ public class SellerController {
     private final MemberService memberService;
     private final ProductService productService;
     private final CategoryService categoryService;
+    private final SellerService sellerService;
 
     @GetMapping("/product/{productId}")
     public ResponseEntity<ProductDTO.Response> getProductDetail(@AuthenticationPrincipal MemberDTO memberDTO, @PathVariable Long productId) {
@@ -49,18 +51,21 @@ public class SellerController {
     @PostMapping("/product")
     public ResponseEntity<Long> createMyProduct(@AuthenticationPrincipal MemberDTO memberDTO, ProductDTO.Request dto) {
         log.info("create memberDTO: {}, productDTO: {}", memberDTO, dto);
+        sellerService.checkedSeller(memberDTO.getEmail());
         return ResponseEntity.ok(productService.createProduct(memberDTO.getEmail(), dto));
     }
 
     @PutMapping("/product/{productId}")
     public ResponseEntity<Long> modifyProduct(@AuthenticationPrincipal MemberDTO memberDTO, @PathVariable Long productId, ProductDTO.Request dto) {
         log.info("modify memberDTO: {}, productId: {}", memberDTO, productId);
+        sellerService.checkedSeller(memberDTO.getEmail());
         return ResponseEntity.ok(productService.updateProduct(memberDTO.getEmail(), dto, productId));
     }
 
     @DeleteMapping("/product/{productId}")
-    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
-        log.info("delete: {}", productId);
+    public ResponseEntity<?> deleteProduct(@AuthenticationPrincipal MemberDTO memberDTO,@PathVariable Long productId) {
+        log.info("delete: {} , memberDTO:{}", productId , memberDTO);
+        sellerService.checkedSeller(memberDTO.getEmail());
         productService.deleteProductById(productId);
         return ResponseEntity.ok().build();
     }
