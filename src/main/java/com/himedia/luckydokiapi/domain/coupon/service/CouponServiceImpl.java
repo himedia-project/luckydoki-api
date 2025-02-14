@@ -78,6 +78,7 @@ public class CouponServiceImpl implements CouponService {
                 .name(requestDto.getName())
                 .content(requestDto.getContent())
                 .discountPrice(requestDto.getDiscountPrice())
+                .minimumUsageAmount(requestDto.getMinimumUsageAmount())
                 .status(CouponStatus.ACTIVE) // ✅ 활성화 상태로 자동 설정
                 .startDate(requestDto.getStartDate()) // ✅ 현재 날짜 자동 설정
                 .endDate(requestDto.getEndDate()) // ✅ 3개월 후 자동 설정
