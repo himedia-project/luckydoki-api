@@ -54,4 +54,11 @@
          * @return 주문 가능 여부
          */
         boolean checkProductOrder(Product product);
+
+        /**
+         * 주문 상세 조회
+         * @param orderId 주문 ID
+         * @return 주문 상세 정보
+         */
+        OrderHistDTO getOne(Long orderId);
     }

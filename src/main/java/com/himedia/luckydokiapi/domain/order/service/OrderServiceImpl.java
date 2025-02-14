@@ -139,6 +139,12 @@ public class OrderServiceImpl implements OrderService {
         return orderItemRepository.existByProduct(product);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public OrderHistDTO getOne(Long orderId) {
+        return this.createOrderHistDTO(this.findOrder(orderId));
+    }
+
     // 주문 조회
     private Order findOrder(Long orderId) {
         return orderRepository.findById(orderId)

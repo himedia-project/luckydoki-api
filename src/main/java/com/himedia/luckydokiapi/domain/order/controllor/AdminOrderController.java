@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,4 +48,15 @@ public class AdminOrderController {
     }
 
 
+    /**
+     * 주문 상세보기
+     * @param orderId 주문 ID
+     */
+    @GetMapping("/{orderId}/detail")
+    public OrderHistDTO orderDetail(
+            @PathVariable Long orderId
+    ) {
+        log.info("orderDetail orderId: {}", orderId);
+        return orderService.getOne(orderId);
+    }
 }
