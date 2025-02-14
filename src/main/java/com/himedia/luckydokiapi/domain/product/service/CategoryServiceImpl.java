@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
 
+import com.himedia.luckydokiapi.domain.likes.repository.ProductLikeRepository;
 import com.himedia.luckydokiapi.domain.product.dto.AdminCategoriesDTO;
 import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ChildCategoryDTO;
@@ -25,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final ProductServiceImpl productServiceImpl;
-    ;
+    private final ProductLikeRepository productLikeRepository;
 
     //파라미터 없이 최상위 카테고리들만 조회
     @Transactional(readOnly = true)
@@ -71,9 +72,9 @@ public class CategoryServiceImpl implements CategoryService {
     //카테고리 아이디 조건식
     @Transactional(readOnly = true)
     @Override
-    public List<ProductDTO.Response> getProductCategoryId(Long categoryId) {
+    public List<ProductDTO.Response> getProductCategoryId(Long categoryId , String email) {
         List<Product> productList = productRepository.findByProductCategoryId(categoryId);
-        return productList.stream().map(product -> productServiceImpl.entityToDTO(product)).toList();
+        return productList.stream().map(product -> productServiceImpl.entityToDTO(product,productLikeRepository.likes(email, product.getId()))).toList();
     } // 람다식을 사용하여 각각의 요소들을 전달하여 하나씩 dto 로 변환 후 list 로 수집
 
 

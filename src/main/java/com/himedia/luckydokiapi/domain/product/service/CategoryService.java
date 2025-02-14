@@ -22,7 +22,7 @@ public interface CategoryService {
 
     List<CategoryDTO> getChildCategoryList(Long subCategoryId);
 
-    List<ProductDTO.Response> getProductCategoryId(Long categoryId) ;
+    List<ProductDTO.Response> getProductCategoryId(Long categoryId,String email) ;
 
 
     List<AdminCategoriesDTO> getCategory(Long categoryId);

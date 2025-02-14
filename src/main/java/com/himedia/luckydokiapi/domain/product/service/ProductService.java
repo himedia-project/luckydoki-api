@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
 
+import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
@@ -14,11 +15,11 @@ import static com.himedia.luckydokiapi.util.NumberGenerator.generateRandomNumber
 public interface ProductService {
 
 
-    ProductDTO.Response getProduct(Long id);
+    ProductDTO.Response getProduct(Long id, String email);
 
     Product getEntity(Long productId);
 
-    List<ProductDTO.Response> list(ProductSearchDTO requestDTO);
+    List<ProductDTO.Response> list(ProductSearchDTO requestDTO, String email);
 
     List<TagDTO> tagList(Long id);
 
@@ -59,7 +60,7 @@ public interface ProductService {
     }
 
 
-    default ProductDTO.Response entityToDTO(Product product) {
+    default ProductDTO.Response entityToDTO(Product product, Boolean productLike) {
         List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
                 .map(Tag::getName).toList();
         ProductDTO.Response productDTO = ProductDTO.Response.builder()
@@ -84,6 +85,7 @@ public interface ProductService {
                 .createdAt(product.getCreatedAt())
                 .modifiedAt(product.getModifiedAt())
                 .tagStrList(tags)
+                .likes(productLike)
                 .build();
 
         List<ProductImage> imageList = product.getImageList();

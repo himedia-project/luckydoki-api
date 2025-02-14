@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
 
+import com.himedia.luckydokiapi.domain.likes.repository.ProductLikeRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
@@ -37,12 +38,14 @@ public class ProductServiceImpl implements ProductService {
     private final ProductTagRepository productTagRepository;
     private final TagRepository tagRepository;
     private final CustomFileUtil fileUtil;
+    private final ProductLikeRepository productLikeRepository;
 
     @Transactional(readOnly = true)
     @Override
-    public ProductDTO.Response getProduct(Long id) {
+    public ProductDTO.Response getProduct(Long id, String email) {
         Product product = getEntity(id);
-        return this.entityToDTO(product);
+        boolean likes = (email != null) && productLikeRepository.likes(email, product.getId());
+        return this.entityToDTO(product, likes);
     }
 
 
@@ -55,9 +58,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ProductDTO.Response> list(ProductSearchDTO requestDTO) {
-        return productRepository.findByDTO(requestDTO).stream()
-                .map(this::entityToDTO).collect(Collectors.toList());
+    public List<ProductDTO.Response> list(ProductSearchDTO requestDTO, String email) {
+        boolean likes = (email != null) && productLikeRepository.likes(email, requestDTO.getId());
+        List<ProductDTO.Response> productList = productRepository.findByDTO(requestDTO).stream()
+                .map(product -> this.entityToDTO(product, likes)).toList();
+
+        return productList;
     }
 
     @Transactional(readOnly = true)
@@ -79,8 +85,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDTO.Response> getListByMember(String email) {
         Member member = getMember(email);
-        return productRepository.findProductByShopMemberEmail(member.getEmail()).stream()
-                .map(this::entityToDTO).collect(Collectors.toList());
+List<Product> productList = productRepository.findProductByShopMemberEmail(member.getEmail());
+
+        return productList.stream()
+                .map(product -> this.entityToDTO(
+                        product,
+                        productLikeRepository.likes(member.getEmail(), product.getId())
+                ))
+                .toList();
     }
 
     //seller 의 상품 등록
@@ -114,7 +126,7 @@ public class ProductServiceImpl implements ProductService {
         Product result = productRepository.save(newProduct);
 
         // 카테고리 처리
-        if(dto.getCategoryId() != null) {
+        if (dto.getCategoryId() != null) {
             categoryBridgeRepository.save(CategoryBridge.from(category, result));
         }
 
@@ -144,7 +156,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = this.getEntity(productId);
 
         //기존의 product 를 dto 로  변환
-        ProductDTO.Response oldDTO = this.entityToDTO(product);
+        ProductDTO.Response oldDTO = this.entityToDTO(product,productLikeRepository.likes(member.getEmail(), product.getId()));
 
         // 파일 업로드 처리
         //기존 db에 저징된 이미지들
@@ -164,9 +176,9 @@ public class ProductServiceImpl implements ProductService {
 
         //유지되는 파일들  + 새로 업로드된 파일 이름들이 저장해야 하는 파일 목록이 됨
         if (currentUploadFileNames != null && !currentUploadFileNames.isEmpty()) {
-        //s3에 새로 업데이트 한 파일이 있다면 ?
+            //s3에 새로 업데이트 한 파일이 있다면 ?
             uploadedFileNames.addAll(currentUploadFileNames);
-        //화면 유지 이미지 리스트에 s3 이미지 저장 리턴값 추가
+            //화면 유지 이미지 리스트에 s3 이미지 저장 리턴값 추가
         }
 
         //기존 파일들 중에서 화면에서 삭제된 파일들을 제거
