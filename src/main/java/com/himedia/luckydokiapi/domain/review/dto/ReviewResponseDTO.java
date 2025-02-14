@@ -15,7 +15,7 @@ public class ReviewResponseDTO {
 //    private Long id;
     private double rating;
     //    private String email;
-    private String memberNickname;
+    private String nickname;
     private Long shopId;
     private Long productId;
     private String productName;

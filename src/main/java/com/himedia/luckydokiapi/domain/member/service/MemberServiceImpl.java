@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.member.service;
 
 
 import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
+import com.himedia.luckydokiapi.domain.member.dto.MemberDetailDTO;
 import com.himedia.luckydokiapi.domain.member.dto.SellerRequestDTO;
 import com.himedia.luckydokiapi.domain.member.dto.UpdateMemberDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
@@ -9,6 +10,8 @@ import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
+import com.himedia.luckydokiapi.domain.shop.entity.Shop;
+import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.security.CustomUserDetailService;
 import com.himedia.luckydokiapi.security.MemberDTO;
@@ -39,6 +42,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
 
     private final CustomFileUtil fileUtil;
+    private final ShopRepository shopRepository;
 
 
     @Transactional(readOnly = true)
@@ -124,13 +128,16 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public MemberDTO getMyInfo(String email) {
+    public MemberDetailDTO getMyInfo(String email) {
         Member member = getEntity(email);
-        return entityToDTO(member);
+        Shop seller = getSeller(member.getEmail());
+        return entityToMemberDetailDTO(member, seller);
     }
 
+
+
     @Override
-    public MemberDTO updateMyInfo(String email, UpdateMemberDTO request) {
+    public MemberDetailDTO updateMyInfo(String email, UpdateMemberDTO request) {
         Member member = getEntity(email);
 
 
@@ -141,9 +148,11 @@ public class MemberServiceImpl implements MemberService {
         if (request.getPhone() != null && !request.getPhone().isEmpty()) {
             member.updatePhone(request.getPhone());
         }
-
         memberRepository.save(member);
-        return entityToDTO(member);
+
+        Shop seller = getSeller(member.getEmail());
+        return entityToMemberDetailDTO(member, seller);
+
     }
 
 
@@ -177,4 +186,9 @@ public class MemberServiceImpl implements MemberService {
         return saved.getId();
     }
 
+
+
+    private Shop getSeller(String email) {
+        return shopRepository.findByMemberEmail(email).orElse(null);
+    }
 }

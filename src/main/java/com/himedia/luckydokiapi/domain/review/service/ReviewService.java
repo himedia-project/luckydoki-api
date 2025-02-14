@@ -17,7 +17,7 @@ public interface ReviewService {
     default ReviewResponseDTO entityToDTO(Review review) {
 
         ReviewResponseDTO reviewResponseDTO = ReviewResponseDTO.builder()
-                .memberNickname(review.getMember().getNickName())
+                .nickname(review.getMember().getNickName())
                 .rating(review.getRating())
                 .content(review.getContent())
                 .shopId(review.getShop().getId())

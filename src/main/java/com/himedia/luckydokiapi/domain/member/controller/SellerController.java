@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.member.controller;
 
+import com.himedia.luckydokiapi.domain.member.dto.MemberDetailDTO;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.member.dto.SellerRequestDTO;
 import com.himedia.luckydokiapi.domain.member.dto.UpdateMemberDTO;
@@ -73,13 +74,13 @@ public class SellerController {
     }
 
     @GetMapping("/me")
-    public MemberDTO getMyInfo(@AuthenticationPrincipal MemberDTO member) {
+    public MemberDetailDTO getMyInfo(@AuthenticationPrincipal MemberDTO member) {
         return memberService.getMyInfo(member.getEmail());
     }
 
 
     @PutMapping("/me")
-    public MemberDTO updateMyInfo(
+    public MemberDetailDTO updateMyInfo(
             @AuthenticationPrincipal MemberDTO member,
             @RequestBody UpdateMemberDTO request) {
         return memberService.updateMyInfo(member.getEmail(), request);
