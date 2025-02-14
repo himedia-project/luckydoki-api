@@ -23,7 +23,7 @@ public class OrderItemDTO {
         return OrderItemDTO.builder()
                 .productId(orderItem.getProduct().getId())
                 .productName(orderItem.getProduct().getName())
-                .count(orderItem.getProduct().getOrderItems().size())
+                .count(orderItem.getCount())
                 .orderPrice(orderItem.getOrderPrice())
                 .image(image)
                 .build();

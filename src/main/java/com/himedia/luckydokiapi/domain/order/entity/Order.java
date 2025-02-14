@@ -53,7 +53,7 @@ public class Order {
     }
 
     // 주문 생성
-    public static Order createOrder(Member member, List<OrderItem> orderItems) {
+    public static Order from(Member member, List<OrderItem> orderItems) {
         Order order = Order.builder()
                 .member(member)
                 .orderDate(LocalDateTime.now())

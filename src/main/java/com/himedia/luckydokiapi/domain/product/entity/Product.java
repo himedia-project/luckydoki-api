@@ -121,11 +121,6 @@ public class Product extends BaseEntity {
     @Builder.Default
     private List<CategoryBridge> categoryBridges = new ArrayList<>();
 
-    // order item 리스트
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<OrderItem> orderItems = new ArrayList<>();
-
 
     public Integer productLikesCount(ProductLike productLike) {
         return productLikes.size();

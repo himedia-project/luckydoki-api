@@ -76,13 +76,12 @@ public class OrderServiceImpl implements OrderService {
             Product product = productRepository.findById(cartItemDTO.getProductId())
                     .orElseThrow(() -> new EntityNotFoundException("해당 상품이 없습니다. productId: " + cartItemDTO.getProductId()));
 
-            // 주문 아이템 생성 (수량 정보는 없음)
-            OrderItem orderItem = OrderItem.createOrderItem(product); // 수량을 1로 고정
-            orderItemList.add(orderItem);
+            // 주문 아이템 생성 (수량 정보만큼)
+            orderItemList.add(OrderItem.from(product, cartItemDTO.getCount()));
         }
 
         // 주문 생성
-        Order savedOrder = orderRepository.save(Order.createOrder(member, orderItemList));
+        Order savedOrder = orderRepository.save(Order.from(member, orderItemList));
         log.info("Order created with code: {}", savedOrder.getCode()); // 생성된 주문 코드 로그 출력
         // 주문 후, 장바구니로 주문하는 거라면, 해당 장바구니 cart items 삭제
         cartService.getCartItemList(email).forEach(cartItemDTO -> {
