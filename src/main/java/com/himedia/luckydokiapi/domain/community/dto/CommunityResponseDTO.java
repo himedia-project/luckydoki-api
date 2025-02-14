@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -29,9 +30,12 @@ public class CommunityResponseDTO {
         this.title = community.getTitle();
         this.content = community.getContent();
         this.createdAt = community.getCreatedAt();
-        this.uploadFileNames = community.getImageList().stream()
-                .map(CommunityImage::getImageName)
-                .toList();
+        this.uploadFileNames = (community.getImageList() != null) ?
+                community.getImageList().stream()
+                        .map(CommunityImage::getImageName)
+                        .toList()
+                : new ArrayList<>();
+
 
         this.productIds =
                 community.getCommunityProductList().stream()

@@ -35,10 +35,10 @@ public class CommunityController {
         return ResponseEntity.ok(communityService.getAllCommunities(requestDTO));
     }
 
-    @PostMapping("/post")
+    @PostMapping
     public ResponseEntity<CommunityResponseDTO> postCommunity(
             @AuthenticationPrincipal MemberDTO memberDTO,
-            @RequestBody CommunityRequestDTO requestDTO) {
+            CommunityRequestDTO requestDTO) {
 
         log.info("postCommunity: {}", requestDTO);
         return ResponseEntity.ok(communityService.postCommunity(memberDTO.getEmail(), requestDTO));

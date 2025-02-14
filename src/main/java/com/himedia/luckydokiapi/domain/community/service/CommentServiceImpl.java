@@ -24,7 +24,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommunityRepository communityRepository;
     private final MemberRepository memberRepository;
 
-    // ✅ 댓글 작성
+
     @Override
     public CommentResponseDTO postComment(String email, Long communityId, CommentRequestDTO request) {
         Member member = memberRepository.findByEmail(email)

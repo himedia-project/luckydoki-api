@@ -32,7 +32,8 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @ElementCollection
+    @CollectionTable(name = "community_image", joinColumns = @JoinColumn(name = "community_id"))
     @Builder.Default
     private List<CommunityImage> imageList = new ArrayList<>();
 

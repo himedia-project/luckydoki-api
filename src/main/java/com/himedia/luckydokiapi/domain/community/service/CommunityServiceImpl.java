@@ -71,6 +71,17 @@ public class CommunityServiceImpl implements CommunityService {
         List<String> uploadFileNames = customFileUtil.uploadS3Files(request.getFiles());
         request.setUploadFileNames(uploadFileNames);
 
+
+        List<CommunityImage> imageList = uploadFileNames.stream()
+                .map(fileName -> CommunityImage.builder()
+                        .imageName(fileName)
+                        .ord(null) // 순서 필요 시 추가
+                        .build())
+                .toList();
+
+        // 커뮤니티 객체에 이미지 리스트 추가
+        community.setImageList(imageList);
+
         if (request.getProductIds() != null && !request.getProductIds().isEmpty()) {
             request.getProductIds().forEach(productId -> {
                 Product product = productRepository.findById(productId)
