@@ -1,0 +1,25 @@
+package com.himedia.luckydokiapi.domain.community.dto;
+
+import com.himedia.luckydokiapi.domain.community.entity.Comment;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CommentResponseDTO {
+    private Long id;
+    private String nickName;
+    private String content;
+    private LocalDateTime createdAt;
+
+    public CommentResponseDTO(Comment comment) {
+        this.id = comment.getId();
+        this.nickName = comment.getMember().getNickName();
+        this.content = comment.getContent();
+        this.createdAt = comment.getCreatedAt();
+    }
+}

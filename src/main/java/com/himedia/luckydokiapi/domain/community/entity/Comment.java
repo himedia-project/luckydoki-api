@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @SuperBuilder
 @Getter
 @Setter
@@ -32,6 +34,9 @@ public class Comment extends BaseEntity {
 
     @Column(nullable = false)
     private String content;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
 
 }
