@@ -11,6 +11,9 @@ import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
+import com.himedia.luckydokiapi.domain.shop.dto.ShopCommunityResponseDTO;
+import com.himedia.luckydokiapi.domain.shop.entity.Shop;
+import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final CustomFileUtil customFileUtil;
+    private final ShopRepository shopRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -184,6 +188,22 @@ public class CommunityServiceImpl implements CommunityService {
         communityRepository.delete(community);
     }
 
+
+    @Transactional(readOnly = true)
+    @Override
+    public ShopCommunityResponseDTO getShopCommunities(Long shopId, String email) {
+        Shop shop = shopRepository.findByIdWithCommunities(shopId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 샵이 존재하지 않습니다: " + shopId));
+//        shop.getCommunityList() -> DTO mapping
+        List<CommunityResponseDTO> communityDTOList = shop.getMember().getCommunityList().stream()
+                .map(CommunityResponseDTO::from).toList();
+
+        return ShopCommunityResponseDTO.builder()
+                .shopId(shop.getId())
+                .shopName(shop.getMember().getNickName())
+                .communityList(communityDTOList)
+                .build();
+    }
 
 
 }
