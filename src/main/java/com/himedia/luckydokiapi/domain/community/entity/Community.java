@@ -23,7 +23,7 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "email", nullable = false)
     private Member member;
 
     @Column(nullable = false, length = 100) // 제목 추가
