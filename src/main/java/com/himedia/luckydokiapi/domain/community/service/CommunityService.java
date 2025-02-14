@@ -14,7 +14,7 @@ public interface CommunityService {
     CommunityResponseDTO getCommunityById(Long communityId);
     List<CommunityResponseDTO> getAllCommunities(CommunitySearchDTO request);
     List<CommunityResponseDTO> getCommunitiesByMemberEmail(String email);
-    CommunityResponseDTO postCommunity(String email, CommunityRequestDTO request);
+//    CommunityResponseDTO postCommunity(String email, CommunityRequestDTO request);
 //    CommunityResponseDTO updateCommunity(Long communityId, String email, CommunityRequestDTO request);
     void deleteCommunity(Long communityId, String email);
 

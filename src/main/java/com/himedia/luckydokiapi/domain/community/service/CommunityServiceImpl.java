@@ -1,6 +1,5 @@
 package com.himedia.luckydokiapi.domain.community.service;
 
-import com.himedia.luckydokiapi.domain.community.dto.CommunityRequestDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
@@ -16,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 @Slf4j
@@ -54,31 +52,31 @@ public class CommunityServiceImpl implements CommunityService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public CommunityResponseDTO postCommunity(String email, CommunityRequestDTO request) {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
-
-        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
-            throw new IllegalArgumentException("제목은 필수 입력 항목입니다.");
-        }
-        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("내용은 필수 입력 항목입니다.");
-        }
-
-        Community community = Community.builder()
-                .member(member)
-                .title(request.getTitle())
-                .content(request.getContent())
-                .build();
-
-        // 파일 업로드
-        List<String> uploadFileNames = fileUtil.uploadS3Files(request.getFiles());
-        request.setUploadFileNames(uploadFileNames);
-
-        communityRepository.save(community);
-        return new CommunityResponseDTO(community);
-    }
+//    @Override
+//    public CommunityResponseDTO postCommunity(String email, CommunityRequestDTO request) {
+//        Member member = memberRepository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+//
+//        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+//            throw new IllegalArgumentException("제목은 필수 입력 항목입니다.");
+//        }
+//        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
+//            throw new IllegalArgumentException("내용은 필수 입력 항목입니다.");
+//        }
+//
+//        Community community = Community.builder()
+//                .member(member)
+//                .title(request.getTitle())
+//                .content(request.getContent())
+//                .build();
+//
+//        // 파일 업로드
+//        List<String> uploadFileNames = fileUtil.uploadS3Files(request.getFiles());
+//        request.setUploadFileNames(uploadFileNames);
+//
+//        communityRepository.save(community);
+//        return new CommunityResponseDTO(community);
+//    }
 
 
 //    @Override

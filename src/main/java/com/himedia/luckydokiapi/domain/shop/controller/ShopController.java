@@ -24,7 +24,7 @@ public class ShopController {
     }
 
     // 특정 샵(셀러)의 상품 리스트 조회 API
-    @GetMapping("/{shopId}/products")
+    @GetMapping("/{shopId}/product/list")
     public ResponseEntity<ShopProductResponseDTO> findShopProducts(@PathVariable Long shopId) {
         log.info("shopId: {}", shopId);
         return ResponseEntity.ok(shopService.getShopProducts(shopId));

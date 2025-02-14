@@ -47,5 +47,4 @@ public class CommunityProduct {
                 .product(product)
                 .build();
     }
-
 }
