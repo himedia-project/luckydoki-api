@@ -1,6 +1,8 @@
 package com.himedia.luckydokiapi.domain.member.controller;
 
 
+import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
+import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import com.himedia.luckydokiapi.domain.member.dto.*;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.props.JwtProps;
@@ -26,6 +28,7 @@ public class MemberController {
     private final MemberService memberService;
     private final JwtProps jwtProps;
 
+    private final CouponService couponService;
 
     @PostMapping("/join")
     public ResponseEntity<?> join(@Valid @RequestBody JoinRequestDTO joinRequestDTO) {
@@ -102,5 +105,11 @@ public class MemberController {
         return memberService.updateMyInfo(member.getEmail(), request);
     }
 
+    // 해당 유저의 쿠폰 리스트
+    @GetMapping("/coupon/list")
+    public List<CouponResponseDto> getUserCoupons(@AuthenticationPrincipal MemberDTO memberDTO) {
+        log.info("getUserCoupons memberDTO: {}", memberDTO);
+        return couponService.getCouponList(memberDTO.getEmail());
+    }
 
 }

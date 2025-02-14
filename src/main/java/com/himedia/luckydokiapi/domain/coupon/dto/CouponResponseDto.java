@@ -17,6 +17,7 @@ public class CouponResponseDto {
 	private String code;
 	private String name;
 	private String content;
+	private Integer minimumUsageAmount;
 	private Integer discountPrice;
 	private LocalDate startDate;
 	private LocalDate endDate;

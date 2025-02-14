@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.coupon.repository.querydsl;
 
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRecordSearchDTO;
+import com.himedia.luckydokiapi.domain.coupon.entity.Coupon;
 import com.himedia.luckydokiapi.domain.coupon.entity.CouponRecord;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -41,7 +42,7 @@ public class CouponRecordRepositoryImpl implements CouponRecordRepositoryCustom 
                 .leftJoin(couponRecord.coupon, coupon)
                 .leftJoin(couponRecord.member, member)
                 .where(
-                        containsSearchKeyword(requestDto.getSearchKeyword())
+                        containsCouponRecordSearchKeyword(requestDto.getSearchKeyword())
                 )
                 .orderBy(couponRecord.id.desc())
                 .offset(pageable.getOffset())
@@ -53,10 +54,27 @@ public class CouponRecordRepositoryImpl implements CouponRecordRepositoryCustom 
                 .leftJoin(couponRecord.coupon, coupon)
                 .leftJoin(couponRecord.member, member)
                 .where(
-                        containsSearchKeyword(requestDto.getSearchKeyword())
+                        containsCouponRecordSearchKeyword(requestDto.getSearchKeyword())
                 );
 
         return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+    }
+
+    @Override
+    public List<Coupon> findCouponListByMemberEmail(String email) {
+
+        return queryFactory
+                .select(couponRecord.coupon)
+                .from(couponRecord)
+                .join(couponRecord.member, member).on(member.email.eq(email))
+                .fetch();
+    }
+
+    private BooleanExpression eqEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return null;
+        }
+        return member.email.eq(email);
     }
 
     private BooleanExpression containsSearchKeyword(String searchKeyword) {
@@ -67,5 +85,16 @@ public class CouponRecordRepositoryImpl implements CouponRecordRepositoryCustom 
 
         return coupon.code.contains(searchKeyword)
                 .or(coupon.name.contains(searchKeyword));
+    }
+
+    private BooleanExpression containsCouponRecordSearchKeyword(String searchKeyword) {
+
+        if (searchKeyword == null || searchKeyword.isBlank()) {
+            return null;
+        }
+
+        return couponRecord.coupon.code.contains(searchKeyword)
+                .or(couponRecord.coupon.name.contains(searchKeyword))
+                .or(couponRecord.member.email.contains(searchKeyword));
     }
 }
