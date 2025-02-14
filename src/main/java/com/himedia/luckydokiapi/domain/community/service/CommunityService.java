@@ -11,23 +11,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface CommunityService {
+    CommunityResponseDTO getCommunityById(Long communityId);
     List<CommunityResponseDTO> getAllCommunities(CommunitySearchDTO request);
     List<CommunityResponseDTO> getCommunitiesByMemberEmail(String email);
-    CommunityResponseDTO getCommunityById(Long communityId);
     CommunityResponseDTO postCommunity(String email, CommunityRequestDTO request);
 //    CommunityResponseDTO updateCommunity(Long communityId, String email, CommunityRequestDTO request);
     void deleteCommunity(Long communityId, String email);
 
 
+
     default CommunityResponseDTO toDTO(Community community) {
-        List<String> images = community.getImageList().stream().map(CommunityImage::getImageName).toList();
         return CommunityResponseDTO.builder()
                 .id(community.getId())
                 .nickName(community.getMember().getNickName())
+                .title(community.getTitle())
                 .content(community.getContent())
-                .uploadFileNames(images)
+                .uploadFileNames(
+                        community.getImageList().stream()
+                                .map(CommunityImage::getImageName)
+                                .toList()
+                )
                 .createdAt(community.getCreatedAt())
                 .build();
     }
-
 }
