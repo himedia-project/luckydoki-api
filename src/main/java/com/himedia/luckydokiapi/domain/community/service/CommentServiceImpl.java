@@ -14,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -44,7 +47,6 @@ public class CommentServiceImpl implements CommentService {
         return new CommentResponseDTO(comment);
     }
 
-    // ✅ 댓글 삭제
     @Override
     public void deleteComment(String email, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
@@ -56,4 +58,14 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.delete(comment);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CommentResponseDTO> getCommentsByCommunity(Long communityId) {
+        List<Comment> comments = commentRepository.findByCommunityId(communityId);
+        return comments.stream()
+                .map(CommentResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
 }

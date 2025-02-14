@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/community/comment")
@@ -42,4 +44,11 @@ public class CommentController {
         commentService.deleteComment(memberDTO.getEmail(), commentId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{communityId}")
+    public ResponseEntity<List<CommentResponseDTO>> getCommentsByCommunity(@PathVariable Long communityId) {
+        log.info("댓글 목록 조회 요청: communityId={}", communityId);
+        return ResponseEntity.ok(commentService.getCommentsByCommunity(communityId));
+    }
+
 }
