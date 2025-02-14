@@ -14,7 +14,7 @@ public class ShopResponseDTO {
     private String introduction;  // 샵 소개글
     private String email;         // 샵 주인의 이메일
     private String nickName;      // 샵 주인의 닉네임
-
+    private Boolean likes;
 
 
 
