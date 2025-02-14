@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.community.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.community.entity.CommunityImage;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
@@ -26,6 +27,8 @@ public class CommunityResponseDTO {
     private List<String> uploadFileNames;
     private List<Long> productIds;
     private List<ProductDTO.Response> productDTOs;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
 
@@ -34,6 +37,7 @@ public class CommunityResponseDTO {
                 .id(community.getId())
                 .title(community.getTitle())
                 .content(community.getContent())
+                .nickName(community.getMember().getNickName())
                 .uploadFileNames(community.getImageList().stream().map(CommunityImage::getImageName).toList())
                 .productIds(community.getCommunityProductList().stream().map(communityProduct -> communityProduct.getProduct().getId()).toList())
                 .productDTOs(community.getCommunityProductList().stream().map(communityProduct -> ProductDTO.Response.from(communityProduct.getProduct())).toList())
