@@ -62,7 +62,7 @@ public interface MemberService {
     /**
      * client 에 보낼 member 정보 MemberDTO 랑 다릅니다
      */
-    default MemberDetailDTO entityToMemberDetailDTO(Member member, Shop shop) {
+    default MemberDetailDTO entityToMemberDetailDTO(Member member, Shop shop, Boolean sellerRequested) {
         String memberRoleName = member.getMemberRoleList().get(0).name();
         return MemberDetailDTO.builder()
                 .nickName(member.getNickName())
@@ -70,7 +70,7 @@ public interface MemberService {
                 .roleName(memberRoleName)
                 .phone(member.getPhone())
                 .shopId(shop != null ? shop.getId() : null)
-                .sellerUpgraded(memberRoleName.equals(SELLER.name()))
+                .sellerRequested(sellerRequested)
                 .build();
     }
 }

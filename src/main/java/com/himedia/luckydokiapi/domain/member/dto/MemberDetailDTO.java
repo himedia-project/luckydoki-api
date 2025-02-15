@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -18,5 +16,5 @@ public class MemberDetailDTO {
     private String nickName;
     private String roleName;
     private Long shopId;
-    private boolean sellerUpgraded;
+    private boolean sellerRequested; // seller_application 여부
 }

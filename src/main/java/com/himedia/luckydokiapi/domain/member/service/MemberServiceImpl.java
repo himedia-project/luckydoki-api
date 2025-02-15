@@ -131,7 +131,9 @@ public class MemberServiceImpl implements MemberService {
     public MemberDetailDTO getMyInfo(String email) {
         Member member = getEntity(email);
         Shop seller = getSeller(member.getEmail());
-        return entityToMemberDetailDTO(member, seller);
+        // 셀러 신청 여부 확인
+        Boolean result = sellerApplicationRepository.existsByEmail(email);
+        return entityToMemberDetailDTO(member, seller, result);
     }
 
 
@@ -150,7 +152,7 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
 
         Shop seller = getSeller(member.getEmail());
-        return entityToMemberDetailDTO(member, seller);
+        return entityToMemberDetailDTO(member, seller, null);
 
     }
 
