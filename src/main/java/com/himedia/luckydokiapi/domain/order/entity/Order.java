@@ -4,6 +4,7 @@ package com.himedia.luckydokiapi.domain.order.entity;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.order.enums.OrderStatus;
 import com.himedia.luckydokiapi.domain.payment.entity.Payment;
+import com.himedia.luckydokiapi.domain.payment.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -98,5 +99,27 @@ public class Order {
 
     public void changeTotalPrice(int totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    /**
+     * 최근 결제 상태 조회
+     * @return 최근 결제 상태
+     */
+    public PaymentStatus getRecentPaymentStatus() {
+        return payments.stream()
+                .max((o1, o2) -> (int) (o1.getId() - o2.getId()))
+                .map(Payment::getStatus)
+                .orElse(null);
+    }
+
+    /**
+     * 최근 결제 일자 조회
+     * @return 최근 결제 일자(결제 승인일자)
+     */
+    public LocalDateTime getRecentPaymentDate() {
+        return payments.stream()
+                .max((o1, o2) -> (int) (o1.getId() - o2.getId()))
+                .map(Payment::getApprovedAt)
+                .orElse(null);
     }
 }

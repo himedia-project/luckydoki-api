@@ -30,6 +30,9 @@ public class OrderHistDTO {
     private OrderStatus orderStatus;    // 주문 상태
     private Integer totalPrice;         // 주문 총 금액
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime paymentDate; // 결제 날짜
+
     private PaymentStatus paymentStatus; // 결제 상태
 
     @Builder.Default
@@ -44,7 +47,8 @@ public class OrderHistDTO {
                 .orderDate(order.getOrderDate())
                 .orderStatus(order.getOrderStatus())
                 .totalPrice(order.getTotalPrice())
-                // TODO: 결제상태 추가
+                .paymentDate(order.getRecentPaymentDate())
+                .paymentStatus(order.getRecentPaymentStatus())
                 .build();
 
         // 주문 아이템을 OrderItemDTO로 변환하여 추가
