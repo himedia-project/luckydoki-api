@@ -93,7 +93,7 @@ public class NotProd {
                 for (int i = 1; i <= 10; i++) {
                     Shop shop = Shop.builder()
                             .member(memberRepository.findByEmail("seller" + i + "@test.com").get())
-                            .image("https://picsum.photos/200/300")
+                            .image("s_3f0b0873-b2e5-48d0-94e1-f72e5b9c75a5-luckydoki_favicon.png")
                             .introduction("seller" +i + "의 세상에 오신 걸 환영합니다!")
                             .build();
                     shops.add(shop);
