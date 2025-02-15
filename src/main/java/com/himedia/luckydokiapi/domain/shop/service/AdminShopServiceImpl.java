@@ -3,7 +3,6 @@ package com.himedia.luckydokiapi.domain.shop.service;
 import com.himedia.luckydokiapi.domain.member.dto.SellerResponseDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
-import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
@@ -59,10 +58,6 @@ public class AdminShopServiceImpl implements AdminShopService {
         SellerApplication application = getApplication(applicationId);
 
         Member member = getMember(application.getEmail());
-
-        // 맴버 권한 유저 -> seller
-        member.changeRole(MemberRole.SELLER);
-        memberRepository.save(member);
         // 셀러 폼 승인 처리
         application.approve();
 
@@ -74,12 +69,9 @@ public class AdminShopServiceImpl implements AdminShopService {
                 });
 
         // 샵이 없으므로 샵 save
-        Shop shop = Shop.builder()
-                .image(application.getShopImage())
-                .introduction(application.getIntroduction())
-                .member(member)
-                .build();
-        Shop saved = shopRepository.save(shop);
+        Shop saved = shopRepository.save(Shop.from(application, member));
+        member.addRoleAndShop(saved);
+        memberRepository.save(member);
 
         return saved.getId();
     }
@@ -90,7 +82,7 @@ public class AdminShopServiceImpl implements AdminShopService {
 
     @Transactional(readOnly = true)
     @Override
-    public PageResponseDTO<SellerResponseDTO> getPendingApplications(SellerSearchDTO requestDTO) {
+    public PageResponseDTO<SellerResponseDTO> getSellerApplications(SellerSearchDTO requestDTO) {
 
         Pageable pageable = PageRequest.of(
                 requestDTO.getPage() - 1,  //페이지 시작 번호가 0부터 시작하므로

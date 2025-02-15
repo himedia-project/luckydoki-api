@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "seller_application")
 @Getter
@@ -35,12 +37,15 @@ public class SellerApplication extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ShopApproved approved;
 
+    private LocalDateTime approvedAt;
+
     public void changeApproved(ShopApproved approved) {
         this.approved = approved;
     }
 
     public void approve() {
         this.approved = ShopApproved.Y;
+        this.approvedAt = LocalDateTime.now();
     }
 
     public void changeShopImage(String uploadS3File) {

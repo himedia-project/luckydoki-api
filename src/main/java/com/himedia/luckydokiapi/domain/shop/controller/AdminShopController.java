@@ -50,12 +50,12 @@ public class AdminShopController {
     }
 
     /**
-     * 승인되지 않은 셀러 신청 목록 조회
+     * 셀러 신청 목록 조회
      */
     @GetMapping("/seller-application/list")
-    public ResponseEntity<PageResponseDTO<SellerResponseDTO>> getPendingApplications(SellerSearchDTO request) {
-        log.info("getPendingApplications request: {}", request);
-        return ResponseEntity.ok(adminShopService.getPendingApplications(request));
+    public ResponseEntity<PageResponseDTO<SellerResponseDTO>> getSellerApplications(SellerSearchDTO request) {
+        log.info("getSellerApplications request: {}", request);
+        return ResponseEntity.ok(adminShopService.getSellerApplications(request));
     }
 
 

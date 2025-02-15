@@ -17,9 +17,7 @@ public interface AdminShopService {
 
     Long approveSeller(Long applicationId);
 
-    PageResponseDTO<SellerResponseDTO> getPendingApplications(SellerSearchDTO request);
-
-    List<SellerResponseDTO> getApprovedApplications();
+    PageResponseDTO<SellerResponseDTO> getSellerApplications(SellerSearchDTO request);
 
     List<ShopResponseDTO> optionList();
 
@@ -30,9 +28,10 @@ public interface AdminShopService {
                 .nickName(application.getNickName())
                 .shopImage(application.getShopImage())
                 .introduction(application.getIntroduction())
-                .approved(application.getApproved())
-                .statusDescription(application.getApproved() == ShopApproved.Y ? "승인 완료" : "승인 대기")
                 .requestAt(application.getCreatedAt())
+                .statusDescription(application.getApproved() == ShopApproved.Y ? "승인 완료" : "승인 대기")
+                .approved(application.getApproved())
+                .approvedAt(application.getApprovedAt())
                 .build();
     }
 

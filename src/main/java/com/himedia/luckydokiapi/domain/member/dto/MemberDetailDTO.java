@@ -17,4 +17,5 @@ public class MemberDetailDTO {
     private String roleName;
     private Long shopId;
     private boolean sellerRequested; // seller_application 여부
+    private Long activeCouponCount;  // 사용가능한 쿠폰 수
 }

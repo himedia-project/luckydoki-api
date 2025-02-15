@@ -71,6 +71,7 @@ public interface MemberService {
                 .phone(member.getPhone())
                 .shopId(shop != null ? shop.getId() : null)
                 .sellerRequested(sellerRequested)
+                .activeCouponCount(member.getActiveCouponCount())
                 .build();
     }
 }
