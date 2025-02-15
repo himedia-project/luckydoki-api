@@ -46,7 +46,8 @@ public class AdminShopController {
     @PostMapping("/approve-seller/{applicationId}")
     public ResponseEntity<?> approve(@PathVariable Long applicationId) {
         log.info("approve applicationId: {}", applicationId);
-        return ResponseEntity.ok(adminShopService.approveSeller(applicationId));
+        Long result = adminShopService.approveSeller(applicationId);
+        return ResponseEntity.ok("approve success applicationId: " + result);
     }
 
     /**

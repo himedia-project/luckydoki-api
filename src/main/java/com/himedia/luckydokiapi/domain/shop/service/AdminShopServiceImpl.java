@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.shop.service;
 import com.himedia.luckydokiapi.domain.member.dto.SellerResponseDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
+import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
@@ -68,12 +69,14 @@ public class AdminShopServiceImpl implements AdminShopService {
                     throw new IllegalArgumentException("이미 shop이 있는 회원입니다. shopId" + shop.getId());
                 });
 
-        // 샵이 없으므로 샵 save
-        Shop saved = shopRepository.save(Shop.from(application, member));
-        member.addRoleAndShop(saved);
+        // 셀러 권한 부여
+        member.changeRole(MemberRole.SELLER);
         memberRepository.save(member);
 
-        return saved.getId();
+        // 샵이 없으므로 샵 save
+        shopRepository.save(Shop.from(application, member));
+
+        return application.getId();
     }
 
     /**

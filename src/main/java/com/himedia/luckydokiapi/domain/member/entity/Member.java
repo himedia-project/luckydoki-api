@@ -37,10 +37,6 @@ public class Member extends BaseEntity {
     private String password;
     private String phone;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shop_id")
-    private Shop shop;
-
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'Y'")
     private MemberActive active;
@@ -66,6 +62,9 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<CouponRecord> couponRecordList = new ArrayList<>();
 
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    private Shop shop;
+
 //    @Builder.Default
 //    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
 //    private List<ChatRoom> sellerChatRooms = new ArrayList<>();
@@ -89,15 +88,6 @@ public class Member extends BaseEntity {
 
     public void updatePhone(String phone) {
         this.phone = phone;
-    }
-
-    /**
-     * 셀러로 등록
-     * @param shop 셀러로 등록할 shop
-     */
-    public void addRoleAndShop(Shop shop) {
-        this.addRole(MemberRole.SELLER);
-        this.shop = shop;
     }
 
     /**
