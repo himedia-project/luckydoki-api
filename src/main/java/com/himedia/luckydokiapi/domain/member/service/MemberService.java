@@ -70,6 +70,7 @@ public interface MemberService {
                 .roleName(memberRoleName)
                 .phone(member.getPhone())
                 .shopId(shop != null ? shop.getId() : null)
+                .sellerUpgraded(memberRoleName.equals(SELLER.name()))
                 .build();
     }
 }

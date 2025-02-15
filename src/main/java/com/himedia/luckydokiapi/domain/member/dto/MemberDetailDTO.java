@@ -18,4 +18,5 @@ public class MemberDetailDTO {
     private String nickName;
     private String roleName;
     private Long shopId;
+    private boolean sellerUpgraded;
 }
