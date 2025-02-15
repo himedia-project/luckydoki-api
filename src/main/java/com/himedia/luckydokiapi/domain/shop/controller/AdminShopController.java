@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("/api/admin/shop")
 @Slf4j
 @RestController
@@ -26,6 +28,16 @@ public class AdminShopController {
     public ResponseEntity<PageResponseDTO<ShopResponseDTO>> list(ShopSearchDTO request) {
         log.info("list request: {}", request);
         return ResponseEntity.ok(adminShopService.list(request));
+    }
+
+
+    /**
+     * 샵 옵션 선택 리스트 조회
+     */
+    @GetMapping("/option/list")
+    public ResponseEntity<List<ShopResponseDTO>> optionList() {
+        log.info("option list");
+        return ResponseEntity.ok(adminShopService.optionList());
     }
 
     /**

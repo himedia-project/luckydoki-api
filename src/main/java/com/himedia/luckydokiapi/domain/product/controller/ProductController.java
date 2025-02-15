@@ -23,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final CustomFileUtil fileUtil;
     private final ProductService productService;
 
     @GetMapping("/{id}/detail")
@@ -46,11 +45,5 @@ public class ProductController {
         return ResponseEntity.ok(productService.tagList(id));
     }
 
-
-    // 이미지 불러오기 api 대체 -> http://localhost:8080/api/image/view/{{fileName}}
-//    @GetMapping("/view/{fileName}")
-//    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName) {
-//        return fileUtil.getFile(fileName);
-//    }
 
 }

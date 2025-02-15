@@ -21,6 +21,8 @@ public interface AdminShopService {
 
     List<SellerResponseDTO> getApprovedApplications();
 
+    List<ShopResponseDTO> optionList();
+
     default SellerResponseDTO convertToDTO(SellerApplication application) {
         return SellerResponseDTO.builder()
                 .id(application.getId())

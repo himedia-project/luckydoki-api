@@ -121,6 +121,18 @@ public class AdminShopServiceImpl implements AdminShopService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 셀러 리스트 조회
+     *
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<ShopResponseDTO> optionList() {
+        return shopRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
 
     /**
      * application 찾기
