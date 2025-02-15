@@ -80,7 +80,7 @@ public interface ProductService {
                 .event(product.getEvent())
                 .shopId(product.getShop().getId())
                 .shopName(product.getShop().getMember().getNickName())
-                .shopImage(product.getShop().getMember().getProfileImage())
+                .shopImage(product.getShop().getImage())
                 .stockNumber(product.getStockNumber())
                 .createdAt(product.getCreatedAt())
                 .modifiedAt(product.getModifiedAt())
