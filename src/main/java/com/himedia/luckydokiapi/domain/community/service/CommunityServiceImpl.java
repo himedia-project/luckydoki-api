@@ -10,6 +10,7 @@ import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
+import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.shop.dto.ShopCommunityResponseDTO;
@@ -21,9 +22,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @Transactional
@@ -33,8 +37,9 @@ public class CommunityServiceImpl implements CommunityService {
     private final CommunityRepository communityRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
-    private final CustomFileUtil customFileUtil;
+    private final CustomFileUtil fileUtil;
     private final ShopRepository shopRepository;
+    private final MemberService memberService;
 
     @Transactional(readOnly = true)
     @Override
@@ -62,57 +67,54 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public CommunityResponseDTO postCommunity(String email, CommunityRequestDTO request) {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
-
+    public Long postCommunity(String email, CommunityRequestDTO request) {
+        Member member = memberService.getEntity(email);
         // 상품을 등록하는 경우에만 셀러인지 확인
-        if (request.getProductIds() != null && !request.getProductIds().isEmpty()) {
-            if (!member.getMemberRoleList().contains(MemberRole.SELLER)) {
-                throw new IllegalArgumentException("셀러만 상품을 등록할 수 있습니다.");
-            }
+        if (!member.getMemberRoleList().contains(MemberRole.SELLER)) {
+            throw new IllegalArgumentException("셀러만 상품을 등록할 수 있습니다. email: " + email);
         }
 
-        Community community = Community.builder()
-                .member(member)
-                .title(request.getTitle())
-                .content(request.getContent())
-                .build();
-
         // 파일 업로드 (누구나 가능)
-        List<String> uploadFileNames = customFileUtil.uploadS3Files(request.getFiles());
-        request.setUploadFileNames(uploadFileNames);
+        if (request.getFiles() == null || request.getFiles().isEmpty()) {
+            throw new IllegalArgumentException("이미지 파일은 필수 입력 항목입니다.");
+        }
 
-        List<CommunityImage> imageList = uploadFileNames.stream()
-                .map(fileName -> CommunityImage.builder()
-                        .imageName(fileName)
-                        .ord(null)
-                        .build())
-                .toList();
+        try {
+            List<MultipartFile> files = request.getFiles();
+            List<String> uploadS3FilesNames = fileUtil.uploadS3Files(files);
+            log.info("uploadS3FilesNames: {}", uploadS3FilesNames);
+            request.setUploadFileNames(uploadS3FilesNames);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("이미지 파일 업로드 중 오류가 발생했습니다.");
+        }
 
-        community.setImageList(imageList);
+        Community newCommunity = this.dtoToEntity(request, member);
 
         // 사용자가 등록한 상품만 추가할 수 있도록 검증
         if (request.getProductIds() != null && !request.getProductIds().isEmpty()) {
-            List<Product> validProducts = productRepository.findProductByShopMemberEmail(email).stream()
-                    .filter(product -> request.getProductIds().contains(product.getId()))
-                    .toList();
+            List<Product> sellerProducts = productRepository.findProductByShopMemberEmail(email);
 
-            if (validProducts.size() != request.getProductIds().size()) {
-                throw new IllegalArgumentException("본인이 등록한 상품만 올릴 수 있습니다.");
-            }
+            List<Long> sellerProductIds = sellerProducts.stream().map(Product::getId).toList();
+            log.info("sellerProductIds: {}", sellerProductIds);
 
-            validProducts.forEach(product ->
-                    community.getCommunityProductList().add(CommunityProduct.from(community, product))
-            );
+            // 셀러가 등록한 상품과 요청한 상품이 일치하는지 확인 -> 하나라도 다르면 예외발생
+            List<Product> requestProducts = new ArrayList<>();
+            request.getProductIds().forEach(productId -> {
+                if (!sellerProductIds.contains(productId)) {
+                    throw new IllegalArgumentException("현재 셀러가 등록한 상품이 아닙니다. productId: " + productId);
+                }
+                requestProducts.add(productRepository.findById(productId).orElseThrow());
+            });
+            // 가져온 상품 리스트로 CommunityProduct 생성
+            requestProducts.forEach(product ->
+                            newCommunity.addProduct(CommunityProduct.from(newCommunity, product)));
         }
 
-        communityRepository.save(community);
-        return CommunityResponseDTO.from(community);
+        log.info("newCommunity: {}", newCommunity);
+
+        Community result = communityRepository.save(newCommunity);
+        return result.getId();
     }
-
-
-
 
 
 //    @Override
@@ -198,7 +200,7 @@ public class CommunityServiceImpl implements CommunityService {
         List<String> deleteImages = community.getImageList().stream()
                 .map(CommunityImage::getImageName)
                 .collect(Collectors.toList());
-        customFileUtil.deleteS3Files(deleteImages);
+        fileUtil.deleteS3Files(deleteImages);
 
         communityRepository.delete(community);
     }

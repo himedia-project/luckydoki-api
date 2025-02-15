@@ -23,6 +23,7 @@ public class CommunityRequestDTO {
     @NotBlank
     private String content;
 
+    // 업로드용 파일 필드
     @Builder.Default
     private List<String> uploadFileNames = new ArrayList<>();
 

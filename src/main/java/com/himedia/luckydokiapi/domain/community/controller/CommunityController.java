@@ -36,12 +36,13 @@ public class CommunityController {
     }
 
     @PostMapping
-    public ResponseEntity<CommunityResponseDTO> postCommunity(
+    public ResponseEntity<String> postCommunity(
             @AuthenticationPrincipal MemberDTO memberDTO,
             CommunityRequestDTO requestDTO) {
 
         log.info("postCommunity: {}", requestDTO);
-        return ResponseEntity.ok(communityService.postCommunity(memberDTO.getEmail(), requestDTO));
+        Long result = communityService.postCommunity(memberDTO.getEmail(), requestDTO);
+        return ResponseEntity.ok("게시글 등록 success community id: " + result);
     }
 
 //    @PutMapping("/{id}")
