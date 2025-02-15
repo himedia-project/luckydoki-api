@@ -10,9 +10,7 @@ import com.himedia.luckydokiapi.domain.cart.repository.CartRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
-import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.product.service.ProductService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -76,6 +74,18 @@ public class CartServiceImpl implements CartService {
         cartItemRepository.deleteById(cartItemId);
 
         return cartItemRepository.getItemsOfCartByCartId(cartId).stream()
+                .map(this::entityToDTO)
+                .toList();
+    }
+
+    @Override
+    public List<CartItemListDTO> removeCartItemAll(String email, List<Long> cartItemIdList) {
+        log.info("removeCartItemAll..........");
+        memberService.getEntity(email);
+        // 전체 삭제(벌크)
+        cartItemRepository.deleteBulk(cartItemIdList);
+
+        return cartItemRepository.findByIds(cartItemIdList).stream()
                 .map(this::entityToDTO)
                 .toList();
     }

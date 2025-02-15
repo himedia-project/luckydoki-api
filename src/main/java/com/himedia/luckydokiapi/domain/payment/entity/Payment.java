@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.payment.entity;
 
 
+import com.himedia.luckydokiapi.domain.order.entity.Order;
 import com.himedia.luckydokiapi.domain.payment.enums.PaymentStatus;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -24,7 +25,11 @@ public class Payment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String orderId;        // 주문 ID
+//    private String orderId;        // 주문 ID
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", referencedColumnName = "code")
+    private Order order;           // order_id이지만, code를 참조한다.
+
     private String paymentKey;     // 결제 키
     private Long amount;           // 결제 금액
 

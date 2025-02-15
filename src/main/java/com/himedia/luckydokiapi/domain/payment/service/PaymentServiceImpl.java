@@ -1,6 +1,8 @@
 package com.himedia.luckydokiapi.domain.payment.service;
 
 
+import com.himedia.luckydokiapi.domain.order.entity.Order;
+import com.himedia.luckydokiapi.domain.order.service.OrderService;
 import com.himedia.luckydokiapi.domain.payment.dto.PaymentCancelDTO;
 import com.himedia.luckydokiapi.domain.payment.dto.PaymentPrepareDTO;
 import com.himedia.luckydokiapi.domain.payment.dto.PaymentResponseDTO;
@@ -38,11 +40,15 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
 
+    private final OrderService orderService;
+
     @Override
     public void preparePayment(PaymentPrepareDTO dto) {
         log.info("PaymentService preparePayment...");
+        Order order = orderService.getEntity(dto.getOrderId());
+
         Payment payment = Payment.builder()
-                .orderId(dto.getOrderId())
+                .order(order)
                 .amount(dto.getAmount())
                 .status(PaymentStatus.READY)
                 .build();
@@ -141,6 +147,6 @@ public class PaymentServiceImpl implements PaymentService {
 
     private Payment getPayment(String orderId) {
         return paymentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("주문 정보가 없습니다. orderId: " + orderId));
+                .orElseThrow(() -> new EntityNotFoundException("주문 정보가 없습니다. orderId(code): " + orderId));
     }
 }

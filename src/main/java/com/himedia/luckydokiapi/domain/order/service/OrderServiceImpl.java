@@ -145,6 +145,14 @@ public class OrderServiceImpl implements OrderService {
         return this.createOrderHistDTO(this.findOrder(orderId));
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Order getEntity(String orderId) {
+        return orderRepository.findByCode(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 주문이 없습니다."));
+    }
+
+
     // 주문 조회
     private Order findOrder(Long orderId) {
         return orderRepository.findById(orderId)

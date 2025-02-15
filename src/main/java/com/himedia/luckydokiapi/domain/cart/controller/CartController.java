@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.cart.controller; // 올바른 패키지 
 
 import com.himedia.luckydokiapi.domain.cart.dto.CartItemDTO;
 import com.himedia.luckydokiapi.domain.cart.dto.CartItemListDTO;
+import com.himedia.luckydokiapi.domain.cart.dto.CartItemListIdDTO;
 import com.himedia.luckydokiapi.domain.cart.service.CartService;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import jakarta.validation.Valid;
@@ -45,7 +46,17 @@ public class CartController {
             @PathVariable Long cartItemId,
             @AuthenticationPrincipal MemberDTO memberDTO
     ) {
-        log.info("Removing member memberDTO: {} , cart item id: {}", memberDTO, cartItemId);
+        log.info("removeFromCart memberDTO: {} , cart item id: {}", memberDTO, cartItemId);
         return cartService.removeCartItem(memberDTO.getEmail(), cartItemId); // 아이템 삭제
+    }
+
+    // 장바구니 상품 전체삭제
+    @DeleteMapping("/all")
+    public List<CartItemListDTO> removeFromCartAll(
+            @RequestBody CartItemListIdDTO requestDTO,
+            @AuthenticationPrincipal MemberDTO memberDTO
+    ) {
+        log.info("removeFromCartAll memberDTO: {} , cartitem requestDTO: {}", memberDTO, requestDTO);
+        return cartService.removeCartItemAll(memberDTO.getEmail(), requestDTO.getCartItemIdList());
     }
 }

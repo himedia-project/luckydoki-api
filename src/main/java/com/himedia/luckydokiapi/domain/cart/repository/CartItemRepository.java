@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.cart.repository;
 
 import com.himedia.luckydokiapi.domain.cart.entity.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -28,4 +29,14 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     // 특정 상품 ID로 장바구니 아이템을 조회하는 메소드
     @Query("select ci from CartItem ci where ci.product.id = :productId")
     CartItem findByProductId(@Param("productId") Long productId);
+
+    // 장바구니 아이템 ID 리스트로 장바구니 아이템을 조회하는 메소드
+    @Query("select ci from CartItem ci where ci.id in :cartItemIdList")
+    List<CartItem> findByIds(@Param("cartItemIdList") List<Long> cartItemIdList);
+
+    // 장바구니 아이템 ID 리스트로 장바구니 아이템을 벌크삭제하는 메소드
+    @Modifying
+    @Query("delete from CartItem ci where ci.id in :cartItemIdList")
+    void deleteBulk(@Param("cartItemIdList") List<Long> cartItemIdList);
+
 }

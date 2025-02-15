@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/payments")
+@RequestMapping("/api/payment")
 @RequiredArgsConstructor
 public class PaymentController {
 
@@ -23,6 +23,7 @@ public class PaymentController {
     // 결제 정보 임시 저장
     @PostMapping("/prepare")
     public ResponseEntity<?> preparePayment(@RequestBody PaymentPrepareDTO dto) {
+        log.info("preparePayment dto: {}", dto);
         paymentService.preparePayment(dto);
         return ResponseEntity.ok("payment prepare success");
     }
@@ -31,7 +32,7 @@ public class PaymentController {
     // 결제 금액 검증 API
     @GetMapping("/validate/{orderId}")
     public ResponseEntity<String> validatePayment(@PathVariable String orderId, @RequestParam Long amount) {
-
+        log.info("validatePayment orderId: {}, amount: {}", orderId, amount);
         paymentService.validatePayment(orderId, amount);
 
         return ResponseEntity.ok("payment amount matched");
@@ -42,7 +43,7 @@ public class PaymentController {
     public ResponseEntity<PaymentResponseDTO> confirmPayment(
             @RequestBody PaymentConfirmDTO dto
     ) {
-        log.info("confirmPayment: {}", dto);
+        log.info("confirmPayment dto: {}", dto);
         return ResponseEntity.ok(paymentService.confirmPayment(dto.getPaymentKey(), dto.getOrderId(), dto.getAmount()));
     }
 
@@ -50,6 +51,7 @@ public class PaymentController {
     public ResponseEntity<PaymentResponseDTO> cancelPayment(
             @PathVariable String orderId,
             @RequestBody PaymentCancelDTO cancelDTO) {
+        log.info("cancelPayment orderId: {}, cancelDTO: {}", orderId, cancelDTO);
         return ResponseEntity.ok(paymentService.cancelPayment(orderId, cancelDTO));
     }
 

@@ -16,6 +16,8 @@ public interface CartService {
 
     List<CartItemListDTO> removeCartItem(String email, Long cartItemId);
 
+    List<CartItemListDTO> removeCartItemAll(String email, List<Long> cartItemIdList);
+
     default CartItemListDTO entityToDTO(CartItem cartItem) {
         return CartItemListDTO.builder()
                 .cartItemId(cartItem.getId())

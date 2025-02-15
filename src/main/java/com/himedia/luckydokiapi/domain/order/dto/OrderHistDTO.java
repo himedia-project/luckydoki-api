@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.himedia.luckydokiapi.domain.order.entity.Order;
 import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
 import com.himedia.luckydokiapi.domain.order.enums.OrderStatus;
+import com.himedia.luckydokiapi.domain.payment.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +30,8 @@ public class OrderHistDTO {
     private OrderStatus orderStatus;    // 주문 상태
     private Integer totalPrice;         // 주문 총 금액
 
+    private PaymentStatus paymentStatus; // 결제 상태
+
     @Builder.Default
     private List<OrderItemDTO> orderItems = new ArrayList<>();
 
@@ -41,6 +44,7 @@ public class OrderHistDTO {
                 .orderDate(order.getOrderDate())
                 .orderStatus(order.getOrderStatus())
                 .totalPrice(order.getTotalPrice())
+                // TODO: 결제상태 추가
                 .build();
 
         // 주문 아이템을 OrderItemDTO로 변환하여 추가

@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.order.entity;
 
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.order.enums.OrderStatus;
+import com.himedia.luckydokiapi.domain.payment.entity.Payment;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -19,13 +20,14 @@ import java.util.concurrent.atomic.AtomicLong;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder // 빌더 패턴 사용
 @Entity
-@ToString(exclude = {"member", "orderItems"})
+@ToString(exclude = {"member", "orderItems", "payments"})
 @Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(unique = true, nullable = false)
     private String code;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,6 +47,10 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Payment> payments = new ArrayList<>();
 
     // order item 추가
     public void addOrderItem(OrderItem orderItem) {

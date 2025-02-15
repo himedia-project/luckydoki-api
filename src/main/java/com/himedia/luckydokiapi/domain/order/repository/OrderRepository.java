@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long>,
         OrderRepositoryCustom {
@@ -15,4 +16,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
     List<Order> findByEmail(@Param("email") String email);
 
 
+    @Query("SELECT o FROM Order o WHERE o.code = :code")
+    Optional<Order> findByCode(@Param("code") String orderId);
 }
