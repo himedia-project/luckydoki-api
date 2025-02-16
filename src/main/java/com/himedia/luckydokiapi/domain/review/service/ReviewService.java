@@ -24,7 +24,9 @@ public interface ReviewService {
                 .productId(review.getProduct().getId())
                 .productName(review.getProduct().getName())
                 .imageName(review.getImage())
+                .shopImage(review.getShop().getImage())
                 .createdAt(review.getCreatedAt())
+                .shopImage(review.getShop().getImage())
                 .build();
         return reviewResponseDTO;
 
