@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.cart.controller; // 올바른 패키지 경로
 
 
+import com.himedia.luckydokiapi.domain.cart.dto.CartItemChangeDTO;
 import com.himedia.luckydokiapi.domain.cart.dto.CartItemDTO;
 import com.himedia.luckydokiapi.domain.cart.dto.CartItemListDTO;
 import com.himedia.luckydokiapi.domain.cart.dto.CartItemListIdDTO;
@@ -31,7 +32,7 @@ public class CartController {
     }
 
     // 장바구니에 상품 추가
-    @PostMapping
+    @PostMapping("/item")
     public List<CartItemListDTO> addCartItem(
             @AuthenticationPrincipal MemberDTO memberDTO,
             @Valid @RequestBody CartItemDTO itemDTO
@@ -40,8 +41,24 @@ public class CartController {
         return cartService.addCartItem(memberDTO.getEmail(), itemDTO); // 아이템 추가
     }
 
+    // 장바구니 수량 변경
+    @PostMapping("/item/{cartItemId}/qty")
+    public List<CartItemListDTO> changeCartItemQty(
+            @PathVariable Long cartItemId,
+            @AuthenticationPrincipal MemberDTO memberDTO,
+            @Valid @RequestBody CartItemChangeDTO itemDTO
+    ) {
+        log.info("changeCartItemQty.......... cartItemId: {}, memberDTO: {}, itemDTO gty: {}",cartItemId, memberDTO, itemDTO);
+        // 삭제 처리
+        if (itemDTO.getQty() <= 0) {
+            return cartService.removeCartItem(memberDTO.getEmail(), cartItemId);
+        }
+        return cartService.changeCartItemQty(memberDTO.getEmail(), cartItemId, itemDTO.getQty());
+    }
+
+
     // 장바구니 상품 삭제
-    @DeleteMapping("/{cartItemId}")
+    @DeleteMapping("/item/{cartItemId}")
     public List<CartItemListDTO> removeFromCart(
             @PathVariable Long cartItemId,
             @AuthenticationPrincipal MemberDTO memberDTO
@@ -51,12 +68,12 @@ public class CartController {
     }
 
     // 장바구니 상품 전체삭제
-    @DeleteMapping("/all")
-    public List<CartItemListDTO> removeFromCartAll(
+    @DeleteMapping("/item/list")
+    public List<CartItemListDTO> removeFromCartItemList(
             @RequestBody CartItemListIdDTO requestDTO,
             @AuthenticationPrincipal MemberDTO memberDTO
     ) {
-        log.info("removeFromCartAll memberDTO: {} , cartitem requestDTO: {}", memberDTO, requestDTO);
-        return cartService.removeCartItemAll(memberDTO.getEmail(), requestDTO.getCartItemIdList());
+        log.info("removeFromCartItemList memberDTO: {} , cartitem requestDTO: {}", memberDTO, requestDTO);
+        return cartService.removeFromCartItemList(memberDTO.getEmail(), requestDTO.getCartItemIdList());
     }
 }

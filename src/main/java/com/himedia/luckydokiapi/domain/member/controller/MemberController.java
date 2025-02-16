@@ -8,6 +8,7 @@ import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import com.himedia.luckydokiapi.util.CookieUtil;
+import com.himedia.luckydokiapi.util.JWTUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.himedia.luckydokiapi.util.TimeUtil.checkTime;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/member")
@@ -26,6 +29,7 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JWTUtil jwtUtil;
     private final JwtProps jwtProps;
 
     private final CouponService couponService;
@@ -80,6 +84,31 @@ public class MemberController {
         CookieUtil.removeTokenCookie(response, "refreshToken");
 
         return ResponseEntity.ok("logout success!");
+    }
+
+    @GetMapping("/refresh")
+    public Map<String, Object> refresh(
+            @CookieValue(value = "refreshToken") String refreshToken,
+            HttpServletResponse response) {
+        log.info("refresh refreshToken: {}", refreshToken);
+
+        // RefreshToken 검증
+        Map<String, Object> claims = jwtUtil.validateToken(refreshToken);
+        log.info("RefreshToken claims: {}", claims);
+
+        String newAccessToken = jwtUtil.generateToken(claims, jwtProps.getAccessTokenExpirationPeriod());
+        String newRefreshToken = jwtUtil.generateToken(claims, jwtProps.getRefreshTokenExpirationPeriod());
+
+        // refreshToken 만료시간이 1시간 이하로 남았다면, 새로 발급
+        if (checkTime((Integer) claims.get("exp"))) {
+            // 새로 발급
+            CookieUtil.setTokenCookie(response, "refreshToken", newRefreshToken, jwtProps.getRefreshTokenExpirationPeriod()); // 1day
+        } else {
+            // 만료시간이 1시간 이상이면, 기존 refreshToken 그대로
+            CookieUtil.setNewRefreshTokenCookie(response, "refreshToken", refreshToken);
+        }
+
+        return Map.of("newAccessToken", newAccessToken);
     }
 
 

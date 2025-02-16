@@ -35,6 +35,8 @@ public class CartItem extends BaseEntity {
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
+    private int qty;
+
     private Integer price;
 
     private Integer discountPrice;
@@ -42,15 +44,30 @@ public class CartItem extends BaseEntity {
     private Integer discountRate;
 
 
-    public static CartItem from(Product product, Cart cart) {
+    public static CartItem from(Product product, Cart cart, int qty) {
         return CartItem.builder()
                 .product(product)
                 .cart(cart)
+                .qty(qty)
                 .price(product.getPrice())
                 .discountPrice(product.getDiscountPrice())
                 .discountRate(product.getDiscountRate())
                 .build();
     }
 
+    /**
+     * 장바구니 아이템 수량 변경
+     * @param qty 변경할 수량
+     */
+    public void changeQty(int qty) {
+        this.qty = qty;
+    }
 
+    /**
+     * 기존의 장바구니 아이템 수량에 새수량 더 추가
+     * @param qty 추가할 수량
+     */
+    public void addQty(int qty) {
+        this.qty += qty;
+    }
 }

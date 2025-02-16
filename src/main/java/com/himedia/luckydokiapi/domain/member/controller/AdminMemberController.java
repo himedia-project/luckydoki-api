@@ -16,9 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static com.himedia.luckydokiapi.util.TimeUtil.checkTime;
 
 @Slf4j
 @RestController
@@ -121,22 +122,7 @@ public class AdminMemberController {
         return ResponseEntity.ok(dto);
     }
 
-    /**
-     * 시간이 1시간 미만으로 남았는지 체크
-     *
-     * @param exp 만료시간
-     * @return 1시간 미만이면 true, 아니면 false
-     */
-    private boolean checkTime(Integer exp) {
 
-        // JWT exp를 날짜로 변환
-        Date expDate = new Date((long) exp * 1000);
-        // 현재 시간과의 차이 계산 - 밀리세컨즈
-        long gap = expDate.getTime() - System.currentTimeMillis();
-        // 분단위 계산
-        long leftMin = gap / (1000 * 60);
-        return leftMin < 60;
-    }
 
 
 }

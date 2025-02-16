@@ -47,6 +47,7 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.confirmPayment(dto.getPaymentKey(), dto.getOrderId(), dto.getAmount()));
     }
 
+    // 결제 취소 요청 API
     @PostMapping("/{orderId}/cancel")
     public ResponseEntity<PaymentResponseDTO> cancelPayment(
             @PathVariable String orderId,

@@ -67,9 +67,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Long order(Long couponId, List<CartItemDTO> cartItemDTOs, String email) {
-
-        // 쿠폰 조회
-        Coupon coupon = couponService.getCoupon(couponId);
         // 회원 정보 조회
         Member member = memberService.getEntity(email);
 
@@ -80,22 +77,29 @@ public class OrderServiceImpl implements OrderService {
             // 상품 정보 조회
             Product product = productService.getEntity(cartItemDTO.getProductId());
             // 주문 아이템 생성 (수량 정보만큼)
-            orderItemList.add(OrderItem.from(product, cartItemDTO.getCount()));
+            orderItemList.add(OrderItem.from(product, cartItemDTO.getQty()));
         }
 
         // 주문 생성
-        // 총 할인 금액
-        int discountTotalPrice = coupon.getDiscountPrice();
-
-        // 총 주문금액이 coupon minimumUsageAmount(쿠폰 사용 최소 금액)보다 작으면 예외처리
-        if (coupon.getMinimumUsageAmount() != null && discountTotalPrice >= coupon.getMinimumUsageAmount()) {
-            throw new IllegalArgumentException("쿠폰 사용 최소 금액 이상만 쿠폰적용이 됩니다. 주문 총금액 : " + discountTotalPrice +" , 쿠폰 사용 최소 금액 : " + coupon.getMinimumUsageAmount());
-        }
-
         Order savedOrder = orderRepository.save(Order.from(member, orderItemList));
-        log.info("Order created with code: {}", savedOrder.getCode()); // 생성된 주문 코드 로그 출력
-        // order 의 totalPrice 할인금액 적용
-        savedOrder.changeTotalPrice(Math.max(savedOrder.getCalcTotalPrice() - discountTotalPrice, 0));
+        log.info("Order created with code: {}", savedOrder.getCode());
+
+        // 쿠폰이 있는 경우의 처리
+        if (couponId != null) {
+            Coupon coupon = couponService.getCoupon(couponId);
+            int couponDiscountPrice = coupon.getDiscountPrice();
+            
+            // 총 주문금액이 coupon minimumUsageAmount(쿠폰 사용 최소 금액)보다 작으면 예외처리
+//            if (coupon.getMinimumUsageAmount() != null && savedOrder.getCalcTotalPrice() < coupon.getMinimumUsageAmount()) {
+//                throw new IllegalArgumentException("쿠폰 사용 최소 금액 이상만 쿠폰적용이 됩니다. 주문 총금액 : " + savedOrder.getCalcTotalPrice() + " , 쿠폰 사용 최소 금액 : " + coupon.getMinimumUsageAmount());
+//            }
+
+            // 할인된 가격으로 totalPrice 변경
+            savedOrder.changeTotalPrice(Math.max(savedOrder.getCalcTotalPrice() - couponDiscountPrice, 0));
+        } else {
+            // 쿠폰이 없는 경우 정상가격으로 설정
+            savedOrder.changeTotalPrice(savedOrder.getCalcTotalPrice());
+        }
 
         // 주문 후, 장바구니로 주문하는 거라면, 해당 장바구니 cart items 삭제
         cartService.getCartItemList(email).forEach(cartItemDTO -> {

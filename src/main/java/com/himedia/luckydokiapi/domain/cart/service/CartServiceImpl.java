@@ -11,6 +11,7 @@ import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.service.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,26 +41,40 @@ public class CartServiceImpl implements CartService {
                 .toList();
     }
 
+
     @Override
-    public List<CartItemListDTO> addCartItem(String email, CartItemDTO cartItemDTO) {
+    public List<CartItemListDTO> addCartItem(String email, CartItemDTO itemDTO) {
         log.info("addCartItem..........");
-        Long productId = cartItemDTO.getProductId();
-
-        // 장바구니 가져오기
+        memberService.getEntity(email);
+        Long productId = itemDTO.getProductId();
+        int qty = itemDTO.getQty();
+        // 장바구니 아이템 번호 cartItemId가 없는 경우(새로 추가하는 경우)
         Cart cart = this.getCart(email);
-        CartItem cartItem = cartItemRepository.getItemOfPno(email, productId);
+        CartItem cartItem = null;
 
+        // 이미 동일한 상품이 담긴 적이 있다면
+        cartItem = cartItemRepository.getItemOfPno(email, productId);
         if (cartItem == null) {
-            // 상품 정보를 데이터베이스에서 가져오기
+            // 그게 아니라면 새로 추가
             Product product = productService.getEntity(productId);
-
-            // 새로운 CartItem 생성
-            cartItemRepository.save(CartItem.from(product, cart));
+            cartItem = CartItem.from(product, cart, qty);
         } else {
-            log.info("이미 장바구니에 존재하는 상품입니다. 상품 ID: " + productId);
+            // 동일한 상품이 맞으면, 수량을 추가
+            cartItem.addQty(qty);
         }
-
+        cartItemRepository.save(cartItem);
         return this.getCartItemList(email);
+    }
+
+    @Override
+    public List<CartItemListDTO> changeCartItemQty(String email, Long cartItemId, int qty) {
+        log.info("changeCartItemQty..........");
+        // 장바구니 아이템 번호가 있고 && 수량만 변경하는 경우
+        memberService.getEntity(email);
+        CartItem cartItem = this.getCartItemEntity(cartItemId);
+        cartItem.changeQty(qty);
+
+        return getCartItemList(email);
     }
 
 
@@ -67,6 +82,7 @@ public class CartServiceImpl implements CartService {
     public List<CartItemListDTO> removeCartItem(String email, Long cartItemId) {
         log.info("removeCartItem..........");
         memberService.getEntity(email);
+        this.getCartItemEntity(cartItemId);
         Long cartId = cartItemRepository.getCartFromItem(cartItemId);
         log.info("cart id: {}", cartId);
 
@@ -79,9 +95,10 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CartItemListDTO> removeCartItemAll(String email, List<Long> cartItemIdList) {
+    public List<CartItemListDTO> removeFromCartItemList(String email, List<Long> cartItemIdList) {
         log.info("removeCartItemAll..........");
         memberService.getEntity(email);
+        cartItemIdList.forEach(this::getCartItemEntity);
         // 전체 삭제(벌크)
         cartItemRepository.deleteBulk(cartItemIdList);
 
@@ -92,7 +109,7 @@ public class CartServiceImpl implements CartService {
 
 
     /**
-     * 이메일을 통해, Cart 객체 가져오기
+     * 이메일을 통해, Cart 객체 가져오기, 없으면 생성해서 가져오기
      * @param email 이메일
      * @return Cart 객체
      */
@@ -110,5 +127,16 @@ public class CartServiceImpl implements CartService {
         }
 
         return cart;
+    }
+
+
+    /**
+     * CartItem Entity 가져오기
+     * @param cartItemId CartItem pk
+     * @return CartItem Entity
+     */
+    private CartItem getCartItemEntity(Long cartItemId) {
+        return cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 상품이 장바구니에 존재하지 않습니다. cartItemId: " + cartItemId));
     }
 }

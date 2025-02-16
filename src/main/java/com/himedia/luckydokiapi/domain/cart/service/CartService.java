@@ -14,9 +14,11 @@ public interface CartService {
 
     List<CartItemListDTO> addCartItem(String email, CartItemDTO cartItemDTO);
 
+    List<CartItemListDTO> changeCartItemQty(String email, Long cartItemId, int qty);
+
     List<CartItemListDTO> removeCartItem(String email, Long cartItemId);
 
-    List<CartItemListDTO> removeCartItemAll(String email, List<Long> cartItemIdList);
+    List<CartItemListDTO> removeFromCartItemList(String email, List<Long> cartItemIdList);
 
     default CartItemListDTO entityToDTO(CartItem cartItem) {
         return CartItemListDTO.builder()
@@ -24,9 +26,12 @@ public interface CartService {
                 .productId(cartItem.getProduct().getId())
                 .productName(cartItem.getProduct().getName())
                 .price(cartItem.getPrice())
+                .qty(cartItem.getQty())
                 .discountPrice(cartItem.getDiscountPrice())
                 .discountRate(cartItem.getDiscountRate())
                 .imageName(cartItem.getProduct().getImageList().get(0).getImageName())
                 .build();
     }
+
+
 }

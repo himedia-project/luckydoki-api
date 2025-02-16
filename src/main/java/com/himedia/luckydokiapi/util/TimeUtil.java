@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Random;
 
 public class TimeUtil {
@@ -35,6 +36,24 @@ public class TimeUtil {
             e.printStackTrace();
         }
     }
+
+    /**
+     * 시간이 1시간 미만으로 남았는지 체크
+     *
+     * @param exp 만료시간
+     * @return 1시간 미만이면 true, 아니면 false
+     */
+    public static boolean checkTime(Integer exp) {
+
+        // JWT exp를 날짜로 변환
+        Date expDate = new Date((long) exp * 1000);
+        // 현재 시간과의 차이 계산 - 밀리세컨즈
+        long gap = expDate.getTime() - System.currentTimeMillis();
+        // 분단위 계산
+        long leftMin = gap / (1000 * 60);
+        return leftMin < 60;
+    }
+
 
     public static String getNowTimeStr(String format) {
         LocalDateTime now = LocalDateTime.now();
