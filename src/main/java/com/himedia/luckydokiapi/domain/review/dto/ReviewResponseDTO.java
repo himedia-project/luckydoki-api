@@ -23,5 +23,4 @@ public class ReviewResponseDTO {
     private String imageName;
     private String shopImage;
     private LocalDateTime createdAt;
-    private String shopImage;
 }
