@@ -60,12 +60,13 @@ public class Order {
     }
 
     // 주문 생성
-    public static Order from(Member member, List<OrderItem> orderItems) {
+    public static Order from(Member member, List<OrderItem> orderItems, int totalPrice) {
         Order order = Order.builder()
                 .member(member)
                 .orderDate(LocalDateTime.now())
                 .orderStatus(OrderStatus.ORDER)
                 .code(orderCodeGenerator()) // 주문 코드 생성
+                .totalPrice(totalPrice)
                 .build();
 
         orderItems.forEach(order::addOrderItem);

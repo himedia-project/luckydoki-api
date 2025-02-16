@@ -77,12 +77,15 @@ public class OrderServiceImpl implements OrderService {
             // 상품 정보 조회
             Product product = productService.getEntity(cartItemDTO.getProductId());
             // 주문 아이템 생성 (수량 정보만큼)
-            orderItemList.add(OrderItem.from(product, cartItemDTO.getQty()));
+            OrderItem orderItem = OrderItem.from(product, cartItemDTO.getQty());
+            orderItemList.add(orderItem);
         }
 
         // 주문 생성
-        Order savedOrder = orderRepository.save(Order.from(member, orderItemList));
-        log.info("Order created with code: {}", savedOrder.getCode());
+        int totalPrice = orderItemList.stream().mapToInt(OrderItem::getTotalPrice).sum();
+
+        Order newOrder = Order.from(member, orderItemList, totalPrice);
+        log.info("new Order with code: {}, totalPrice: {}", newOrder.getCode(), newOrder.getTotalPrice());
 
         // 쿠폰이 있는 경우의 처리
         if (couponId != null) {
@@ -95,11 +98,14 @@ public class OrderServiceImpl implements OrderService {
 //            }
 
             // 할인된 가격으로 totalPrice 변경
-            savedOrder.changeTotalPrice(Math.max(savedOrder.getCalcTotalPrice() - couponDiscountPrice, 0));
+            newOrder.changeTotalPrice(Math.max(newOrder.getCalcTotalPrice() - couponDiscountPrice, 0));
         } else {
             // 쿠폰이 없는 경우 정상가격으로 설정
-            savedOrder.changeTotalPrice(savedOrder.getCalcTotalPrice());
+            newOrder.changeTotalPrice(newOrder.getCalcTotalPrice());
         }
+
+        // 주문 저장
+        Order savedOrder = orderRepository.save(newOrder);
 
         // 주문 후, 장바구니로 주문하는 거라면, 해당 장바구니 cart items 삭제
         cartService.getCartItemList(email).forEach(cartItemDTO -> {
