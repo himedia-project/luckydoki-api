@@ -23,7 +23,7 @@ public class CommunityController {
     private final CustomFileUtil fileUtil;
     private final CommunityService communityService;
 
-    @GetMapping("/{id}/detail")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<CommunityResponseDTO> getCommunity(@PathVariable Long id) {
         log.info("getCommunity: {}", id);
         return ResponseEntity.ok(communityService.getCommunityById(id));

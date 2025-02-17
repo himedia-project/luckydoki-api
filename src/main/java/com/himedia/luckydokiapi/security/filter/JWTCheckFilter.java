@@ -68,12 +68,21 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return true;
         }
 
+        if (path.startsWith("/api/community/**")) {
+            return true;
+        }
+
+
 
 //websocket handshake 요청 필터  안타게
         if (path.startsWith("/ws-stomp")) {
             return true;
         }
 
+        if (path.startsWith("/api/category")
+        ) {
+            return true;
+        }
 
         // -----
         // health check
@@ -108,16 +117,20 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         String autHeaderStr = request.getHeader("Authorization");
         log.info("autHeaderStr Authorization: {}", autHeaderStr);
 
-        if ((Objects.equals(autHeaderStr, "Bearer null") || autHeaderStr == null) && (
+        if ((Objects.equals(autHeaderStr, "Bearer null") || (autHeaderStr == null)) && (
                 request.getServletPath().startsWith("/api/product/list")
                         || (request.getServletPath().startsWith("/api/product/") && request.getServletPath().endsWith("/detail"))
                         || (request.getServletPath().startsWith("/api/product/") && request.getServletPath().endsWith("/tag/list"))
                         //리뷰 관련 api 상품 별 리뷰는 필터 안타게
                         || request.getServletPath().matches("^/api/review/list/\\d+$")
                         // shop 관련 api
-                        || request.getServletPath().startsWith("/api/shop/")
+                        || request.getServletPath().matches("/api/shop/\\d+$")
                         // community 관련 api
-                        || request.getServletPath().startsWith("/api/community")
+                        || request.getServletPath().startsWith("/api/community/detail")
+                        || request.getServletPath().startsWith("/api/community/list")
+                        //커뮤니티 글 별 댓글 조회
+                        || request.getServletPath().matches("/api/community/comment/\\d+$")
+
         )) {
             filterChain.doFilter(request, response);
             return;
