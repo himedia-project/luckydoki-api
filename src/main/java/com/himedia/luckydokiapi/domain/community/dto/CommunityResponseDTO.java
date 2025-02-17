@@ -35,7 +35,7 @@ public class CommunityResponseDTO {
     public static CommunityResponseDTO from(Community community) {
         return CommunityResponseDTO.builder()
                 .id(community.getId())
-                .shopImage(community.getMember().getShop().getImage())
+                .shopImage(community.getSellerShopImage())
                 .nickName(community.getMember().getNickName())
                 .title(community.getTitle())
                 .content(community.getContent())

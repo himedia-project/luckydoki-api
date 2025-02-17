@@ -79,4 +79,13 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
     public void clearImageList() {
         this.imageList.clear();
     }
+
+    /**
+     * 셀러 샵이미지 반환 if, 단순 유저는 null 반환
+     * @return
+     */
+    public String getSellerShopImage() {
+        // 게시글 작성자의 상점 이미지
+        return member.getShop() != null ? member.getShop().getImage() : null;
+    }
 }
