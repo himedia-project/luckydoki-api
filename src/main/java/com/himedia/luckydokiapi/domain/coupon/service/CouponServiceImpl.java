@@ -135,7 +135,6 @@ public class CouponServiceImpl implements CouponService {
             CouponRecord couponRecord = CouponRecord.builder()
                     .coupon(coupon)
                     .member(memberService.getEntity(email))
-                    .issuedAt(LocalDateTime.now())
                     .status(CouponRecordStatus.UNUSED)
                     .build();
             couponRecordRepository.save(couponRecord);

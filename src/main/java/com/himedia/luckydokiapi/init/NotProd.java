@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.init;
 
+import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
@@ -29,6 +30,8 @@ public class NotProd {
     private final PasswordEncoder passwordEncoder;
 
     private final ShopRepository shopRepository;
+
+    private final CouponService couponService;
 
 
     @Bean
@@ -98,6 +101,9 @@ public class NotProd {
                             .build();
                     shops.add(shop);
                 }
+
+                // 쿠폰 회원가입 쿠폰 발급
+                couponService.issueCoupon(1L, members.stream().map(Member::getEmail).toList());
 
                 shopRepository.saveAll(shops);
                 log.info("Member, Shop 초기 데이터 생성 완료");

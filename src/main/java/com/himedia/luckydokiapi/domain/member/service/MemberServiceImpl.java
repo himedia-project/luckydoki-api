@@ -8,9 +8,11 @@ import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.community.repository.CommentRepository;
 import com.himedia.luckydokiapi.domain.community.repository.CommunityProductRepository;
 import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
+import com.himedia.luckydokiapi.domain.coupon.entity.Coupon;
 import com.himedia.luckydokiapi.domain.coupon.entity.CouponRecord;
 import com.himedia.luckydokiapi.domain.coupon.repository.CouponRecordRepository;
 import com.himedia.luckydokiapi.domain.coupon.repository.CouponRepository;
+import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import com.himedia.luckydokiapi.domain.event.repository.EventBridgeRepository;
 import com.himedia.luckydokiapi.domain.event.service.EventService;
 import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
@@ -81,6 +83,8 @@ public class MemberServiceImpl implements MemberService {
     private final OrderItemRepository orderItemRepository;
     private final ReviewRepository reviewRepository;
 
+    private final CouponService couponService;
+
 
     @Transactional(readOnly = true)
     @Override
@@ -125,6 +129,9 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         member.addRole(MemberRole.USER);
+
+        // 회원가입시, 첫회원가입축하쿠폰 couponId: 1 부여
+        couponService.issueCoupon(1L, List.of(member.getEmail()));
 
         memberRepository.save(member);
     }
