@@ -28,7 +28,9 @@ public class OrderHistDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime orderDate;    // 주문 날짜
     private OrderStatus orderStatus;    // 주문 상태
-    private Integer totalPrice;         // 주문 총 금액
+    private Integer productsPrice;      // 주문 상품 합계금액
+    private Integer totalPrice;         // 주문 총 금액(실제 결제금액)
+    private Integer totalDiscountPrice; // 총 할인 금액
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime paymentDate; // 결제 날짜
@@ -46,7 +48,9 @@ public class OrderHistDTO {
                 .email(order.getMember().getEmail())
                 .orderDate(order.getOrderDate())
                 .orderStatus(order.getOrderStatus())
+                .productsPrice(order.getProductsPrice())
                 .totalPrice(order.getTotalPrice())
+                .totalDiscountPrice(order.getTotalDiscountPrice())
                 .paymentDate(order.getRecentPaymentDate())
                 .paymentStatus(order.getRecentPaymentStatus())
                 .build();

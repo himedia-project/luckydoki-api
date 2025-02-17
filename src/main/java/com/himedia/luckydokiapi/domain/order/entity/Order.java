@@ -41,9 +41,16 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    // 주문 총 금액
+    // 주문한 상품 합계금액
+    @ColumnDefault("0")
+    private int productsPrice;
+
+    // 주문 총 금액(실제 결제금액)
     @ColumnDefault("0")
     private int totalPrice;
+    // 총 할인 금액
+    @ColumnDefault("0")
+    private int totalDiscountPrice;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -60,13 +67,15 @@ public class Order {
     }
 
     // 주문 생성
-    public static Order from(Member member, List<OrderItem> orderItems, int totalPrice) {
+    public static Order from(Member member, List<OrderItem> orderItems, int totalDiscountPrice) {
         Order order = Order.builder()
                 .member(member)
                 .orderDate(LocalDateTime.now())
                 .orderStatus(OrderStatus.ORDER)
                 .code(orderCodeGenerator()) // 주문 코드 생성
-                .totalPrice(totalPrice)
+                .productsPrice(getSum(orderItems))
+                .totalPrice(getSum(orderItems) - totalDiscountPrice)
+                .totalDiscountPrice(totalDiscountPrice)
                 .build();
 
         orderItems.forEach(order::addOrderItem);
@@ -74,8 +83,12 @@ public class Order {
         return order;
     }
 
+    private static int getSum(List<OrderItem> orderItems) {
+        return orderItems.stream().mapToInt(OrderItem::getTotalPrice).sum();
+    }
+
     // 총합 계산
-    public int getCalcTotalPrice() {
+    public int getCalcProductsPrice() {
         return orderItems.stream()
                 .mapToInt(OrderItem::getTotalPrice)
                 .sum();
@@ -123,4 +136,5 @@ public class Order {
                 .map(Payment::getApprovedAt)
                 .orElse(null);
     }
+
 }

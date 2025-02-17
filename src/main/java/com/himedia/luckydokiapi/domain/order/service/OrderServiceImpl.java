@@ -80,12 +80,8 @@ public class OrderServiceImpl implements OrderService {
             OrderItem orderItem = OrderItem.from(product, cartItemDTO.getQty());
             orderItemList.add(orderItem);
         }
-
-        // 주문 생성
-        int totalPrice = orderItemList.stream().mapToInt(OrderItem::getTotalPrice).sum();
-
-        Order newOrder = Order.from(member, orderItemList, totalPrice);
-        log.info("new Order with code: {}, totalPrice: {}", newOrder.getCode(), newOrder.getTotalPrice());
+        // 총 할인 금액 계산
+        int totalDiscountPrice = 0;
 
         // 쿠폰이 있는 경우의 처리
         if (couponId != null) {
@@ -97,12 +93,12 @@ public class OrderServiceImpl implements OrderService {
 //                throw new IllegalArgumentException("쿠폰 사용 최소 금액 이상만 쿠폰적용이 됩니다. 주문 총금액 : " + savedOrder.getCalcTotalPrice() + " , 쿠폰 사용 최소 금액 : " + coupon.getMinimumUsageAmount());
 //            }
 
-            // 할인된 가격으로 totalPrice 변경
-            newOrder.changeTotalPrice(Math.max(newOrder.getCalcTotalPrice() - couponDiscountPrice, 0));
-        } else {
-            // 쿠폰이 없는 경우 정상가격으로 설정
-            newOrder.changeTotalPrice(newOrder.getCalcTotalPrice());
+            totalDiscountPrice = couponDiscountPrice;  // 지금 현재 할인금액 쿠폰 밖에 없음!
         }
+
+        // 주문 생성
+        Order newOrder = Order.from(member, orderItemList, totalDiscountPrice);
+        log.info("new Order with code: {}, productsPrice: {}", newOrder.getCode(), newOrder.getTotalPrice());
 
         // 주문 저장
         Order savedOrder = orderRepository.save(newOrder);

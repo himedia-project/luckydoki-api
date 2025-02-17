@@ -31,9 +31,9 @@ public class OrderItem extends BaseEntity {
     @JoinColumn(name = "orders_id")
     private Order order;
 
-    private int orderPrice; // 해당상품 주문단일 가격
+    private int orderPrice;     // 해당상품 주문단일 가격 -> 할인가격으로!
 
-    private int count;      // 해당 상품 주문 수량
+    private int count;          // 해당 상품 주문 수량
 
     /**
      * 주문 상품 생성
@@ -42,14 +42,14 @@ public class OrderItem extends BaseEntity {
      * @return OrderItem
      */
     public static OrderItem from(Product product, int count) {
-        int orderPrice = product.getPrice();
         OrderItem orderItem = new OrderItem();
         orderItem.setProduct(product);
-        orderItem.setOrderPrice(orderPrice);
+        orderItem.setOrderPrice(product.getDiscountPrice());        // 할인가격으로 변경(실제 가격임)
         orderItem.setCount(count);
 
         return orderItem;
     }
+
 
     /**
      * 주문 상품의 총 가격 계산
@@ -60,8 +60,9 @@ public class OrderItem extends BaseEntity {
         return orderPrice * this.count; // 주문 가격 * 주문 수량
     }
 
+
     /**
-     * 주문 취소 (불필요한 로직 제거)
+     * 주문 취소 (불필요한 로직 제거) -> 현재, 주무건당 취소 로직을 돌리고 있음!
      */
     public void cancel() {
         // 주문 취소 관련 로직을 추가할 수 있습니다.
