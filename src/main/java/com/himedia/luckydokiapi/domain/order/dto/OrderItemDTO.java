@@ -16,6 +16,7 @@ public class OrderItemDTO {
     private String productName;     // 상품명
     private int count;              // 상품 수량
     private int orderPrice;         // 상품 주문 가격
+    private int discountPrice;      // 상품 할인 가격
     private String image;           // 상품 이미지 이름
 
     // builder
@@ -25,6 +26,7 @@ public class OrderItemDTO {
                 .productName(orderItem.getProduct().getName())
                 .count(orderItem.getCount())
                 .orderPrice(orderItem.getOrderPrice())
+                .discountPrice(orderItem.getProduct().getDiscountPrice())
                 .image(image)
                 .build();
     }
