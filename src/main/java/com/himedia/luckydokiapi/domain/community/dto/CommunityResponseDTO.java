@@ -21,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CommunityResponseDTO {
     private Long id;
+    private String shopImage;
     private String nickName;
     private String title;
     private String content;
@@ -37,6 +38,7 @@ public class CommunityResponseDTO {
                 .id(community.getId())
                 .title(community.getTitle())
                 .content(community.getContent())
+                .shopImage(community.getMember().getShop().getImage())
                 .nickName(community.getMember().getNickName())
                 .uploadFileNames(community.getImageList().stream().map(CommunityImage::getImageName).toList())
                 .productIds(community.getCommunityProductList().stream().map(communityProduct -> communityProduct.getProduct().getId()).toList())
