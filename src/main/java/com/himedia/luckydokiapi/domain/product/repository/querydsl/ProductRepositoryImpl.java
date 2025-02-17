@@ -109,11 +109,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         return queryFactory
                 .selectFrom(product)
+                .leftJoin(product.imageList, productImage).on(productImage.ord.eq(0))
                 .leftJoin(product.productTagList, productTag).fetchJoin()
                 .leftJoin(productTag.tag, tag).fetchJoin()
                 .where(
                         product.delFlag.eq(false),
                         eqCategory(requestDTO.getCategoryId()),
+                        eqTagId(requestDTO.getTagId()),
                         eqIsNew(requestDTO.getIsNew()),
                         containsSearchKeyword(requestDTO.getSearchKeyword()),
                         eqBest(requestDTO.getBest()),
@@ -271,6 +273,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         }
         return product.shop.member.email.eq(email); // product - shop - member - email 연관관계
 
+    }
+
+    private BooleanExpression eqTagId(Long tagId) {
+        if (tagId == null) {
+            return null;
+        }
+        return product.productTagList.any().tag.id.eq(tagId);
     }
 
 }

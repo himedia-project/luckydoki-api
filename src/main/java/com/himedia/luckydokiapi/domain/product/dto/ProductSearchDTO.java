@@ -32,4 +32,6 @@ public class ProductSearchDTO extends PageRequestDTO {
 
     // 상품 태그 문자열 리스트 "액션,스포츠,연애"
     private List<String> tagStrList;
+
+    private Long tagId; // 태그 pk
 }
