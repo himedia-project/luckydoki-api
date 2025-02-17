@@ -2,10 +2,7 @@ package com.himedia.luckydokiapi.domain.product.service;
 
 
 
-import com.himedia.luckydokiapi.domain.product.dto.AdminCategoriesDTO;
-import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
-import com.himedia.luckydokiapi.domain.product.dto.ChildCategoryDTO;
-import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
+import com.himedia.luckydokiapi.domain.product.dto.*;
 import com.himedia.luckydokiapi.domain.product.entity.Category;
 
 import java.util.List;
@@ -23,6 +20,8 @@ public interface CategoryService {
     List<CategoryDTO> getChildCategoryList(Long subCategoryId);
 
     List<ProductDTO.Response> getProductCategoryId(Long categoryId,String email) ;
+
+    CategoryDTO getParentCategory(Long categoryId);
 
 
     List<AdminCategoriesDTO> getCategory(Long categoryId);

@@ -10,6 +10,7 @@ import com.himedia.luckydokiapi.domain.product.entity.Category;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.repository.CategoryRepository;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     }
 
-
     //main -> sub
     @Transactional(readOnly = true)
     @Override
@@ -76,6 +76,18 @@ public class CategoryServiceImpl implements CategoryService {
         List<Product> productList = productRepository.findByProductCategoryId(categoryId);
         return productList.stream().map(product -> productServiceImpl.entityToDTO(product,productLikeRepository.likes(email, product.getId()))).toList();
     } // 람다식을 사용하여 각각의 요소들을 전달하여 하나씩 dto 로 변환 후 list 로 수집
+
+
+    // 해당 카테고리의 부모 카테고리를 조회
+    @Transactional(readOnly = true)
+    @Override
+    public CategoryDTO getParentCategory(Long categoryId) {
+        Category parentCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 카테고리의 부모 카테고리가 존재하지 않습니다. categoryId: " + categoryId));
+
+        return entityToCategoriesDTO(parentCategory.getParent() == null ? parentCategory : parentCategory.getParent());
+
+    }
 
 
     //admin 용 카테고리 리스트
