@@ -11,7 +11,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -36,10 +35,10 @@ public class CommunityResponseDTO {
     public static CommunityResponseDTO from(Community community) {
         return CommunityResponseDTO.builder()
                 .id(community.getId())
-                .title(community.getTitle())
-                .content(community.getContent())
                 .shopImage(community.getMember().getShop().getImage())
                 .nickName(community.getMember().getNickName())
+                .title(community.getTitle())
+                .content(community.getContent())
                 .uploadFileNames(community.getImageList().stream().map(CommunityImage::getImageName).toList())
                 .productIds(community.getCommunityProductList().stream().map(communityProduct -> communityProduct.getProduct().getId()).toList())
                 .productDTOs(community.getCommunityProductList().stream().map(communityProduct -> ProductDTO.Response.from(communityProduct.getProduct())).toList())

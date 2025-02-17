@@ -46,7 +46,7 @@ public class CommunityServiceImpl implements CommunityService {
     public CommunityResponseDTO getCommunityById(Long communityId) {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
-        return toDTO(community);
+        return CommunityResponseDTO.from(community);
     }
 
 
@@ -54,7 +54,7 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public List<CommunityResponseDTO> getAllCommunities(CommunitySearchDTO request) {
         return communityRepository.findByDTO(request).stream()
-                .map(this::toDTO)
+                .map(CommunityResponseDTO::from)
                 .collect(Collectors.toList());
     }
 
@@ -62,7 +62,7 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public List<CommunityResponseDTO> getCommunitiesByMemberEmail(String email) {
         return communityRepository.findByMemberEmail(email).stream()
-                .map(this::toDTO)
+                .map(CommunityResponseDTO::from)
                 .collect(Collectors.toList());
     }
 
