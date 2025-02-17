@@ -10,6 +10,7 @@ import com.himedia.luckydokiapi.security.MemberDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,7 @@ public class CartController {
     private final CartService cartService; // CartService 주입
 
     // 장바구니 목록 조회
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_SELLER')")
     @GetMapping("/item/list")
     public List<CartItemListDTO> getCartItems(@AuthenticationPrincipal MemberDTO memberDTO) {
         String email = memberDTO.getEmail();
@@ -32,6 +34,7 @@ public class CartController {
     }
 
     // 장바구니에 상품 추가
+    @PreAuthorize("#memberDTO.getEmail() == authentication.name")
     @PostMapping("/item")
     public List<CartItemListDTO> addCartItem(
             @AuthenticationPrincipal MemberDTO memberDTO,
@@ -42,6 +45,7 @@ public class CartController {
     }
 
     // 장바구니 수량 변경
+    @PreAuthorize("#memberDTO.getEmail() == authentication.name")
     @PostMapping("/item/{cartItemId}/qty")
     public List<CartItemListDTO> changeCartItemQty(
             @PathVariable Long cartItemId,
@@ -58,6 +62,7 @@ public class CartController {
 
 
     // 장바구니 상품 삭제
+    @PreAuthorize("#memberDTO.getEmail() == authentication.name")
     @DeleteMapping("/item/{cartItemId}")
     public List<CartItemListDTO> removeFromCart(
             @PathVariable Long cartItemId,
@@ -68,6 +73,7 @@ public class CartController {
     }
 
     // 장바구니 상품 전체삭제
+    @PreAuthorize("#memberDTO.getEmail() == authentication.name")
     @DeleteMapping("/item/list")
     public List<CartItemListDTO> removeFromCartItemList(
             @RequestBody CartItemListIdDTO requestDTO,
