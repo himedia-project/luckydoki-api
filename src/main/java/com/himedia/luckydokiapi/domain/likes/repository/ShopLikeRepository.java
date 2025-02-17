@@ -27,4 +27,9 @@ public interface ShopLikeRepository extends JpaRepository<ShopLike, Long> {
     @Query("SELECT COUNT(s) > 0 FROM ShopLike s WHERE s.member.email = :email AND s.shop.id = :shopId")
     boolean likes(@Param("email") String email, @Param("shopId") Long shopId);
 
+    @Modifying
+    @Query("DELETE FROM ShopLike s WHERE s.member.email = :email")
+    void deleteByEmail(@Param("email") String email);
+
+
 }

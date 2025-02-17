@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.security;
 
 
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,10 @@ public class CustomUserDetailService implements UserDetailsService {
 
         Member member = memberRepository.getWithRoles(username)
                 .orElseThrow(() -> new UsernameNotFoundException("미존재하는 사용자 email: " + username));
+
+        if (member.getActive() == MemberActive.N){
+            throw new RuntimeException("탈퇴한 회원입니다.");
+        }
 
         MemberDTO memberDTO = new MemberDTO(
                 member.getEmail(),

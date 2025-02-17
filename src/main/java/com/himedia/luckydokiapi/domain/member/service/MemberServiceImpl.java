@@ -1,15 +1,39 @@
 package com.himedia.luckydokiapi.domain.member.service;
 
 
+import com.himedia.luckydokiapi.domain.cart.repository.CartItemRepository;
+import com.himedia.luckydokiapi.domain.cart.repository.CartRepository;
+import com.himedia.luckydokiapi.domain.community.entity.Comment;
+import com.himedia.luckydokiapi.domain.community.entity.Community;
+import com.himedia.luckydokiapi.domain.community.repository.CommentRepository;
+import com.himedia.luckydokiapi.domain.community.repository.CommunityProductRepository;
+import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
+import com.himedia.luckydokiapi.domain.coupon.entity.CouponRecord;
+import com.himedia.luckydokiapi.domain.coupon.repository.CouponRecordRepository;
+import com.himedia.luckydokiapi.domain.coupon.repository.CouponRepository;
+import com.himedia.luckydokiapi.domain.event.repository.EventBridgeRepository;
+import com.himedia.luckydokiapi.domain.event.service.EventService;
+import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
+import com.himedia.luckydokiapi.domain.likes.entity.ShopLike;
+import com.himedia.luckydokiapi.domain.likes.repository.ProductLikeRepository;
+import com.himedia.luckydokiapi.domain.likes.repository.ShopLikeRepository;
 import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
 import com.himedia.luckydokiapi.domain.member.dto.MemberDetailDTO;
 import com.himedia.luckydokiapi.domain.member.dto.SellerRequestDTO;
 import com.himedia.luckydokiapi.domain.member.dto.UpdateMemberDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
+import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
+import com.himedia.luckydokiapi.domain.order.entity.Order;
+import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
+import com.himedia.luckydokiapi.domain.order.repository.OrderItemRepository;
+import com.himedia.luckydokiapi.domain.order.repository.OrderRepository;
+import com.himedia.luckydokiapi.domain.payment.repository.PaymentRepository;
+import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
+import com.himedia.luckydokiapi.domain.review.repository.ReviewRepository;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.props.JwtProps;
@@ -24,6 +48,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -35,14 +60,26 @@ public class MemberServiceImpl implements MemberService {
     private final SellerApplicationRepository sellerApplicationRepository;
     private final JWTUtil jwtUtil;
     private final JwtProps jwtProps;
-
     private final CustomUserDetailService userDetailService;
-
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final CustomFileUtil fileUtil;
     private final ShopRepository shopRepository;
+    private final EventBridgeRepository eventBridgeRepository;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+    private final CommunityRepository communityRepository;
+    private final CommentRepository commentRepository;
+    private final CommunityProductRepository communityProductRepository;
+    private final CouponRepository couponRepository;
+    private final CouponRecordRepository couponRecordRepository;
+    private final ProductRepository productRepository;
+    private final ProductLikeRepository productLikeRepository;
+    private final ShopLikeRepository shopLikeRepository;
+    private final OrderRepository orderRepository;
+    private final PaymentRepository paymentRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final ReviewRepository reviewRepository;
 
 
     @Transactional(readOnly = true)
@@ -50,6 +87,10 @@ public class MemberServiceImpl implements MemberService {
     public Map<String, Object> login(String email, String password) {
         MemberDTO memberAuthDTO = (MemberDTO) userDetailService.loadUserByUsername(email);
         log.info("email :{} , password :{} ", email, password);
+
+        if(memberAuthDTO.getActive() == MemberActive.N){
+            throw new RuntimeException("탈퇴한 회원은 로그인할 수 없습니다.");
+        }
 
         if (!passwordEncoder.matches(password, memberAuthDTO.getPassword())) {
             throw new RuntimeException("비밀번호가 틀렸습니다.");
@@ -169,26 +210,47 @@ public class MemberServiceImpl implements MemberService {
             throw new IllegalStateException("이미 셀러 신청을 완료한 회원입니다.");
         }
 
+        if (requestDTO.getProfileImage() == null || requestDTO.getProfileImage().isEmpty()) {
+            throw new IllegalArgumentException("프로필 이미지는 필수 입력값입니다.");
+        }
+
+        // 파일을 업로드하고 DB에 저장할 파일 경로를 설정
+        String uploadedImagePath = fileUtil.uploadS3File(requestDTO.getProfileImage());
+
+        // shopImage 값을 설정한 상태에서 SellerApplication 객체 생성
         SellerApplication application = SellerApplication.builder()
                 .email(member.getEmail())
                 .nickName(member.getNickName())
                 .introduction(requestDTO.getIntroduction())
+                .shopImage(uploadedImagePath)  // 여기서 바로 설정
                 .approved(ShopApproved.N)
                 .build();
 
-        // 프로필 이미지가 있을 경우 S3에 업로드 후 URL 저장
-        if (requestDTO.getProfileImage() != null) {
-            ;
-            application.changeShopImage(fileUtil.uploadS3File(requestDTO.getProfileImage()));
-        }
-
         SellerApplication saved = sellerApplicationRepository.save(application);
-
         return saved.getId();
     }
 
 
     private Shop getSeller(String email) {
+
         return shopRepository.findByMemberEmail(email).orElse(null);
     }
+
+
+    @Transactional
+    public void deleteMember(String email) {
+
+        deactivateMember(email); // 회원 비활성화
+    }
+
+    @Transactional
+    public void deactivateMember(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+
+        member.deactivate(); // 회원 비활성화
+    }
+
+
+
 }

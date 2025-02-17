@@ -45,3 +45,8 @@ INSERT INTO `category` (`id`, `last_type`, `logo`, `name`, `parent_id`) VALUES (
 INSERT INTO `category` (`id`, `last_type`, `logo`, `name`, `parent_id`) VALUES (34, 'N', NULL, '패션잡화', 1);
 INSERT INTO `category` (`id`, `last_type`, `logo`, `name`, `parent_id`) VALUES (35, 'Y', NULL, '여성신발', 34);
 INSERT INTO `category` (`id`, `last_type`, `logo`, `name`, `parent_id`) VALUES (36, 'Y', NULL, '남성신발', 34);
+
+
+
+
+

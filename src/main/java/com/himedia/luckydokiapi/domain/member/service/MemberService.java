@@ -74,5 +74,9 @@ public interface MemberService {
                 .activeCouponCount(member.getActiveCouponCount())
                 .build();
     }
+
+    void deleteMember(String email);
+
+
 }
 

@@ -39,6 +39,7 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'Y'")
+    @Column(nullable = false)
     private MemberActive active;
 
     @Enumerated(EnumType.STRING)
@@ -97,6 +98,10 @@ public class Member extends BaseEntity {
         return couponRecordList.stream()
                 .filter(couponRecord -> couponRecord.getCoupon().getStatus() == CouponStatus.ISSUED)
                 .count();
+    }
+
+    public void deactivate() {
+        this.active = MemberActive.N;
     }
 }
 

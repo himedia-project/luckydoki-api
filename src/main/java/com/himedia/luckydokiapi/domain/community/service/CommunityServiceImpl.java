@@ -70,8 +70,10 @@ public class CommunityServiceImpl implements CommunityService {
     public Long postCommunity(String email, CommunityRequestDTO request) {
         Member member = memberService.getEntity(email);
         // 상품을 등록하는 경우에만 셀러인지 확인
-        if (!member.getMemberRoleList().contains(MemberRole.SELLER)) {
-            throw new IllegalArgumentException("셀러만 상품을 등록할 수 있습니다. email: " + email);
+        if (request.getProductIds() != null && !request.getProductIds().isEmpty()) {
+            if (!member.getMemberRoleList().contains(MemberRole.SELLER)) {
+                throw new IllegalArgumentException("셀러만 상품을 등록할 수 있습니다. email: " + email);
+            }
         }
 
         // 파일 업로드 (누구나 가능)

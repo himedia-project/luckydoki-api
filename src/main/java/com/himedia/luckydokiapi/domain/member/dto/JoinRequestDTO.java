@@ -23,5 +23,4 @@ public class JoinRequestDTO {
     private String phone;
 
     private String fcmToken;
-
 }

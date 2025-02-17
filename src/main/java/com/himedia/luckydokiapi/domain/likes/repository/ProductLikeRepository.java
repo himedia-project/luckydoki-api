@@ -27,4 +27,9 @@ public interface ProductLikeRepository extends JpaRepository<ProductLike, Long> 
     @Query("SELECT COUNT(p) > 0 FROM ProductLike p WHERE p.member.email = :email AND p.product.id = :productId")
     boolean likes(@Param("email") String email, @Param("productId") Long productId);
 
+    @Modifying
+    @Query("DELETE FROM ProductLike p WHERE p.member.email = :email")
+    void deleteByEmail(@Param("email") String email);
+
+
 }

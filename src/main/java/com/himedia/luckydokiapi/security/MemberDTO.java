@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.security;
 
+import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,6 +23,7 @@ public class MemberDTO extends User {
     private String phone;
     private String nickName;
     private List<String> roleNames = new ArrayList<>();
+    private MemberActive active;
 
 
     public MemberDTO(String email, String password, String phone,String nickName, List<String> roleNames) {
@@ -32,6 +34,7 @@ public class MemberDTO extends User {
         this.phone = phone;
         this.nickName = nickName;
         this.roleNames = roleNames;
+        this.active = active != null ? active : MemberActive.Y;
     }
 
     public Map<String, Object> getClaims() {
@@ -43,6 +46,7 @@ public class MemberDTO extends User {
         dataMap.put("phone", this.phone);
         dataMap.put("nickName", this.nickName);
         dataMap.put("roleNames", this.roleNames);
+        dataMap.put("active", this.active.name());
 
         return dataMap;
     }

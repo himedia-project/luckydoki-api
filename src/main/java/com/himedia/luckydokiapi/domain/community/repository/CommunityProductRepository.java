@@ -12,4 +12,9 @@ public interface CommunityProductRepository extends JpaRepository<CommunityProdu
     @Modifying
     @Query("delete from CommunityProduct cp where cp.product = :product")
     void deleteByProduct(@Param("product") Product product);
+
+    @Modifying
+    @Query("DELETE FROM CommunityProduct cp WHERE cp.community.id IN (SELECT com.id FROM Community com WHERE com.member.email = :email)")
+    void deleteByMemberEmail(@Param("email") String email);
+
 }

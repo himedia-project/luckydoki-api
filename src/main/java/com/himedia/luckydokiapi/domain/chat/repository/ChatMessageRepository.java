@@ -1,3 +1,7 @@
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 //package com.himedia.luckydokiapi.domain.chat.repository;
 //
 //import com.himedia.luckydokiapi.domain.chat.document.ChatMessage;
@@ -19,4 +23,8 @@
 //    //buyer email 로 해당 유저의 채팅 문의 기록 조회
 //    List<ChatMessage> findByBuyerEmail(Long buyerEmail);
 //
+//
+//@Modifying
+//@Query("DELETE FROM ChatMessage cm WHERE cm.buyerEmail = :email OR cm.sellerEmail = :email")
+//void deleteAllByBuyerEmailOrSellerEmail(@Param("email") String email);
 //}

@@ -192,7 +192,7 @@ public class CouponServiceImpl implements CouponService {
                 .issuedAt(couponRecord.getIssuedAt())
                 .expiredAt(couponRecord.getExpiredAt())
                 .used(couponRecord.getUsedDatetime() != null)
-                // ✅ 쿠폰 유효기간 계산
+                // 쿠폰 유효기간 계산
                 .validPeriod(ChronoUnit.DAYS.between(couponRecord.getCoupon().getStartDate(), couponRecord.getCoupon().getEndDate()) + 1)
                 .build();
     }

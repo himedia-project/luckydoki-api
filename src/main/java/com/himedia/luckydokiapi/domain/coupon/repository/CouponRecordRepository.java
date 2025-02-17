@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.coupon.repository;
 import com.himedia.luckydokiapi.domain.coupon.entity.CouponRecord;
 import com.himedia.luckydokiapi.domain.coupon.repository.querydsl.CouponRecordRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -14,4 +15,9 @@ public interface CouponRecordRepository extends JpaRepository<CouponRecord, Long
 
     @Query("SELECT COUNT(cr) > 0 FROM CouponRecord cr WHERE cr.coupon.id = :couponId")
     boolean existsByCouponId(@Param("couponId") Long couponId);
+
+    @Modifying
+    @Query("DELETE FROM CouponRecord cr WHERE cr.member.email = :email")
+    void deleteByMemberEmail(@Param("email") String email);
+
 }

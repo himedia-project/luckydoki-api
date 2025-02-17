@@ -141,4 +141,11 @@ public class MemberController {
         return couponService.getCouponList(memberDTO.getEmail());
     }
 
+    @DeleteMapping
+    public ResponseEntity<String> deleteMember(@AuthenticationPrincipal MemberDTO member) {
+        memberService.deleteMember(member.getEmail());
+        return ResponseEntity.ok("회원 탈퇴 완료");
+    }
+
+
 }
