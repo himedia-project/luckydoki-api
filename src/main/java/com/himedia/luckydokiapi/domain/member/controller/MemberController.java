@@ -86,30 +86,30 @@ public class MemberController {
         return ResponseEntity.ok("logout success!");
     }
 
-    @GetMapping("/refresh")
-    public Map<String, Object> refresh(
-            @CookieValue(value = "refreshToken") String refreshToken,
-            HttpServletResponse response) {
-        log.info("refresh refreshToken: {}", refreshToken);
-
-        // RefreshToken 검증
-        Map<String, Object> claims = jwtUtil.validateToken(refreshToken);
-        log.info("RefreshToken claims: {}", claims);
-
-        String newAccessToken = jwtUtil.generateToken(claims, jwtProps.getAccessTokenExpirationPeriod());
-        String newRefreshToken = jwtUtil.generateToken(claims, jwtProps.getRefreshTokenExpirationPeriod());
-
-        // refreshToken 만료시간이 1시간 이하로 남았다면, 새로 발급
-        if (checkTime((Integer) claims.get("exp"))) {
-            // 새로 발급
-            CookieUtil.setTokenCookie(response, "refreshToken", newRefreshToken, jwtProps.getRefreshTokenExpirationPeriod()); // 1day
-        } else {
-            // 만료시간이 1시간 이상이면, 기존 refreshToken 그대로
-            CookieUtil.setNewRefreshTokenCookie(response, "refreshToken", refreshToken);
-        }
-
-        return Map.of("newAccessToken", newAccessToken);
-    }
+//    @GetMapping("/refresh")
+//    public Map<String, Object> refresh(
+//            @CookieValue(value = "refreshToken") String refreshToken,
+//            HttpServletResponse response) {
+//        log.info("refresh refreshToken: {}", refreshToken);
+//
+//        // RefreshToken 검증
+//        Map<String, Object> claims = jwtUtil.validateToken(refreshToken);
+//        log.info("RefreshToken claims: {}", claims);
+//
+//        String newAccessToken = jwtUtil.generateToken(claims, jwtProps.getAccessTokenExpirationPeriod());
+//        String newRefreshToken = jwtUtil.generateToken(claims, jwtProps.getRefreshTokenExpirationPeriod());
+//
+//        // refreshToken 만료시간이 1시간 이하로 남았다면, 새로 발급
+//        if (checkTime((Integer) claims.get("exp"))) {
+//            // 새로 발급
+//            CookieUtil.setTokenCookie(response, "refreshToken", newRefreshToken, jwtProps.getRefreshTokenExpirationPeriod()); // 1day
+//        } else {
+//            // 만료시간이 1시간 이상이면, 기존 refreshToken 그대로
+//            CookieUtil.setNewRefreshTokenCookie(response, "refreshToken", refreshToken);
+//        }
+//
+//        return Map.of("newAccessToken", newAccessToken);
+//    }
 
 
     @PostMapping("/upgrade-to-seller")
