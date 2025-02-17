@@ -35,12 +35,4 @@ public class Comment extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
 }
