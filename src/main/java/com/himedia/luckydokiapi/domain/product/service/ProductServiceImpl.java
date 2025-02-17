@@ -40,15 +40,6 @@ public class ProductServiceImpl implements ProductService {
     private final CustomFileUtil fileUtil;
     private final ProductLikeRepository productLikeRepository;
     
-    @Transactional(readOnly = true)
-    @Override
-    public List<ProductDTO.Response> getAllProducts() {
-        List<Product> products = productRepository.findAllByDelFlagFalse();
-        return products.stream()
-                .map(product -> this.entityToDTO(product, false))
-                .collect(Collectors.toList());
-    }
-    
     
     @Transactional(readOnly = true)
     @Override
