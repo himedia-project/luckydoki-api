@@ -114,7 +114,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void join(JoinRequestDTO request) {
-
         memberRepository.findByEmail(request.getEmail())
                 .ifPresent(member -> {
                     throw new IllegalArgumentException("이미 존재하는 회원입니다!");
@@ -129,11 +128,17 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         member.addRole(MemberRole.USER);
-
-        // 회원가입시, 첫회원가입축하쿠폰 couponId: 1 부여
-        couponService.issueCoupon(1L, List.of(member.getEmail()));
-
+        
+        // 먼저 회원을 저장
         memberRepository.save(member);
+
+        // 회원 저장 후 쿠폰 발급 처리
+        try {
+            couponService.issueCoupon(1L, List.of(member.getEmail()));
+        } catch (Exception e) {
+            log.error("Failed to issue welcome coupon for member: " + member.getEmail(), e);
+            // 쿠폰 발급 실패는 회원가입 실패로 이어지지 않도록 함
+        }
     }
 
     /**

@@ -11,7 +11,7 @@ import com.himedia.luckydokiapi.domain.coupon.enums.CouponStatus;
 import com.himedia.luckydokiapi.domain.coupon.repository.CouponRecordRepository;
 import com.himedia.luckydokiapi.domain.coupon.repository.CouponRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
-import com.himedia.luckydokiapi.domain.member.service.MemberService;
+import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.NumberGenerator;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,7 +34,7 @@ public class CouponServiceImpl implements CouponService {
 
     private final CouponRecordRepository couponRecordRepository;
 
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     @Override
     public PageResponseDTO<CouponResponseDto> getAllCoupons(CouponRequestDto requestDto) {
@@ -132,9 +132,12 @@ public class CouponServiceImpl implements CouponService {
                 throw new IllegalArgumentException("Coupon already issued to member: " + email);
             }
 
+            Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with email: " + email));
+
             CouponRecord couponRecord = CouponRecord.builder()
                     .coupon(coupon)
-                    .member(memberService.getEntity(email))
+                    .member(member)
                     .status(CouponRecordStatus.UNUSED)
                     .build();
             couponRecordRepository.save(couponRecord);
@@ -162,7 +165,8 @@ public class CouponServiceImpl implements CouponService {
      */
     @Override
     public List<CouponResponseDto> getCouponList(String email) {
-        Member member = memberService.getEntity(email);// 회원 조회
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with email: " + email));
         return couponRecordRepository.findCouponListByMemberEmail(member.getEmail()).stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
