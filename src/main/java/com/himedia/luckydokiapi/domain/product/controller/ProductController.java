@@ -24,7 +24,13 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
-
+    
+    @GetMapping
+    public ResponseEntity<List<ProductDTO.Response>> getAllProducts() {
+        log.info("Fetching all active products");
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
+    
     @GetMapping("/{id}/detail")
     public ResponseEntity<ProductDTO.Response> getProduct(@PathVariable Long id , @AuthenticationPrincipal MemberDTO memberDTO) {
         String email =  (memberDTO !=null) ? memberDTO.getEmail() : null;

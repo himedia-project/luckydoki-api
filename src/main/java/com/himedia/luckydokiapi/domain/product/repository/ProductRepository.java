@@ -23,6 +23,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>
     @Modifying
     @Query("update Product p set p.delFlag = true where p.id = :id")
     void modifyDeleteFlag(@Param("id") Long id);
-
+    
+    List<Product> findAllByDelFlagFalse();
 
 }
