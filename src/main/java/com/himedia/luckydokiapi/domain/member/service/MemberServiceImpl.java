@@ -114,6 +114,7 @@ public class MemberServiceImpl implements MemberService {
                 .email(request.getEmail())
                 .nickName(request.getNickName())
                 .birthday(request.getBirthday())
+                .profileImage("s_3f0b0873-b2e5-48d0-94e1-f72e5b9c75a5-luckydoki_favicon.png")
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
                 .build();
