@@ -1,9 +1,6 @@
 package com.himedia.luckydokiapi.domain.event.controller;
 
-import com.himedia.luckydokiapi.domain.event.dto.EventBridgeDto;
-import com.himedia.luckydokiapi.domain.event.dto.EventDto;
-import com.himedia.luckydokiapi.domain.event.dto.EventRequestDto;
-import com.himedia.luckydokiapi.domain.event.dto.EventSearchDto;
+import com.himedia.luckydokiapi.domain.event.dto.*;
 import com.himedia.luckydokiapi.domain.event.service.EventBridgeService;
 import com.himedia.luckydokiapi.domain.event.service.EventService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
@@ -26,6 +23,13 @@ public class AdminEventController {
     public ResponseEntity<PageResponseDTO<EventDto>> getEvents(EventSearchDto requestDto) {
         log.info("getEvents requestDto: {}", requestDto);
         return ResponseEntity.ok(eventService.getEvents(requestDto));
+    }
+
+    // 이벤트 상세 (이벤트상품, 이미지, 내용, 기간 등등)
+    @GetMapping("/{id}/detail")
+    public ResponseEntity<EventDetailDto> getEvent(@PathVariable Long id) {
+        log.info("getEvent: {}", id);
+        return ResponseEntity.ok(eventService.getEvent(id));
     }
 
     // ✅ 이벤트 생성 (관리자 전용)

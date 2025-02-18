@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.event.service;
 
+import com.himedia.luckydokiapi.domain.event.dto.EventDetailDto;
 import com.himedia.luckydokiapi.domain.event.dto.EventDto;
 import com.himedia.luckydokiapi.domain.event.dto.EventRequestDto;
 import com.himedia.luckydokiapi.domain.event.dto.EventSearchDto;
@@ -16,5 +17,7 @@ public interface EventService {
 	void deleteEvent(Long id);
 
 	PageResponseDTO<EventDto> getEvents(EventSearchDto requestDto);
+
+	EventDetailDto getEvent(Long id);
 }
 

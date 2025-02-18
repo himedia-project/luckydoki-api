@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.event.service;
 
+import com.himedia.luckydokiapi.domain.event.dto.EventDetailDto;
 import com.himedia.luckydokiapi.domain.event.dto.EventDto;
 import com.himedia.luckydokiapi.domain.event.dto.EventRequestDto;
 import com.himedia.luckydokiapi.domain.event.dto.EventSearchDto;
@@ -65,7 +66,7 @@ public class EventServiceImpl implements EventService {
 	@Transactional(readOnly = true)
 	@Override
 	public EventDto getEventById(Long id) {
-		Event event = getEvent(id);
+		Event event = getEntity(id);
 		return convertToDto(event);
 	}
 
@@ -103,7 +104,7 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public EventDto updateEvent(Long id, EventRequestDto eventRequestDto) {
 		eventRequestDto.sanitize();
-		Event existingEvent = getEvent(id);
+		Event existingEvent = getEntity(id);
 
 		Event updatedEvent = Event.builder()
 				.id(existingEvent.getId())
@@ -128,15 +129,23 @@ public class EventServiceImpl implements EventService {
 	}
 
 
+	@Override
+	public EventDetailDto getEvent(Long id) {
+		return eventRepository.findById(id)
+				.map(EventDetailDto::from)
+				.orElseThrow(() -> new EventNotFoundException(id));
+	}
+
 	/**
 	 * 이벤트 조회
 	 * @param id 이벤트 ID
 	 * @return 이벤트
 	 */
-	private Event getEvent(Long id) {
+	public Event getEntity(Long id) {
 		return eventRepository.findById(id)
 				.orElseThrow(() -> new EventNotFoundException(id));
 	}
+
 
 	private EventDto convertToDto(Event event) {
 		return EventDto.builder()
