@@ -73,10 +73,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return true;
         }
 
-        if (path.startsWith("/api/community/")) {
-            return true;
-        }
-
 
 
 //websocket handshake 요청 필터  안타게
@@ -131,10 +127,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
                         // shop 관련 api
                         || request.getServletPath().matches("/api/shop/\\d+$")
                         // community 관련 api
-                        || request.getServletPath().startsWith("/api/community/detail")
-                        || request.getServletPath().startsWith("/api/community/list")
-                        //커뮤니티 글 별 댓글 관련 api
-                        || request.getServletPath().matches("/api/community/comment/\\d+$")
+                        || request.getServletPath().startsWith("/api/community/")
 
         )) {
             filterChain.doFilter(request, response);

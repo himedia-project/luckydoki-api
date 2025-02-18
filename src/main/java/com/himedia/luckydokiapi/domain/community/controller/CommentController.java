@@ -34,7 +34,7 @@ public class CommentController {
     }
 
     //  댓글 삭제
-    @DeleteMapping("/comment/{commentId}")
+    @DeleteMapping("/{communityId}/comment/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @AuthenticationPrincipal MemberDTO memberDTO,
             @PathVariable Long commentId) {

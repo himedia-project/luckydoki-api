@@ -28,7 +28,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "email")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_id")
     private Community community;
 
