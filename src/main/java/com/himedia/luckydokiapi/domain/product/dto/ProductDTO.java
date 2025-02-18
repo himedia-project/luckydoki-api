@@ -87,7 +87,7 @@ public class ProductDTO {
         private Boolean likes;
 
         public static Response from(Product product) {
-            ProductDTO.Response productDTO = ProductDTO.Response.builder()
+            ProductDTO.Response productDTO = Response.builder()
                     .id(product.getId())
                     .code(product.getCode())
                     .nickName(product.getShop().getMember().getNickName())  // shop name으로 사용
@@ -107,6 +107,7 @@ public class ProductDTO {
                     .shopName(product.getShop().getMember().getNickName())
                     .shopImage(product.getShop().getMember().getProfileImage())
                     .stockNumber(product.getStockNumber())
+                    .tagStrList(product.getProductTagList().stream().map(tag -> tag.getTag().getName()).toList())
                     .createdAt(product.getCreatedAt())
                     .modifiedAt(product.getModifiedAt())
                     .build();
