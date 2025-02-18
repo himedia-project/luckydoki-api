@@ -25,4 +25,8 @@ public interface CouponService {
 	Coupon getCoupon(Long couponId);
 
 	List<CouponResponseDto> getCouponList(String email);
+
+	int countAllCoupon();
+
+	void initCoupon();
 }

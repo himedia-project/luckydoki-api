@@ -39,6 +39,15 @@ public class NotProd {
         return (args) -> {
             log.info("init data...");
 
+            if(couponService.countAllCoupon() > 0) {
+                log.info("이미 초기 쿠폰 데이터가 존재합니다.");
+                return;
+            } else {
+                log.info("초기 쿠폰 데이터가 없어 초기화합니다.");
+                couponService.initCoupon();
+                log.info("Coupon 초기 데이터 생성 완료");
+            }
+
             // 데이터가 하나라도 있으면 초기화하지 않음
             if (memberRepository.count() > 0) {
                 log.info("이미 초기 데이터가 존재합니다.");
@@ -109,7 +118,7 @@ public class NotProd {
                 couponService.issueCoupon(1L, members.stream().map(Member::getEmail).toList());
 
                 shopRepository.saveAll(shops);
-                log.info("Member, Shop 초기 데이터 생성 완료");
+                log.info("Coupon, Member, Shop 초기 데이터 생성 완료");
             }
 
         };

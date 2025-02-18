@@ -20,7 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -170,6 +170,30 @@ public class CouponServiceImpl implements CouponService {
         return couponRecordRepository.findCouponListByMemberEmail(member.getEmail()).stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public int countAllCoupon() {
+        return couponRepository.findAll().size();
+    }
+
+    @Transactional
+    @Override
+    public void initCoupon() {
+        // ✅ 쿠폰 초기화
+        // 회원가입 쿠폰 생성
+        // INSERT INTO `coupon` (`end_date`, `start_date`, `id`,`code`, `content`, `name`, `status`, `discount_price`, `minimum_usage_amount`) VALUES ('2026-02-12', '2025-02-12', 1, '3285037658', '😊첫회원가입축하쿠폰! 3000원 할인이 됩니다!', '🎉회원가입축하쿠폰', 'ACTIVE', 3000, 30000);
+        Coupon coupon = Coupon.builder()
+                .code(NumberGenerator.generateRandomNumber(10))
+                .name("🎉회원가입축하쿠폰")
+                .content("😊첫회원가입축하쿠폰! 3000원 할인이 됩니다!")
+                .discountPrice(3000)
+                .minimumUsageAmount(30000)
+                .status(CouponStatus.ACTIVE)
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusMonths(12))
+                .build();
+        couponRepository.save(coupon);
     }
 
     private CouponResponseDto convertToResponseDto(Coupon coupon) {
