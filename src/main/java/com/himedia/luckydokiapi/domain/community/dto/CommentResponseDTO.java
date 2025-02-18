@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class CommentResponseDTO {
     private Long id;
     private String nickName;
+    private String profileImage;
     private String content;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
@@ -22,6 +23,7 @@ public class CommentResponseDTO {
     public CommentResponseDTO(Comment comment) {
         this.id = comment.getId();
         this.nickName = comment.getMember().getNickName();
+        this.profileImage = comment.getMember().getProfileImage();
         this.content = comment.getContent();
         this.createdAt = comment.getCreatedAt();
     }
