@@ -121,10 +121,20 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         eqBest(requestDTO.getBest()),
                         eqEvent(requestDTO.getEvent()),
                         eqShopId(requestDTO.getShopId()),
-                        betweenPrice(requestDTO.getMinPrice(), requestDTO.getMaxPrice()) //가격 범위 검색
+                        betweenPrice(requestDTO.getMinPrice(), requestDTO.getMaxPrice()), //가격 범위 검색
+                        // 해당 할인율 이상
+                        goeDiscountRate(requestDTO.getDiscountRate())
+
                 )
                 .orderBy(product.id.desc())
                 .fetch();
+    }
+
+    private BooleanExpression goeDiscountRate(Integer discountRate) {
+        if (discountRate == null) {
+            return null;
+        }
+        return product.discountRate.goe(discountRate);
     }
 
     @Override

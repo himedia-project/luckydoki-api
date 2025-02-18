@@ -30,6 +30,8 @@ public class ProductSearchDTO extends PageRequestDTO {
     private Integer minPrice; // 최소가격
     private Integer maxPrice; //최대가격
 
+    private Integer discountRate; // 할인율
+
     // 상품 태그 문자열 리스트 "액션,스포츠,연애"
     private List<String> tagStrList;
 
