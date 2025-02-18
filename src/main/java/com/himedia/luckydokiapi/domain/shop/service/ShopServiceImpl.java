@@ -50,7 +50,7 @@ public class ShopServiceImpl implements ShopService {
     @Transactional(readOnly = true)
     public ShopProductResponseDTO getShopProducts(Long shopId, String email) {
 
-        Shop shop = shopRepository.findByIdWithProducts(shopId)
+        Shop shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 샵이 존재하지 않습니다: " + shopId));
 
         List<ProductDTO.Response> productDTOList = productRepository.findByShopId(shopId).stream()
