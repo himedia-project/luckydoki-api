@@ -73,7 +73,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return true;
         }
 
-        if (path.startsWith("/api/community/**")) {
+        if (path.startsWith("/api/community/")) {
             return true;
         }
 
@@ -133,7 +133,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
                         // community 관련 api
                         || request.getServletPath().startsWith("/api/community/detail")
                         || request.getServletPath().startsWith("/api/community/list")
-                        //커뮤니티 글 별 댓글 조회
+                        //커뮤니티 글 별 댓글 관련 api
                         || request.getServletPath().matches("/api/community/comment/\\d+$")
 
         )) {
