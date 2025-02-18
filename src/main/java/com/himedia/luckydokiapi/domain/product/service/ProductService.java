@@ -65,6 +65,7 @@ public interface ProductService {
         ProductDTO.Response productDTO = ProductDTO.Response.builder()
                 .id(product.getId())
                 .code(product.getCode())
+                .reviewAverage(product.getReviewAverage())
                 .nickName(product.getShop().getMember().getNickName())  // shop name으로 사용
                 .email(product.getShop().getMember().getEmail())
                 .categoryId(product.getCategory().getId())

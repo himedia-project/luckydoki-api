@@ -224,4 +224,16 @@ public class Product extends BaseEntity {
         this.productTagList.clear();
     }
 
+    /**
+     * 상품 리뷰 평균 구하기
+     * @return 리뷰 평균
+     */
+    public double getReviewAverage() {
+        if (productReviews == null || productReviews.isEmpty()) {
+            return 0;
+        }
+        return productReviews.stream().mapToDouble(Review::getRating).average().orElse(0);
+    }
+
+
 }

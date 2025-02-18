@@ -57,6 +57,7 @@ public class ProductDTO {
         private String code;
         private Long categoryId;
         private String categoryName;
+        private double reviewAverage;
         private String name;
         private Integer price;
         private Integer discountPrice;
@@ -93,6 +94,7 @@ public class ProductDTO {
                     .email(product.getShop().getMember().getEmail())
                     .categoryId(product.getCategory().getId())
                     .categoryName(product.getCategory().getName())
+                    .reviewAverage(product.getReviewAverage())
                     .name(product.getName())
                     .price(product.getPrice())
                     .discountPrice(product.getDiscountPrice())
