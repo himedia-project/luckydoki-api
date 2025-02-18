@@ -21,6 +21,8 @@ public class JoinRequestDTO {
     private String password;
     @NotBlank(message = "전화번호는 필수 입력 값입니다.")
     private String phone;
+    @NotBlank(message = "전화번호 인증 코드를 입력하세요")
+    private String verificationCode;
 
     private String fcmToken;
 }

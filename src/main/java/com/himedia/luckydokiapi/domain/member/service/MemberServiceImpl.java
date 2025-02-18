@@ -34,6 +34,7 @@ import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
 import com.himedia.luckydokiapi.domain.order.repository.OrderItemRepository;
 import com.himedia.luckydokiapi.domain.order.repository.OrderRepository;
 import com.himedia.luckydokiapi.domain.payment.repository.PaymentRepository;
+import com.himedia.luckydokiapi.domain.phone.service.PhoneVerificationService;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.review.repository.ReviewRepository;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
@@ -67,22 +68,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final CustomFileUtil fileUtil;
     private final ShopRepository shopRepository;
-    private final EventBridgeRepository eventBridgeRepository;
-    private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
-    private final CommunityRepository communityRepository;
-    private final CommentRepository commentRepository;
-    private final CommunityProductRepository communityProductRepository;
-    private final CouponRepository couponRepository;
-    private final CouponRecordRepository couponRecordRepository;
-    private final ProductRepository productRepository;
-    private final ProductLikeRepository productLikeRepository;
-    private final ShopLikeRepository shopLikeRepository;
-    private final OrderRepository orderRepository;
-    private final PaymentRepository paymentRepository;
-    private final OrderItemRepository orderItemRepository;
-    private final ReviewRepository reviewRepository;
-
+    private final PhoneVerificationService phoneVerificationService;
     private final CouponService couponService;
 
 
@@ -118,6 +104,11 @@ public class MemberServiceImpl implements MemberService {
                 .ifPresent(member -> {
                     throw new IllegalArgumentException("이미 존재하는 회원입니다!");
                 });
+
+        boolean isVerified = phoneVerificationService.verifyCode(request.getPhone(), request.getVerificationCode());
+        if (!isVerified) {
+            throw new IllegalArgumentException("전화번호 인증이 실패했습니다.");
+        }
 
         Member member = Member.builder()
                 .email(request.getEmail())

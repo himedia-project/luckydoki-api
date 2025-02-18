@@ -72,6 +72,11 @@ app:
         bucket-name: ${AWS_S3_BUCKET_NAME}
         region: ${AWS_REGION}
 
+sms:
+  api-key: ${SMS_API_KEY}
+  api-secret: ${SMS_API_SECRET}
+  from: ${SMS_FROM}
+
 toss:
   secret-key: ${TOSS_SECRET_KEY}
 
