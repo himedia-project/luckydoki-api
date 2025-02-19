@@ -15,10 +15,10 @@ services:
     volumes:
       - ./mysql/conf.d:/etc/mysql/conf.d
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    networks:
+      - app-network
 
 
-
-     MongoDB 설정  추가
   mongodb:
     image: mongo:latest
     container_name: chatdb
@@ -33,6 +33,8 @@ services:
       - mongodb_data:/data/db
 #       초기화 스크립트가 필요한 경우 주석 해제
 #       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    command:
+      - --auth
     networks:
       - app-network
 
