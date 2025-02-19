@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.member.service;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
+import com.himedia.luckydokiapi.domain.member.enums.PushActive;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.props.SocialProps;
 import com.himedia.luckydokiapi.security.MemberDTO;
@@ -516,6 +517,7 @@ public class SocialService {
                 .nickName(nickname)
                 .profileImage("s_3f0b0873-b2e5-48d0-94e1-f72e5b9c75a5-luckydoki_favicon.png")
                 .active(MemberActive.Y)
+                .pushActive(PushActive.Y)
                 .build();
         member.addRole(MemberRole.USER);
         return member;

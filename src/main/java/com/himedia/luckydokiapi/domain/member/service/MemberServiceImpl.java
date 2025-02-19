@@ -135,7 +135,13 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Map<String, Object> getSocialClaims(MemberDTO memberDTO) {
-        return Map.of();
+        Map<String, Object> claims = memberDTO.getClaims();
+        String jwtAccessToken = jwtUtil.generateToken(claims, jwtProps.getAccessTokenExpirationPeriod());      // 15분
+        String jwtRefreshToken = jwtUtil.generateToken(claims, jwtProps.getRefreshTokenExpirationPeriod());     // 1일
+
+        claims.put("accessToken", jwtAccessToken);
+        claims.put("refreshToken", jwtRefreshToken);
+        return claims;
     }
 
     @Override
