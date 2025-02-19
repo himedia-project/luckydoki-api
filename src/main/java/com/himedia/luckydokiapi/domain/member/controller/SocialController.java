@@ -1,5 +1,10 @@
 package com.himedia.luckydokiapi.domain.member.controller;
 
+import com.himedia.luckydokiapi.domain.member.dto.SocialLoginRequestDTO;
+import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
+import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
+import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.member.service.SocialService;
 import com.himedia.luckydokiapi.props.JwtProps;
@@ -8,12 +13,13 @@ import com.himedia.luckydokiapi.util.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @Log4j2
@@ -21,9 +27,11 @@ import java.util.Map;
 
 public class SocialController {
 
+    private final MemberRepository memberRepository;
     private final MemberService memberService;
     private final SocialService socialService;
     private final JwtProps jwtProps;
+
 
     // 카카오 access token 받기
     @GetMapping("/api/member/kakao/token")
@@ -145,5 +153,40 @@ public class SocialController {
         return claims;
 
     }
+    @PostMapping("/api/member/social-login")
+    public ResponseEntity<?> socialLogin(@RequestBody SocialLoginRequestDTO requestDTO) {
+        log.info("소셜 로그인 요청: {}", requestDTO);
+
+        String email = requestDTO.getEmail();
+        String nickName = requestDTO.getNickName();
+
+        Optional<Member> existingMemberOpt = memberRepository.findByEmail(email);
+
+        if (existingMemberOpt.isPresent()) {
+            Member existingMember = existingMemberOpt.get();
+
+            // ✅ 기존 회원이면 active 값만 유지하고 반환
+            if (existingMember.getActive() == MemberActive.N) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("탈퇴한 회원입니다. 다시 가입할 수 없습니다.");
+            }
+
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("이미 가입된 이메일입니다. 이메일로 로그인해주세요.");
+        }
+
+        // ✅ 새 회원 저장 (active = Y 자동 설정)
+        Member newMember = Member.builder()
+                .email(email)
+                .nickName(nickName != null ? nickName : "소셜_사용자") // ✅ 닉네임 기본값 설정
+                .active(MemberActive.Y) // ✅ 소셜 로그인 후 active 자동 설정
+                .build();
+
+        newMember.addRole(MemberRole.USER);
+        memberRepository.save(newMember);
+
+        return ResponseEntity.ok("소셜 로그인 성공, 회원가입 완료");
+    }
+
 
 }
