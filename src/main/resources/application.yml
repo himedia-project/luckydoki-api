@@ -33,7 +33,7 @@ spring:
     open-in-view: false # open in view 설정
     hibernate:
       ddl-auto: update # 테이블 생성 및 업데이트 전략 (create, create-drop, update, validate, none)
-#    defer-datasource-initialization: true # true일시, DataSource 초기화 지연
+    #    defer-datasource-initialization: true # true일시, DataSource 초기화 지연
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect # Hibernate Dialect 설정
@@ -92,11 +92,16 @@ spring:
     username: luckydoki
     password: luckydoki
 
-#  data:
-#    mongodb:
-#      host: localhost
-#      port: 27017
-#      database: chatdb
+  data:
+    mongodb:
+      uri: mongodb://luckydoki:luckydoki@localhost:27017/chatdb?authSource=admin
+      #      host: mongodb
+      #      port: 27017
+      #      database: chatdb
+      #      authentication-database: admin
+      #      username: luckydoki
+      #      password: luckydoki
+      #사용자 섧정
 
 app:
   props:
@@ -158,7 +163,8 @@ logging:
 #      on-profile: docker
 #  data:
 #    mongodb:
-#      host: mongodb
+#       uri: mongodb://luckydoki:luckydoki@chatdb:27017/chatdb?authSource=admin
+#      host: chatdb # ㄷㅗ커 컨테이너 이름
 #      port: 27017
 #      database: chatdb
 #      username: luckydoki

@@ -87,19 +87,24 @@ dependencies {
     implementation 'org.seleniumhq.selenium:selenium-java:4.25.0'
 
     //mongodb
-//    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
     //mongodb test 를 위한 의존성
-//    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
+    //mongodb 드라이버
+    implementation 'org.mongodb:mongodb-driver-sync:4.11.1'
+
+    implementation 'org.mongodb:mongodb-driver-core:4.11.1'
+    implementation 'org.mongodb:bson:4.11.1'
     //webSocket 구현을 위한 기본적인 패키지
-//    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     //STOMP(Simple Text Oriented Messaging Protocol) 구현체
-//    implementation 'org.webjars:stomp-websocket:2.3.4'
+    implementation 'org.webjars:stomp-websocket:2.3.4'
 
     //WebSocket을 지원하지 않는 브라우저를 위한 대체 솔루션
-//    implementation 'org.webjars:sockjs-client:1.5.1'
+    implementation 'org.webjars:sockjs-client:1.5.1'
 
 }
 
