@@ -67,4 +67,11 @@ public class OrderItem extends BaseEntity {
     public void cancel() {
         // 주문 취소 관련 로직을 추가할 수 있습니다.
     }
+
+    /**
+     * 주문 상품의 재고를 감소시킴
+     */
+    public void decreaseStock() {
+        this.product.decreaseStock(this.count);
+    }
 }

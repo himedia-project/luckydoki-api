@@ -235,5 +235,14 @@ public class Product extends BaseEntity {
         return productReviews.stream().mapToDouble(Review::getRating).average().orElse(0);
     }
 
-
+    /**
+     * 상품 재고 감소
+     * @param count 감소할 수량
+     */
+    public void decreaseStock(int count) {
+        if (this.stockNumber - count < 0) {
+            throw new IllegalArgumentException("재고가 부족합니다.");
+        }
+        this.stockNumber -= count;
+    }
 }
