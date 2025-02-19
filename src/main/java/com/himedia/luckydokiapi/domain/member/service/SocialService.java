@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.member.service;
 
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.props.SocialProps;
@@ -41,7 +42,7 @@ public class SocialService {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
 
-    
+
     public String getKakaoAccessToken(String code) {
         log.info("getKakaoAccessToken start...");
 
@@ -79,7 +80,6 @@ public class SocialService {
         return bodyMap.get("access_token");
     }
 
-
     @Transactional
     public MemberDTO getKakaoMember(String accessToken) {
         log.info("getKakaoMember start...");
@@ -88,22 +88,26 @@ public class SocialService {
 
         Optional<Member> result = memberRepository.findById(email);
 
-        // 기존의 회원
+        // 기존 회원이 존재하는 경우
         if (result.isPresent()) {
-            MemberDTO memberDTO = memberService.entityToDTO(result.get());
-            return memberDTO;
+            Member member = result.get();
+
+            // active = N인 경우 로그인 차단
+            if (member.getActive() == MemberActive.N) {
+                throw new RuntimeException("탈퇴한 회원입니다. 다시 가입할 수 없습니다.");
+            }
+
+            return memberService.entityToDTO(member);
         }
 
-        // 회원이 아니었다면 닉네임은 '소셜 회원'으로 패스워드는 임의로 생성
-        Member socialMember = this.makeSocialMember(email);
-        memberRepository.save(socialMember);
-        MemberDTO memberDTO = memberService.entityToDTO(socialMember);
+        // 새로운 회원 가입 (active = Y 설정)
+        Member member = this.makeSocialMember(email);
 
-        return memberDTO;
+        memberRepository.save(member);
+        return memberService.entityToDTO(member);
     }
 
 
-    
     public String getGoogleAccessToken(String code) {
         log.info("getGoogleAccessToken start...");
 
@@ -164,7 +168,6 @@ public class SocialService {
     }
 
 
-    
     public String getFacebookAccessToken(String code) {
         log.info("getFacebookAccessToken start...");
 
@@ -224,7 +227,6 @@ public class SocialService {
     }
 
 
-    
     public String getNaverAccessToken(String code, String state) {
         log.info("getNaverAccessToken start...");
 
@@ -281,7 +283,6 @@ public class SocialService {
     }
 
 
-    
     public String getGithubAccessToken(String code) {
         log.info("getGithubAccessToken start...");
 
@@ -504,7 +505,7 @@ public class SocialService {
         return userEmail;
     }
 
-    
+
     public Member makeSocialMember(String email) {
         String tempPassword = memberService.makeTempPassword();
         log.info("tempPassword: " + tempPassword);
@@ -513,6 +514,8 @@ public class SocialService {
                 .email(email)
                 .password(passwordEncoder.encode(tempPassword))
                 .nickName(nickname)
+                .profileImage("s_3f0b0873-b2e5-48d0-94e1-f72e5b9c75a5-luckydoki_favicon.png")
+                .active(MemberActive.Y)
                 .build();
         member.addRole(MemberRole.USER);
         return member;
