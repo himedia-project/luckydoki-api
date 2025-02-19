@@ -8,6 +8,7 @@ import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -116,6 +117,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.delFlag.eq(false),
                         eqCategory(requestDTO.getCategoryId()),
                         eqTagId(requestDTO.getTagId()),
+                        inTagStrList(requestDTO.getTagStrList()),
                         eqIsNew(requestDTO.getIsNew()),
                         containsSearchKeyword(requestDTO.getSearchKeyword()),
                         eqBest(requestDTO.getBest()),
@@ -128,6 +130,19 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 )
                 .orderBy(product.id.desc())
                 .fetch();
+    }
+
+    /**
+     * 해당태그 리스트에 포함된 상품들만 조회
+     * @param tagStrList 태그 리스트
+     * @return  해당 태그 리스트에 포함된 상품들
+     */
+    private BooleanExpression inTagStrList(List<String> tagStrList) {
+        if (tagStrList.isEmpty()) {
+            return null;
+        }
+        // return tag.name.in(tagStrList); x tag.name만 하면, 해당 태그 리스트들만 조회됨
+        return product.productTagList.any().tag.name.in(tagStrList);
     }
 
     private BooleanExpression goeDiscountRate(Integer discountRate) {
