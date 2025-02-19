@@ -11,13 +11,15 @@ import java.util.List;
 
 public interface CommunityService {
     CommunityResponseDTO getCommunityById(Long communityId);
-    List<CommunityResponseDTO> getAllCommunities(CommunitySearchDTO request);
-    List<CommunityResponseDTO> getCommunitiesByMemberEmail(String email);
-    Long postCommunity(String email, CommunityRequestDTO request);
-//    CommunityResponseDTO updateCommunity(Long communityId, String email, CommunityRequestDTO request);
-    void deleteCommunity(Long communityId, String email);
-    ShopCommunityResponseDTO getShopCommunities(Long shopId, String email);
 
+    List<CommunityResponseDTO> list(CommunitySearchDTO request, String email);
+
+    List<CommunityResponseDTO> getCommunitiesByMemberEmail(String email);
+
+    Long postCommunity(String email, CommunityRequestDTO request);
+
+    //    CommunityResponseDTO updateCommunity(Long communityId, String email, CommunityRequestDTO request);
+    void deleteCommunity(Long communityId, String email);
 
 
     default Community dtoToEntity(CommunityRequestDTO request, Member member) {
