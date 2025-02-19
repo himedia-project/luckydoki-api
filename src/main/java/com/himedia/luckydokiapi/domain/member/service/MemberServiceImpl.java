@@ -165,7 +165,6 @@ public class MemberServiceImpl implements MemberService {
     public MemberDetailDTO updateMyInfo(String email, UpdateMemberDTO request) {
         Member member = getEntity(email);
 
-
         if (request.getNickName() != null && !request.getNickName().isEmpty()) {
             member.updateNickName(request.getNickName());
         }
@@ -175,9 +174,11 @@ public class MemberServiceImpl implements MemberService {
         }
         memberRepository.save(member);
 
-        Shop seller = getSeller(member.getEmail());
-        return entityToMemberDetailDTO(member, seller, null);
-
+        return MemberDetailDTO.builder()
+                .email(member.getEmail())
+                .nickName(member.getNickName())
+                .phone(member.getPhone())
+                .build();
     }
 
 

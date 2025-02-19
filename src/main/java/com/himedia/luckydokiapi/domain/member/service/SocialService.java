@@ -26,6 +26,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
+import static com.himedia.luckydokiapi.domain.member.entity.Member.fromSocialMember;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -509,17 +511,9 @@ public class SocialService {
 
     public Member makeSocialMember(String email) {
         String tempPassword = memberService.makeTempPassword();
+        String encodedTempPassword = passwordEncoder.encode(tempPassword);
         log.info("tempPassword: " + tempPassword);
-        String nickname = "소셜회원";
-        Member member = Member.builder()
-                .email(email)
-                .password(passwordEncoder.encode(tempPassword))
-                .nickName(nickname)
-                .profileImage("s_3f0b0873-b2e5-48d0-94e1-f72e5b9c75a5-luckydoki_favicon.png")
-                .active(MemberActive.Y)
-                .pushActive(PushActive.Y)
-                .build();
-        member.addRole(MemberRole.USER);
-        return member;
+        return fromSocialMember(email, encodedTempPassword);
     }
+
 }
