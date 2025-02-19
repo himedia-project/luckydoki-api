@@ -49,3 +49,6 @@ db_dev.trace.db
 
 # node_modules
 /node_modules
+
+## resources 내 파일
+/resources/firebase-service-account.json
