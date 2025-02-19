@@ -1,24 +1,7 @@
 package com.himedia.luckydokiapi.domain.member.service;
 
 
-import com.himedia.luckydokiapi.domain.cart.repository.CartItemRepository;
-import com.himedia.luckydokiapi.domain.cart.repository.CartRepository;
-import com.himedia.luckydokiapi.domain.community.entity.Comment;
-import com.himedia.luckydokiapi.domain.community.entity.Community;
-import com.himedia.luckydokiapi.domain.community.repository.CommentRepository;
-import com.himedia.luckydokiapi.domain.community.repository.CommunityProductRepository;
-import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
-import com.himedia.luckydokiapi.domain.coupon.entity.Coupon;
-import com.himedia.luckydokiapi.domain.coupon.entity.CouponRecord;
-import com.himedia.luckydokiapi.domain.coupon.repository.CouponRecordRepository;
-import com.himedia.luckydokiapi.domain.coupon.repository.CouponRepository;
 import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
-import com.himedia.luckydokiapi.domain.event.repository.EventBridgeRepository;
-import com.himedia.luckydokiapi.domain.event.service.EventService;
-import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
-import com.himedia.luckydokiapi.domain.likes.entity.ShopLike;
-import com.himedia.luckydokiapi.domain.likes.repository.ProductLikeRepository;
-import com.himedia.luckydokiapi.domain.likes.repository.ShopLikeRepository;
 import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
 import com.himedia.luckydokiapi.domain.member.dto.MemberDetailDTO;
 import com.himedia.luckydokiapi.domain.member.dto.SellerRequestDTO;
@@ -26,17 +9,10 @@ import com.himedia.luckydokiapi.domain.member.dto.UpdateMemberDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
-import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
-import com.himedia.luckydokiapi.domain.order.entity.Order;
-import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
-import com.himedia.luckydokiapi.domain.order.repository.OrderItemRepository;
-import com.himedia.luckydokiapi.domain.order.repository.OrderRepository;
-import com.himedia.luckydokiapi.domain.payment.repository.PaymentRepository;
+import com.himedia.luckydokiapi.domain.notification.service.NotificationService;
 import com.himedia.luckydokiapi.domain.phone.service.PhoneVerificationService;
-import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
-import com.himedia.luckydokiapi.domain.review.repository.ReviewRepository;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.props.JwtProps;
@@ -70,6 +46,8 @@ public class MemberServiceImpl implements MemberService {
     private final ShopRepository shopRepository;
     private final PhoneVerificationService phoneVerificationService;
     private final CouponService couponService;
+
+    private final NotificationService notificationService;
 
 
     @Transactional(readOnly = true)
@@ -111,17 +89,8 @@ public class MemberServiceImpl implements MemberService {
             throw new IllegalArgumentException("전화번호 인증이 실패했습니다.");
         }
 
-        Member member = Member.builder()
-                .email(request.getEmail())
-                .nickName(request.getNickName())
-                .birthday(request.getBirthday())
-                .profileImage("s_3f0b0873-b2e5-48d0-94e1-f72e5b9c75a5-luckydoki_favicon.png")
-                .password(passwordEncoder.encode(request.getPassword()))
-                .phone(request.getPhone())
-                .build();
-
-        member.addRole(MemberRole.USER);
-        
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        Member member = Member.from(request);
         // 먼저 회원을 저장
         memberRepository.save(member);
 
@@ -235,6 +204,10 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         SellerApplication saved = sellerApplicationRepository.save(application);
+
+        // 알림신청
+//        notificationService.sendSellerApprovalNotification(member.getEmail());
+
         return saved.getId();
     }
 
@@ -259,6 +232,13 @@ public class MemberServiceImpl implements MemberService {
         member.deactivate(); // 회원 비활성화
     }
 
+    @Transactional
+    @Override
+    public void updateFCMToken(String targetEmail, String fcmToken) {
+        Member member = memberRepository.findByEmail(targetEmail)
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다. email: " + targetEmail));
 
+        member.updateFcmToken(fcmToken);
+    }
 
 }

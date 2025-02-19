@@ -7,6 +7,7 @@ import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
+import com.himedia.luckydokiapi.domain.notification.service.NotificationService;
 import com.himedia.luckydokiapi.domain.shop.dto.SellerSearchDTO;
 import com.himedia.luckydokiapi.domain.shop.dto.ShopResponseDTO;
 import com.himedia.luckydokiapi.domain.shop.dto.ShopSearchDTO;
@@ -38,6 +39,8 @@ public class AdminShopServiceImpl implements AdminShopService {
     private final SellerApplicationRepository sellerApplicationRepository;
     private final MemberService memberService;
     private final MemberRepository memberRepository;
+
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     @Override
@@ -75,6 +78,9 @@ public class AdminShopServiceImpl implements AdminShopService {
 
         // 샵이 없으므로 샵 save
         shopRepository.save(Shop.from(application, member));
+
+        // ✅ 승인처리 알림
+        notificationService.sendSellerApprovalNotification(member.getEmail());
 
         return application.getId();
     }

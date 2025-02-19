@@ -6,6 +6,7 @@ package com.himedia.luckydokiapi.domain.member.entity;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.coupon.entity.CouponRecord;
 import com.himedia.luckydokiapi.domain.coupon.enums.CouponStatus;
+import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.PushActive;
@@ -15,11 +16,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@DynamicUpdate
 @SuperBuilder
 @AllArgsConstructor
 @Getter
@@ -46,6 +48,9 @@ public class Member extends BaseEntity {
     @ColumnDefault("'Y'")
     private PushActive pushActive;
 
+    @Column
+    private String fcmToken;
+
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "member_role_list", joinColumns = @JoinColumn(name = "email"))
@@ -65,6 +70,8 @@ public class Member extends BaseEntity {
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
     private Shop shop;
+
+
 
 //    @Builder.Default
 //    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
@@ -102,6 +109,27 @@ public class Member extends BaseEntity {
 
     public void deactivate() {
         this.active = MemberActive.N;
+    }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    // 엔티티 정적 팩토리 메서드
+    public static Member from(JoinRequestDTO request) {
+        // "s_3f0b0873-b2e5-48d0-94e1-f72e5b9c75a5-luckydoki_favicon.png"
+        Member member = Member.builder()
+                .email(request.getEmail())
+                .nickName(request.getNickName())
+                .birthday(request.getBirthday())
+                .active(MemberActive.Y)
+                .profileImage("s_3f0b0873-b2e5-48d0-94e1-f72e5b9c75a5-luckydoki_favicon.png")
+                .phone(request.getPhone())
+                .build();
+
+        member.addRole(MemberRole.USER);
+        return member;
+
     }
 }
 
