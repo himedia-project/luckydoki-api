@@ -60,9 +60,13 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     @Override
     public List<ProductDTO.Response> list(ProductSearchDTO requestDTO, String email) {
-        boolean likes = (email != null) && productLikeRepository.likes(email, requestDTO.getId());
+//        boolean likes = (email != null) && productLikeRepository.likes(email, requestDTO.getId());
+//        log.info("likes: {}", likes);
         List<ProductDTO.Response> productList = productRepository.findByDTO(requestDTO).stream()
-                .map(product -> this.entityToDTO(product, likes)).toList();
+                .map(product -> {
+                    boolean likes = (email != null) && productLikeRepository.likes(email, product.getId());
+                    return this.entityToDTO(product, likes);
+                }).toList();
 
         return productList;
     }

@@ -69,10 +69,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         if (path.startsWith("/api/event/active")) {
             return true;
         }
-        
-        if (path.startsWith("/api/product")) {
-            return true;
-        }
 
 
 
@@ -120,9 +116,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         log.info("autHeaderStr Authorization: {}", autHeaderStr);
 
         if ((Objects.equals(autHeaderStr, "Bearer null") || (autHeaderStr == null)) && (
-                request.getServletPath().startsWith("/api/product/list")
-                        || (request.getServletPath().startsWith("/api/product/") && request.getServletPath().endsWith("/detail"))
-                        || (request.getServletPath().startsWith("/api/product/") && request.getServletPath().endsWith("/tag/list"))
+                request.getServletPath().startsWith("/api/product/")
                         //리뷰 관련 api 상품 별 리뷰는 필터 안타게
                         || request.getServletPath().matches("^/api/review/list/\\d+$")
                         // shop 관련 api
