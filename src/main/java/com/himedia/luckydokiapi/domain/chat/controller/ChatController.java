@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
@@ -46,7 +47,10 @@ public class ChatController {
         //mu sql 테이블에도 insert
         // /topic/chat/room/{roomId} 에게 전송
 
+        //해당 룸 아이디를 구독하고 있는 유저에게 메세지 알림 전송
+        messagingTemplate.convertAndSend("/topic/notifications/" + chatMessageDTO.getRoomId(), "새로운 메세지가 도착했습니다!");
     }
+
 
     //roomId와 email 로 채팅 대화내역  상세 조회
     @GetMapping("/history/{roomId}")

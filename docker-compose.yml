@@ -19,6 +19,7 @@ services:
       - app-network
 
 
+
   mongodb:
     image: mongo:latest
     container_name: chatdb

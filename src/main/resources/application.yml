@@ -107,7 +107,7 @@ app:
   props:
     social:
       kakao:
-        redirect-uri: ${KAKAO_LOCAL_REDIRECT_URI}
+        redirect-uri: ${KAKAO_REDIRECT_URI}
 
 logging:
   level:
