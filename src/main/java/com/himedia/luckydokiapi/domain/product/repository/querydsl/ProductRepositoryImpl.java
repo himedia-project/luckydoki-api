@@ -138,7 +138,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
      * @return  해당 태그 리스트에 포함된 상품들
      */
     private BooleanExpression inTagStrList(List<String> tagStrList) {
-        if (tagStrList.isEmpty()) {
+        if (tagStrList == null || tagStrList.isEmpty()) {       // 순서 중요!
             return null;
         }
         // any() : 하나라도 만족하면 true
