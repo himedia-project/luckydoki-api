@@ -141,7 +141,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         if (tagStrList.isEmpty()) {
             return null;
         }
-        // return tag.name.in(tagStrList); x tag.name만 하면, 해당 태그 리스트들만 조회됨
+        // any() : 하나라도 만족하면 true
+        // 태그 리스트가 ["신상", "할인"]일 때
+        // 둘 중 하나라도 "신상" 태그가 있는 상품 또는 "할인" 태그가 있는 상품 모두를 반환
         return product.productTagList.any().tag.name.in(tagStrList);
     }
 
