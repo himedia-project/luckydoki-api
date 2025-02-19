@@ -22,7 +22,9 @@ public class SMSUtil {
     @Value("${sms.from}")
     private String fromNumber;
 
-    public SMSUtil(@Value("${sms.api-key}") String apiKey, @Value("${sms.api-secret}") String apiSecret) {
+    public SMSUtil(
+            @Value("${sms.api-key}") String apiKey,
+            @Value("${sms.api-secret}") String apiSecret) {
         this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecret, "https://api.coolsms.co.kr");
     }
 

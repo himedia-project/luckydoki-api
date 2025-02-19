@@ -56,7 +56,9 @@ public interface MemberService {
                 member.getNickName(),
                 member.getPhone(),
                 member.getMemberRoleList().stream()
-                        .map(Enum::name).toList());
+                        .map(Enum::name).toList(),
+                member.getActive()
+        );
     }
 
     /**

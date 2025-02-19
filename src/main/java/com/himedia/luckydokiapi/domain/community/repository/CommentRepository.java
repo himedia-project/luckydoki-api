@@ -17,5 +17,4 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     void deleteByMemberEmail(@Param("email") String email);
 
 
-
 }

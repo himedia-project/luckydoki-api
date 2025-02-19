@@ -15,7 +15,7 @@ public class JoinRequestDTO {
     private String email; //username
     @NotBlank(message = "닉네임은 필수 입력 항목 입니다")
     private String nickName;
-    @NotNull(message = "생년월일 필수 입력 값입니다.")
+//    @NotNull(message = "생년월일 필수 입력 값입니다.")
     private Long birthday;
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
     private String password;

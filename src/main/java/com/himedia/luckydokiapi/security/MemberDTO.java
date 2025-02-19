@@ -26,7 +26,7 @@ public class MemberDTO extends User {
     private MemberActive active;
 
 
-    public MemberDTO(String email, String password, String phone,String nickName, List<String> roleNames) {
+    public MemberDTO(String email, String password, String phone,String nickName, List<String> roleNames, MemberActive active) {
         // ROLE_ 접두사를 붙여서 권한을 부여
         super(email, password, roleNames.stream().map(str -> new SimpleGrantedAuthority("ROLE_" + str)).collect(Collectors.toList()));
         this.email = email;
@@ -34,7 +34,7 @@ public class MemberDTO extends User {
         this.phone = phone;
         this.nickName = nickName;
         this.roleNames = roleNames;
-        this.active = active != null ? active : MemberActive.Y;
+        this.active = active;
     }
 
     public Map<String, Object> getClaims() {
@@ -46,7 +46,7 @@ public class MemberDTO extends User {
         dataMap.put("phone", this.phone);
         dataMap.put("nickName", this.nickName);
         dataMap.put("roleNames", this.roleNames);
-        dataMap.put("active", this.active.name());
+        dataMap.put("active", this.active != null ? this.active.name() : "Y");
 
         return dataMap;
     }

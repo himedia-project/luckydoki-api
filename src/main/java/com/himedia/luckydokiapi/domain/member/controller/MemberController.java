@@ -4,6 +4,7 @@ package com.himedia.luckydokiapi.domain.member.controller;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
 import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import com.himedia.luckydokiapi.domain.member.dto.*;
+import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.security.MemberDTO;
@@ -31,7 +32,6 @@ public class MemberController {
     private final MemberService memberService;
     private final JWTUtil jwtUtil;
     private final JwtProps jwtProps;
-
     private final CouponService couponService;
 
     @PostMapping("/join")
@@ -68,6 +68,7 @@ public class MemberController {
                 .nickName(loginClaims.get("nickName").toString())
                 .roles((List<String>) loginClaims.get("roleNames"))
                 .accessToken(accessToken)
+                .active(MemberActive.valueOf(loginClaims.get("active").toString()))
                 .build();
 
         log.info("loginResponseDTO: {}", loginResponseDTO);

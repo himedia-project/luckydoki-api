@@ -94,6 +94,7 @@ public class MemberServiceImpl implements MemberService {
 
         memberClaims.put("accessToken", accessToken);
         memberClaims.put("refreshToken", refreshToken);
+        memberClaims.put("active", memberAuthDTO.getActive().name());
 
         return memberClaims;
     }
@@ -147,7 +148,10 @@ public class MemberServiceImpl implements MemberService {
                 member.getPhone(),
                 member.getNickName(),
                 member.getMemberRoleList().stream()
-                        .map(Enum::name).toList());
+                        .map(Enum::name).toList(),
+                member.getActive()
+
+        );
     }
 
     @Override
