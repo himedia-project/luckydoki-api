@@ -12,8 +12,6 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.Map;
 
-import static com.himedia.luckydokiapi.domain.member.enums.MemberRole.SELLER;
-
 public interface MemberService {
     Long upgradeToSeller(String email, SellerRequestDTO requestDTO);
 
@@ -79,6 +77,8 @@ public interface MemberService {
 
     void deleteMember(String email);
 
+
+    void updateFCMToken(String targetEmail, String fcmToken);
 
 }
 

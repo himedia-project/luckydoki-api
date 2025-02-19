@@ -1,5 +1,8 @@
 package com.himedia.luckydokiapi.domain.member.controller;
 
+import com.himedia.luckydokiapi.domain.member.dto.LoginResponseDTO;
+import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
+import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.member.service.SocialService;
 import com.himedia.luckydokiapi.props.JwtProps;
@@ -8,11 +11,11 @@ import com.himedia.luckydokiapi.util.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,9 +24,11 @@ import java.util.Map;
 
 public class SocialController {
 
+    private final MemberRepository memberRepository;
     private final MemberService memberService;
     private final SocialService socialService;
     private final JwtProps jwtProps;
+
 
     // 카카오 access token 받기
     @GetMapping("/api/member/kakao/token")
@@ -35,16 +40,25 @@ public class SocialController {
 
     // 카카오 로그인 -> 유저정보 받기 + JWT 토큰 발급, cookie에 set
     @GetMapping("/api/member/kakao")
-    public Map<String, Object> getMemberFromKakao(String accessToken, HttpServletResponse response) {
+    public ResponseEntity<?> getMemberFromKakao(String accessToken, HttpServletResponse response) {
         log.info("getMemberFromKakao accessToken: {}", accessToken);
 
         MemberDTO memberDTO = socialService.getKakaoMember(accessToken);
-        Map<String, Object> claims = memberService.getSocialClaims(memberDTO);
+        Map<String, Object> loginClaims = memberService.getSocialClaims(memberDTO);
 
-        CookieUtil.setTokenCookie(response, "accessToken", (String) claims.get("accessToken"), jwtProps.getAccessTokenExpirationPeriod());
-        CookieUtil.setTokenCookie(response, "refreshToken", (String) claims.get("refreshToken"), jwtProps.getRefreshTokenExpirationPeriod());
+        CookieUtil.setTokenCookie(response, "refreshToken", (String) loginClaims.get("refreshToken"), jwtProps.getRefreshTokenExpirationPeriod());
 
-        return claims;
+        LoginResponseDTO loginResponseDTO = LoginResponseDTO.builder()
+                .email(loginClaims.get("email").toString())
+                .nickName(loginClaims.get("nickName").toString())
+                .roles((List<String>) loginClaims.get("roleNames"))
+                .accessToken((String) loginClaims.get("accessToken"))
+                .active(MemberActive.valueOf(loginClaims.get("active").toString()))
+                .build();
+
+        log.info("loginResponseDTO: {}", loginResponseDTO);
+        // 로그인 성공시, socialAccessToken, email, name, roles 반환
+        return ResponseEntity.ok(loginResponseDTO);
 
     }
 
@@ -143,7 +157,7 @@ public class SocialController {
         CookieUtil.setTokenCookie(response, "refreshToken", (String) claims.get("refreshToken"), jwtProps.getRefreshTokenExpirationPeriod());
 
         return claims;
-
     }
+
 
 }
