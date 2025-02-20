@@ -35,6 +35,10 @@ public class SalesController {
 
   private final SalesService salesService;
 
+  /**
+   * /api/sales/forecast
+   * 전체 일별 매출 데이터를 Python 스크립트에 전달하여 예측
+   */
   @PostMapping("/forecast")
   public ResponseEntity<?> getSalesForecast() {
     try {
@@ -55,9 +59,14 @@ public class SalesController {
       File tempScriptFile = File.createTempFile("sales_forecast", ".py");
       tempScriptFile.deleteOnExit(); // JVM 종료 시 임시 파일 삭제
 
-      // 3) Python 스크립트 실행
-      String pythonFilePath = "F:/notebook/luckydoki/luckydoki-api/src/main/resources/python/sales_forecast.py";
-      ProcessBuilder processBuilder = new ProcessBuilder("python3", pythonFilePath);
+      // 리소스를 임시 파일에 복사
+      try (InputStream is = resource.getInputStream();
+          FileOutputStream fos = new FileOutputStream(tempScriptFile)) {
+        StreamUtils.copy(is, fos);
+      }
+
+      // 4) 복사된 임시 파일 경로로 파이썬 프로세스 실행
+      ProcessBuilder processBuilder = new ProcessBuilder("python3", tempScriptFile.getAbsolutePath());
       processBuilder.redirectErrorStream(false);
       Process process = processBuilder.start();
 
@@ -107,7 +116,7 @@ public class SalesController {
 
   /**
    * /api/sales/forecast/date
-   * 요청 바디(selectedDate)를 받아 해당 날짜의 매출 데이터를 조회 후 Python에 전달, 예측값을 받아옴
+   * 특정 날짜(selectedDate)의 매출 데이터를 Python 스크립트에 전달하여 예측
    */
   @PostMapping("/forecast/date")
   public ResponseEntity<?> getSalesForecastByDate(@RequestBody Map<String, Object> requestBody) {
@@ -120,12 +129,12 @@ public class SalesController {
       objectMapper.registerModule(new JavaTimeModule());
       objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-      String selectedDateValue = (selectedDate != null ? selectedDate : "");
-      PythonRequest pythonRequest = new PythonRequest(salesDataList, selectedDateValue);
+      // PythonRequest: (List<SalesData> salesData, String selectedDate)
+      PythonRequest pythonRequest = new PythonRequest(salesDataList, selectedDate != null ? selectedDate : "");
       String jsonInput = objectMapper.writeValueAsString(pythonRequest);
       log.info("Serialized JSON to Python: {}", jsonInput);
 
-      // 1) 마찬가지로 ClassPathResource로 파이썬 스크립트 로드
+      // 1) ClassPathResource로 파이썬 스크립트 로드 → 임시 파일로 복사
       ClassPathResource resource = new ClassPathResource("python/sales_forecast.py");
       File tempScriptFile = File.createTempFile("sales_forecast", ".py");
       tempScriptFile.deleteOnExit();
@@ -136,7 +145,7 @@ public class SalesController {
       }
 
       // 2) 파이썬 프로세스 실행
-      ProcessBuilder processBuilder = new ProcessBuilder("python", tempScriptFile.getAbsolutePath());
+      ProcessBuilder processBuilder = new ProcessBuilder("python3", tempScriptFile.getAbsolutePath());
       processBuilder.redirectErrorStream(false);
       Process process = processBuilder.start();
 
@@ -172,7 +181,9 @@ public class SalesController {
         throw new RuntimeException("Python script returned no output");
       }
 
+      // 6) 결과 JSON 파싱
       Map<String, Object> result = objectMapper.readValue(output, Map.class);
+
       return ResponseEntity.ok(result);
 
     } catch (Exception e) {
