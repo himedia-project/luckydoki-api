@@ -39,4 +39,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     @Query("delete from CartItem ci where ci.id in :cartItemIdList")
     void deleteBulk(@Param("cartItemIdList") List<Long> cartItemIdList);
 
+    // 특정 상품 ID로 장바구니 아이템이 존재하는지 확인하는 메소드
+    @Query("select case when count(ci) > 0 then true else false end from CartItem ci where ci.product.id = :productId")
+    boolean existByProductId(@Param("productId") Long productId);
 }
