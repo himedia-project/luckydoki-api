@@ -58,6 +58,7 @@ public class ProductDTO {
         private Long categoryId;
         private String categoryName;
         private double reviewAverage;
+        private int reviewCount;
         private String name;
         private Integer price;
         private Integer discountPrice;
@@ -95,6 +96,7 @@ public class ProductDTO {
                     .categoryId(product.getCategory().getId())
                     .categoryName(product.getCategory().getName())
                     .reviewAverage(product.getReviewAverage())
+                    .reviewCount(product.getReviewCount())
                     .name(product.getName())
                     .price(product.getPrice())
                     .discountPrice(product.getDiscountPrice())
