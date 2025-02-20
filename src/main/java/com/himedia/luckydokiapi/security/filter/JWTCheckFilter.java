@@ -72,13 +72,22 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
 
 
-//websocket handshake 요청 필터  안타게
+        //websocket handshake 요청 필터  안타게
         if (path.startsWith("/ws-stomp")) {
             return true;
         }
 
         if (path.startsWith("/api/category")
         ) {
+            return true;
+        }
+
+        // python
+        if (path.startsWith("/api/sales/forecast")) {
+            return true;
+        }
+
+        if(path.startsWith("/static")) {
             return true;
         }
 
@@ -101,7 +110,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         if (path.startsWith("/favicon.ico")) {
             return true;
         }
-
 
         return false;
     }
