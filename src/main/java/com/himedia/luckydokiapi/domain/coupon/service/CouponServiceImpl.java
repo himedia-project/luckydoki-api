@@ -3,7 +3,7 @@ package com.himedia.luckydokiapi.domain.coupon.service;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRecordResponseDTO;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRecordSearchDTO;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRequestDto;
-import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
+import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDTO;
 import com.himedia.luckydokiapi.domain.coupon.entity.Coupon;
 import com.himedia.luckydokiapi.domain.coupon.entity.CouponRecord;
 import com.himedia.luckydokiapi.domain.coupon.enums.CouponRecordStatus;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,11 +37,11 @@ public class CouponServiceImpl implements CouponService {
 
     @Transactional(readOnly = true)
     @Override
-    public PageResponseDTO<CouponResponseDto> getAllCoupons(CouponRequestDto requestDto) {
+    public PageResponseDTO<CouponResponseDTO> getAllCoupons(CouponRequestDto requestDto) {
         Page<Coupon> result = couponRepository.findListBy(requestDto);
 
-        return PageResponseDTO.<CouponResponseDto>withAll()
-                .dtoList(result.getContent().stream().map(this::convertToResponseDto).toList())
+        return PageResponseDTO.<CouponResponseDTO>withAll()
+                .dtoList(result.getContent().stream().map(CouponResponseDTO::from).toList())
                 .totalCount(result.getTotalElements())
                 .pageRequestDTO(requestDto)
                 .build();
@@ -50,28 +49,28 @@ public class CouponServiceImpl implements CouponService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CouponResponseDto> getActiveCoupons() {
+    public List<CouponResponseDTO> getActiveCoupons() {
         return couponRepository.findActiveCoupons().stream()
-                .map(this::convertToResponseDto)
+                .map(CouponResponseDTO::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     @Override
-    public CouponResponseDto getCouponById(Long id) {
+    public CouponResponseDTO getCouponById(Long id) {
         Coupon coupon = couponRepository.findCouponById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Coupon not found with id: " + id));
-        return convertToResponseDto(coupon);
+        return CouponResponseDTO.from(coupon);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public CouponResponseDto getCouponByCode(String code) {
+    public CouponResponseDTO getCouponByCode(String code) {
         Coupon coupon = couponRepository.findByCode(code);
         if (coupon == null) {
             throw new EntityNotFoundException("Coupon not found with code: " + code);
         }
-        return convertToResponseDto(coupon);
+        return CouponResponseDTO.from(coupon);
     }
 
     @Override
@@ -92,7 +91,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public CouponResponseDto updateCoupon(Long id, CouponRequestDto requestDto) {
+    public CouponResponseDTO updateCoupon(Long id, CouponRequestDto requestDto) {
         // ✅ QueryDSL 기반의 updateCoupon() 호출
         couponRepository.updateCoupon(id, requestDto);
         return getCouponById(id);
@@ -117,7 +116,7 @@ public class CouponServiceImpl implements CouponService {
         Page<CouponRecord> result = couponRecordRepository.findListBy(requestDto);
 
         return PageResponseDTO.<CouponRecordResponseDTO>withAll()
-                .dtoList(result.getContent().stream().map(this::convertToRecordResponseDto).toList())
+                .dtoList(result.getContent().stream().map(CouponRecordResponseDTO::from).toList())
                 .totalCount(result.getTotalElements())
                 .pageRequestDTO(requestDto)
                 .build();
@@ -167,11 +166,11 @@ public class CouponServiceImpl implements CouponService {
      */
     @Transactional(readOnly = true)
     @Override
-    public List<CouponResponseDto> getCouponList(String email) {
+    public List<CouponResponseDTO> getCouponList(String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with email: " + email));
         return couponRecordRepository.findCouponListByMemberEmail(member.getEmail()).stream()
-                .map(this::convertToResponseDto)
+                .map(CouponResponseDTO::from)
                 .collect(Collectors.toList());
     }
 
@@ -217,31 +216,4 @@ public class CouponServiceImpl implements CouponService {
         couponRecord.useCoupon();
     }
 
-    private CouponResponseDto convertToResponseDto(Coupon coupon) {
-        return CouponResponseDto.builder()
-                .id(coupon.getId())
-                .code(coupon.getCode())
-                .name(coupon.getName())
-                .content(coupon.getContent())
-                .minimumUsageAmount(coupon.getMinimumUsageAmount())
-                .discountPrice(coupon.getDiscountPrice())
-                .startDate(coupon.getStartDate())
-                .endDate(coupon.getEndDate())
-                .status(coupon.getStatus())
-                .build();
-    }
-
-    private CouponRecordResponseDTO convertToRecordResponseDto(CouponRecord couponRecord) {
-        return CouponRecordResponseDTO.builder()
-                .id(couponRecord.getId())
-                .name(couponRecord.getCoupon().getName())
-                .code(couponRecord.getCoupon().getCode())
-                .email(couponRecord.getMember().getEmail())
-                .issuedAt(couponRecord.getIssuedAt())
-                .expiredAt(couponRecord.getExpiredAt())
-                .used(couponRecord.getUsedDatetime() != null)
-                // 쿠폰 유효기간 계산
-                .validPeriod(ChronoUnit.DAYS.between(couponRecord.getCoupon().getStartDate(), couponRecord.getCoupon().getEndDate()) + 1)
-                .build();
-    }
 }
