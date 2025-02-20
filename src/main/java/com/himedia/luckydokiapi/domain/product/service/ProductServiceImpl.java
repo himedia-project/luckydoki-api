@@ -11,6 +11,7 @@ import com.himedia.luckydokiapi.domain.product.entity.*;
 import com.himedia.luckydokiapi.domain.product.repository.*;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
+import com.himedia.luckydokiapi.exception.OutOfStockException;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -272,6 +273,15 @@ public class ProductServiceImpl implements ProductService {
         // 상품 delFlag true 로 변경
         productRepository.modifyDeleteFlag(productId);
 //row 가 삭제되는게 아니라 deflag 가 바뀐다
+    }
+
+    @Override
+    public void validateProductCount(Long id, Integer count) {
+        Product product = this.getEntity(id);
+        // 주문상품 count 개수가 상품 재고수량 보다 많으면 예외처리
+        if (count > product.getStockNumber()) {
+            throw new OutOfStockException("해당 상품은 재고수량 삭제할 수 없습니다. 상품 id: " + id);
+        }
     }
 
 
