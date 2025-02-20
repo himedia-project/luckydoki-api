@@ -69,4 +69,6 @@
          * @return 주문 엔티티
          */
         Order getEntity(String orderId);
+
+
     }
