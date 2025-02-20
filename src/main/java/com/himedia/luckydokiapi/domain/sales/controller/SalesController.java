@@ -9,10 +9,11 @@ import com.himedia.luckydokiapi.domain.sales.service.SalesService;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -34,27 +35,38 @@ public class SalesController {
   private final SalesService salesService;
 
   private String getPythonScriptPath() {
-    String os = System.getProperty("os.name").toLowerCase();
-    
-    // 현재 클래스의 ClassLoader를 통해 리소스 경로 찾기
-    URL resourceUrl = getClass().getClassLoader().getResource("python/sales_forecast.py");
-    if (resourceUrl == null) {
-        throw new RuntimeException("Python script not found in resources");
-    }
-    
     try {
-        // URL을 파일 경로로 변환
-        File resourceFile = new File(resourceUrl.toURI());
-        String absolutePath = resourceFile.getAbsolutePath();
-        
-        // Windows의 경우 백슬래시를 정방향 슬래시로 변환
-        if (os.contains("win")) {
-            return absolutePath.replace("\\", "/");
+        // 리소스에서 Python 스크립트 읽기
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("python/sales_forecast.py");
+        if (inputStream == null) {
+            throw new RuntimeException("Python script not found in resources");
         }
-        return absolutePath;
+
+        // 운영체제의 임시 디렉토리에 임시 파일 생성
+        String tempDir = System.getProperty("java.io.tmpdir");
+        File tempFile = new File(tempDir, "sales_forecast_" + System.currentTimeMillis() + ".py");
         
-    } catch (URISyntaxException e) {
-        throw new RuntimeException("Failed to get Python script path", e);
+        // 리소스를 임시 파일로 복사
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+        }
+        
+        inputStream.close();
+        tempFile.deleteOnExit(); // 애플리케이션 종료 시 임시 파일 삭제
+
+        // 실행 권한 부여 (Linux 환경)
+        if (!System.getProperty("os.name").toLowerCase().contains("win")) {
+            tempFile.setExecutable(true);
+        }
+
+        return tempFile.getAbsolutePath();
+        
+    } catch (IOException e) {
+        throw new RuntimeException("Failed to create temporary Python script file", e);
     }
   }
 
