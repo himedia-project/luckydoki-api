@@ -39,8 +39,8 @@ public class ProductServiceImpl implements ProductService {
     private final TagRepository tagRepository;
     private final CustomFileUtil fileUtil;
     private final ProductLikeRepository productLikeRepository;
-    
-    
+
+
     @Transactional(readOnly = true)
     @Override
     public ProductDTO.Response getProduct(Long id, String email) {
@@ -60,8 +60,6 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     @Override
     public List<ProductDTO.Response> list(ProductSearchDTO requestDTO, String email) {
-//        boolean likes = (email != null) && productLikeRepository.likes(email, requestDTO.getId());
-//        log.info("likes: {}", likes);
         List<ProductDTO.Response> productList = productRepository.findByDTO(requestDTO).stream()
                 .map(product -> {
                     boolean likes = (email != null) && productLikeRepository.likes(email, product.getId());
@@ -90,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDTO.Response> getListByMember(String email) {
         Member member = getMember(email);
-List<Product> productList = productRepository.findProductByShopMemberEmail(member.getEmail());
+        List<Product> productList = productRepository.findProductByShopMemberEmail(member.getEmail());
 
         return productList.stream()
                 .map(product -> this.entityToDTO(

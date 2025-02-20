@@ -6,6 +6,7 @@ import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import com.himedia.luckydokiapi.domain.member.dto.*;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
+import com.himedia.luckydokiapi.domain.notification.dto.FcmTokenRequestDTO;
 import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import com.himedia.luckydokiapi.util.CookieUtil;
@@ -20,8 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-
-import static com.himedia.luckydokiapi.util.TimeUtil.checkTime;
 
 @Slf4j
 @RestController
@@ -149,4 +148,12 @@ public class MemberController {
     }
 
 
+    @PostMapping("/fcm-token")
+    public ResponseEntity<Void> updateFCMToken(
+            @RequestBody FcmTokenRequestDTO request
+    ) {
+        log.info("updateFCMToken request: {}", request);
+        memberService.updateFCMToken(request.getEmail(), request.getFcmToken());
+        return ResponseEntity.ok().build();
+    }
 }
