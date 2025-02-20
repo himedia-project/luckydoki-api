@@ -66,7 +66,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         }
 
 
-        if (path.startsWith("/api/event/active")) {
+        if (path.startsWith("/api/event")) {
             return true;
         }
 
