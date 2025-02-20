@@ -34,41 +34,41 @@ public class SalesController {
 
   private final SalesService salesService;
 
-  private String getPythonScriptPath() {
-    try {
-        // 리소스에서 Python 스크립트 읽기
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("python/sales_forecast.py");
-        if (inputStream == null) {
-            throw new RuntimeException("Python script not found in resources");
-        }
-
-        // 운영체제의 임시 디렉토리에 임시 파일 생성
-        String tempDir = System.getProperty("java.io.tmpdir");
-        File tempFile = new File(tempDir, "sales_forecast_" + System.currentTimeMillis() + ".py");
-        
-        // 리소스를 임시 파일로 복사
-        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, length);
-            }
-        }
-        
-        inputStream.close();
-        tempFile.deleteOnExit(); // 애플리케이션 종료 시 임시 파일 삭제
-
-        // 실행 권한 부여 (Linux 환경)
-        if (!System.getProperty("os.name").toLowerCase().contains("win")) {
-            tempFile.setExecutable(true);
-        }
-
-        return tempFile.getAbsolutePath();
-        
-    } catch (IOException e) {
-        throw new RuntimeException("Failed to create temporary Python script file", e);
-    }
-  }
+//  private String getPythonScriptPath() {
+//    try {
+//        // 리소스에서 Python 스크립트 읽기
+//        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("python/sales_forecast.py");
+//        if (inputStream == null) {
+//            throw new RuntimeException("Python script not found in resources");
+//        }
+//
+//        // 운영체제의 임시 디렉토리에 임시 파일 생성
+//        String tempDir = System.getProperty("java.io.tmpdir");
+//        File tempFile = new File(tempDir, "sales_forecast_" + System.currentTimeMillis() + ".py");
+//
+//        // 리소스를 임시 파일로 복사
+//        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+//            byte[] buffer = new byte[1024];
+//            int length;
+//            while ((length = inputStream.read(buffer)) > 0) {
+//                outputStream.write(buffer, 0, length);
+//            }
+//        }
+//
+//        inputStream.close();
+//        tempFile.deleteOnExit(); // 애플리케이션 종료 시 임시 파일 삭제
+//
+//        // 실행 권한 부여 (Linux 환경)
+//        if (!System.getProperty("os.name").toLowerCase().contains("win")) {
+//            tempFile.setExecutable(true);
+//        }
+//
+//        return tempFile.getAbsolutePath();
+//
+//    } catch (IOException e) {
+//        throw new RuntimeException("Failed to create temporary Python script file", e);
+//    }
+//  }
 
   @PostMapping("/forecast")
   public ResponseEntity<?> getSalesForecast() {
@@ -87,7 +87,8 @@ public class SalesController {
       log.info("Serialized JSON: " + jsonData);
 
       // 3) Python 스크립트 실행
-      String pythonFilePath = getPythonScriptPath();
+//      String pythonFilePath =
+      String pythonFilePath = "/home/ubuntu/luckydoki-api/src/main/resources/python/sales_forecast.py";
       ProcessBuilder processBuilder = new ProcessBuilder("python", pythonFilePath);
       processBuilder.redirectErrorStream(false);
       Process process = processBuilder.start();
