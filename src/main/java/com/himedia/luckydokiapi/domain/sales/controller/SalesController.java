@@ -8,8 +8,11 @@ import com.himedia.luckydokiapi.domain.sales.dto.SalesData;
 import com.himedia.luckydokiapi.domain.sales.service.SalesService;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +35,26 @@ public class SalesController {
 
   private String getPythonScriptPath() {
     String os = System.getProperty("os.name").toLowerCase();
-    String resourcePath = "src/main/resources/python/sales_forecast.py";
     
-    if (os.contains("win")) {
-      return "src\\main\\resources\\python\\sales_forecast.py";
-    } else {
-      return resourcePath;
+    // 현재 클래스의 ClassLoader를 통해 리소스 경로 찾기
+    URL resourceUrl = getClass().getClassLoader().getResource("python/sales_forecast.py");
+    if (resourceUrl == null) {
+        throw new RuntimeException("Python script not found in resources");
+    }
+    
+    try {
+        // URL을 파일 경로로 변환
+        File resourceFile = new File(resourceUrl.toURI());
+        String absolutePath = resourceFile.getAbsolutePath();
+        
+        // Windows의 경우 백슬래시를 정방향 슬래시로 변환
+        if (os.contains("win")) {
+            return absolutePath.replace("\\", "/");
+        }
+        return absolutePath;
+        
+    } catch (URISyntaxException e) {
+        throw new RuntimeException("Failed to get Python script path", e);
     }
   }
 
@@ -124,7 +141,7 @@ public class SalesController {
       String jsonInput = objectMapper.writeValueAsString(pythonRequest);
       log.info("Serialized JSON to Python: " + jsonInput);
 
-      String pythonFilePath = getPythonScriptPath();
+      String pythonFilePath = "F:/notebook/luckydoki/luckydoki-api/src/main/resources/python/sales_forecast.py";
       ProcessBuilder processBuilder = new ProcessBuilder("python", pythonFilePath);
       processBuilder.redirectErrorStream(false);
       Process process = processBuilder.start();
