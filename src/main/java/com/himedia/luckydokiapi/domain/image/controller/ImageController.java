@@ -22,6 +22,11 @@ public class ImageController {
         return fileUtil.getFile(fileName);
     }
 
+    @PostMapping("/upload/thumbnail")
+    public ResponseEntity<String> thumbnailUploadFilePOST(@RequestPart("file") MultipartFile file) {
+        return ResponseEntity.ok(fileUtil.uploadToThumbnailS3File(file));
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFilePOST(@RequestPart("file") MultipartFile file) {
         return ResponseEntity.ok(fileUtil.uploadS3File(file));

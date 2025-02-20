@@ -18,7 +18,7 @@ public class EventController {
 	private final EventBridgeService eventBridgeService;
 
 	// 모든 이벤트 조회
-	@GetMapping
+	@GetMapping("/list")
 	public ResponseEntity<List<EventDto>> getAllEvents() {
 		return ResponseEntity.ok(eventService.getAllEvents());
 	}

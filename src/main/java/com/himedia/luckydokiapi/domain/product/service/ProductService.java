@@ -66,6 +66,7 @@ public interface ProductService {
                 .id(product.getId())
                 .code(product.getCode())
                 .reviewAverage(product.getReviewAverage())
+                .reviewCount(product.getReviewCount())
                 .nickName(product.getShop().getMember().getNickName())  // shop name으로 사용
                 .email(product.getShop().getMember().getEmail())
                 .categoryId(product.getCategory().getId())

@@ -69,6 +69,48 @@ public class AwsS3Util {
         checkImageExtension(extension);
 
         String originalFilename = file.getOriginalFilename();
+        String fileName = UUID.randomUUID().toString() + "-" + originalFilename;
+
+        try {
+            // MultipartFile의 입력 스트림을 직접 S3에 업로드
+            s3Client.putObject(bucketName, fileName, file.getInputStream(), null);
+            return fileName;
+        } catch (IOException e) {
+            throw new RuntimeException("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+
+    /**
+     * S3에 썸네일파일 리스트 업로드
+     * @param files 파일 리스트
+     * @return 업로드된 400X400 파일 URL 리스트
+     */
+
+    public List<String> uploadToThumbnailS3Files(List<MultipartFile> files) {
+        return files.stream()
+                .map(this::uploadToThumbnailS3File)
+                .toList();
+    }
+
+
+    /**
+     * S3에 썸네일 파일로 업로드
+     * @param file 이미지 파일
+     * @return 업로드된 400X400 썸네일 파일 URL
+     */
+    public String uploadToThumbnailS3File(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File is empty");
+        }
+
+        String extension = Objects.requireNonNull(file.getOriginalFilename())
+                .substring(file.getOriginalFilename().lastIndexOf(".") + 1)
+                .toLowerCase();
+
+        checkImageExtension(extension);
+
+        String originalFilename = file.getOriginalFilename();
         String thumbnailFileName = "s_" + UUID.randomUUID().toString() + "-" + originalFilename;
         Path thumbnailPath = null;
         try {
@@ -179,4 +221,6 @@ public class AwsS3Util {
     public String getUrl(String fileName) {
         return s3Client.getUrl(bucketName, fileName).toString();
     }
+
+
 }

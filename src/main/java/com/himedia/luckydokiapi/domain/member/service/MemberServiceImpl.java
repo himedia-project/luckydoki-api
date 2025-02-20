@@ -199,7 +199,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         // 파일을 업로드하고 DB에 저장할 파일 경로를 설정
-        String uploadedImagePath = fileUtil.uploadS3File(requestDTO.getProfileImage());
+        String uploadedImagePath = fileUtil.uploadToThumbnailS3File(requestDTO.getProfileImage());
 
         // shopImage 값을 설정한 상태에서 SellerApplication 객체 생성
         SellerApplication application = SellerApplication.builder()

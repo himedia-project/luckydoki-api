@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.member.controller;
 
 
 import com.himedia.luckydokiapi.domain.member.dto.*;
+import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.service.AdminMemberService;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
@@ -84,20 +85,20 @@ public class AdminMemberController {
     }
 
     @GetMapping("/refresh")
-    public Map<String, Object> refresh(
+    public ResponseEntity<LoginResponseDTO> refresh(
             @CookieValue(value = "refreshToken") String refreshToken,
             HttpServletResponse response) {
         log.info("refresh refreshToken: {}", refreshToken);
 
-        // RefreshToken 검증
-        Map<String, Object> claims = jwtUtil.validateToken(refreshToken);
-        log.info("RefreshToken claims: {}", claims);
+        // ✳️ RefreshToken 검증해서 맴버정보 다시 가져옴!
+        Map<String, Object> loginClaims = jwtUtil.validateToken(refreshToken);
+        log.info("RefreshToken loginClaims: {}", loginClaims);
 
-        String newAccessToken = jwtUtil.generateToken(claims, jwtProps.getAccessTokenExpirationPeriod());
-        String newRefreshToken = jwtUtil.generateToken(claims, jwtProps.getRefreshTokenExpirationPeriod());
+        String newAccessToken = jwtUtil.generateToken(loginClaims, jwtProps.getAccessTokenExpirationPeriod());
+        String newRefreshToken = jwtUtil.generateToken(loginClaims, jwtProps.getRefreshTokenExpirationPeriod());
 
         // refreshToken 만료시간이 1시간 이하로 남았다면, 새로 발급
-        if (checkTime((Integer) claims.get("exp"))) {
+        if (checkTime((Integer) loginClaims.get("exp"))) {
             // 새로 발급
             CookieUtil.setTokenCookie(response, "refreshToken", newRefreshToken, jwtProps.getRefreshTokenExpirationPeriod()); // 1day
         } else {
@@ -105,7 +106,17 @@ public class AdminMemberController {
             CookieUtil.setNewRefreshTokenCookie(response, "refreshToken", refreshToken);
         }
 
-        return Map.of("newAccessToken", newAccessToken);
+        LoginResponseDTO loginResponseDTO = LoginResponseDTO.builder()
+                .email(loginClaims.get("email").toString())
+                .nickName(loginClaims.get("nickName").toString())
+                .roles((List<String>) loginClaims.get("roleNames"))
+                .accessToken(newAccessToken)
+                .active(MemberActive.valueOf(loginClaims.get("active").toString()))
+                .build();
+
+        log.info("refresh loginResponseDTO: {}", loginResponseDTO);
+        // refresh 성공시, accessToken, email, name, roles 반환
+        return ResponseEntity.ok(loginResponseDTO);
     }
 
     // 회원 목록

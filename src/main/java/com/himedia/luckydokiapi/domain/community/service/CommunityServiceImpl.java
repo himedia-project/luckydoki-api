@@ -52,7 +52,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CommunityResponseDTO> getAllCommunities(CommunitySearchDTO request) {
+    public List<CommunityResponseDTO> list(CommunitySearchDTO request, String email) {
         return communityRepository.findByDTO(request).stream()
                 .map(CommunityResponseDTO::from)
                 .collect(Collectors.toList());
@@ -207,22 +207,6 @@ public class CommunityServiceImpl implements CommunityService {
         communityRepository.delete(community);
     }
 
-
-    @Transactional(readOnly = true)
-    @Override
-    public ShopCommunityResponseDTO getShopCommunities(Long shopId, String email) {
-        Shop shop = shopRepository.findByIdWithCommunities(shopId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 샵이 존재하지 않습니다: " + shopId));
-//        shop.getCommunityList() -> DTO mapping
-        List<CommunityResponseDTO> communityDTOList = shop.getMember().getCommunityList().stream()
-                .map(CommunityResponseDTO::from).toList();
-
-        return ShopCommunityResponseDTO.builder()
-                .shopId(shop.getId())
-                .shopName(shop.getMember().getNickName())
-                .communityList(communityDTOList)
-                .build();
-    }
 
 
 }
