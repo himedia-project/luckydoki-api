@@ -9,7 +9,7 @@ import threading
 import traceback
 from io import BytesIO
 
-plt.rcParams["font.family"] = "Malgun Gothic"
+plt.rcParams["font.family"] = "Noto Sans CJK"
 
 def read_stdin_with_timeout(timeout=3.0):
     result = []
