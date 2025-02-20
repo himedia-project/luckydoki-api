@@ -4,15 +4,16 @@ import com.himedia.luckydokiapi.domain.chat.document.ChatMessage;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatHistoryDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatRoomDTO;
+import com.himedia.luckydokiapi.domain.chat.dto.MessageNotificationDTO;
+
 import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
-import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
-import com.himedia.luckydokiapi.security.MemberDTO;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+
 public interface ChatService {
     ChatMessageDTO saveMessage(ChatMessageDTO chatMessageDTO, String email);
 
@@ -22,10 +23,10 @@ public interface ChatService {
 
     List<ChatRoomDTO> findAllChatRooms(String email);
 
-    default ChatMessage convertToDocument(ChatMessageDTO chatMessageDTO, Member buyer, Shop shop, Long chatRoomId) {
+    default ChatMessage convertToDocument(ChatMessageDTO chatMessageDTO, Member member, Shop shop, Long chatRoomId) {
         return ChatMessage.builder()
                 .roomId(chatRoomId)
-                .email(buyer.getEmail())
+                .email(member.getEmail())
                 .shopId(shop.getId())
                 .message(chatMessageDTO.getMessage())
                 .sendTime(chatMessageDTO.getSendTime())
@@ -61,11 +62,30 @@ public interface ChatService {
                 .shopId(chatRoom.getShop().getId())
                 .shopImage(chatRoom.getShopImage())
                 .shopName(chatRoom.getShop().getMember().getNickName())
+                .isRead(chatRoom.getIsRead())
                 .lastMessage(message == null ? null : message)
                 .lastMessageTime(chatRoom.getLastMessageTime())
                 .build();
     }
 
 
+    default MessageNotificationDTO convertToMessageNotificationDTO(ChatRoom chatRoom) {
+        return MessageNotificationDTO.builder()
+                .notificationMessage("새 메세지가 도착했습니다")
+                .email(chatRoom.getMember().getEmail())
+                .isRead(chatRoom.getIsRead())
+                .timestamp(chatRoom.getLastMessageTime())
+                .roomId(chatRoom.getId())
+                .build();
+    }
+
+
+    Set<String> getRoomMembers(Long roomId);
+
+
+    List<MessageNotificationDTO> getUnreadNotifications(String email);
+
+
+    void changeRead(String email, Long roomId);
 //    Boolean findChatRoom(String email, Long shopId);
 }

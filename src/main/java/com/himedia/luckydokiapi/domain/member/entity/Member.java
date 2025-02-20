@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.member.entity;
 
 //import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
 
+import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.coupon.entity.CouponRecord;
 import com.himedia.luckydokiapi.domain.coupon.enums.CouponStatus;
@@ -73,9 +74,9 @@ public class Member extends BaseEntity {
 
 
 
-//    @Builder.Default
-//    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
-//    private List<ChatRoom> sellerChatRooms = new ArrayList<>();
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<ChatRoom> chatRooms = new ArrayList<>();
 //
 //    @Builder.Default
 //    @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL)

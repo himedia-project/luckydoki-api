@@ -34,8 +34,6 @@ public class ChatMessage {
     private String email;
     private Long shopId;     // 상품 ID
     private String message;     // 채팅 내용
-
-
     private LocalDateTime sendTime;
 
 //    public LocalDateTime getSendTimeAsInstant() {

@@ -17,7 +17,7 @@ public class ChatRoomDTO {
     private String shopImage;
     private String shopName;
     private String lastMessage;
-
-    private LocalDateTime lastMessageTime; // 처음 room 이 만들어진 시간
+    private Boolean isRead;
+    private LocalDateTime lastMessageTime;
 }
 //처음 채팅방이 생성될때 서버에 전달되는 dto

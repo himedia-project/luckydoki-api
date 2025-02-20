@@ -15,5 +15,6 @@ public class ChatHistoryDTO {
     private Long ShopId;
     private String shopImage;
     private String message;     // 채팅 내용
+    private String image;
     private LocalDateTime lastMessageTime; //마지막 대화 시간
 }

@@ -4,17 +4,15 @@ import com.himedia.luckydokiapi.domain.chat.document.ChatMessage;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatHistoryDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatRoomDTO;
+import com.himedia.luckydokiapi.domain.chat.dto.MessageNotificationDTO;
 import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
 import com.himedia.luckydokiapi.domain.chat.repository.ChatMessageRepository;
 import com.himedia.luckydokiapi.domain.chat.repository.ChatRoomRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
-import com.himedia.luckydokiapi.domain.product.entity.Product;
-import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.exception.NotAccessChatRoom;
-import com.himedia.luckydokiapi.security.MemberDTO;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +20,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.himedia.luckydokiapi.domain.member.enums.MemberRole.SELLER;
 import static com.himedia.luckydokiapi.domain.member.enums.MemberRole.USER;
@@ -41,6 +39,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final MemberRepository memberRepository;
     private final ShopRepository shopRepository;
+
 
     @Override
     public ChatMessageDTO saveMessage(ChatMessageDTO chatMessageDTO, String email) {
@@ -78,19 +77,18 @@ public class ChatServiceImpl implements ChatService {
     public ChatRoomDTO createChatRoom(ChatRoomDTO chatRoomDTO, String email) {
         //메세지를 보내는 시점에서 채팅룸이 생성되므로 sender 의 email 로 생성
         //회원 조회
+        log.info("createChatRoom : {}", chatRoomDTO);
         Member member = getMember(email);
         // shop 조회
         Shop shop = getShop(chatRoomDTO.getShopId());
         // sql ChatRoom 엔티티에 저장, id는 자동으로 생성되므로 null 로 전달
+
         ChatRoom chatRoom = createChatRoomEntity(member, shop, null);
         //새로운 chat room 생성 + 저장
 
         chatRoomRepository.save(chatRoom);
         //다시 dto로 변환하여 리턴
         return this.convertToChatRoomDTO(chatRoom, null);
-
-        //존재한다면 ? 채팅 메세지만 mongo db 에 저장한다
-
 
     }
 
@@ -102,14 +100,13 @@ public class ChatServiceImpl implements ChatService {
         if (chatMessages.isEmpty()) {
             return Collections.emptyList();
         }
-        String shopImage = chatRoom.getShop().getImage();
 
         return chatMessages.stream()
                 .map(chatMessage -> ChatHistoryDTO.builder()
                         .roomId(chatRoom.getId())
                         .email(chatMessage.getEmail())
                         .ShopId(chatRoom.getShop().getId())
-                        .shopImage(shopImage)
+                        .shopImage(chatRoom.getShop().getImage())
                         .message(chatMessage.getMessage())
                         .lastMessageTime(LocalDateTime.from(chatMessage.getSendTime()))
                         .build())
@@ -146,12 +143,48 @@ public class ChatServiceImpl implements ChatService {
         }).toList();
     }
 
-//    @Override
-//    public Boolean findChatRoom(String email, Long shopId) {
-//        Member member = getMember(email);
-//        Boolean exists = chatRoomRepository.chatRoomExist(member.getEmail(), shopId);
-//        return exists;
-//    }
+    @Override
+    public Set<String> getRoomMembers(Long roomId) {
+        return chatRoomRepository.findByChatMembers(roomId);
+    }
+
+
+    @Transactional
+    @Override  // 읽음 상태 바꾸기
+    public void changeRead(String email, Long roomId) {
+        Member member = getMember(email);
+        chatRoomRepository.modifyIsRead(roomId, member.getEmail());
+    }
+
+    @Override
+    @Transactional(readOnly = true)//안읽은 알림 리스트
+    public List<MessageNotificationDTO> getUnreadNotifications(String email) {
+        Member member = getMember(email);
+        //안읽은 채티방 리스트에 참여한 멤버들을 찾기
+// 해당 사용자의 안 읽은 채팅방들을 가져옴
+        List<ChatRoom> unreadRooms = chatRoomRepository.findByMemberAndIsRead(member.getEmail(), false);
+
+        // 각 채팅방의 마지막 메시지 발신자 정보와 함께 DTO로 변환
+        return unreadRooms.stream()
+                .map(room -> {
+                    // 채팅방의 마지막 메시지 발신자 찾기
+                    String sender = this.getRoomMembers(room.getId()).stream()
+                            .filter(roomMember -> !roomMember.equals(member.getEmail()))
+                            .findFirst()
+                            .orElse(null);
+
+                    return MessageNotificationDTO.builder()
+                            .roomId(room.getId())
+                            .sender(sender)  // 발신자 설정
+                            .email(member.getEmail())  // 수신자(현재 사용자)
+                            .notificationMessage(sender + "님에게 새 메세지가 도착하였습니다")
+                            .timestamp(room.getLastMessageTime())
+                            .isRead(false)
+                            .build();
+                })
+                .toList();
+    }
+
 
 
     private Boolean getSellerAndBuyer(String email) {
@@ -181,6 +214,8 @@ public class ChatServiceImpl implements ChatService {
     private ChatMessageDTO saveMongoAndReturnChatDTO(ChatMessageDTO chatMessageDTO, Member member, Shop shop) {
         //채팅룸의 아이디로 엔티티 조회
         ChatRoom chatRoom = getChatroom(chatMessageDTO.getRoomId());
+
+
         // document 변환
         ChatMessage chatMessage = this.convertToDocument(chatMessageDTO, member, shop, chatRoom.getId());
         //mongodb 에 저장된 document
