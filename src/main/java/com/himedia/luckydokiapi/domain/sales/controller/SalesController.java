@@ -66,7 +66,7 @@ public class SalesController {
       }
 
       // 4) 복사된 임시 파일 경로로 파이썬 프로세스 실행
-      ProcessBuilder processBuilder = new ProcessBuilder("python3", tempScriptFile.getAbsolutePath());
+      ProcessBuilder processBuilder = new ProcessBuilder("/home/ubuntu/myenv/bin/python", tempScriptFile.getAbsolutePath());
       processBuilder.redirectErrorStream(false);
       Process process = processBuilder.start();
 
@@ -145,7 +145,7 @@ public class SalesController {
       }
 
       // 2) 파이썬 프로세스 실행
-      ProcessBuilder processBuilder = new ProcessBuilder("python3", tempScriptFile.getAbsolutePath());
+      ProcessBuilder processBuilder = new ProcessBuilder("/home/ubuntu/myenv/bin/python", tempScriptFile.getAbsolutePath());
       processBuilder.redirectErrorStream(false);
       Process process = processBuilder.start();
 
