@@ -6,6 +6,7 @@
     import com.himedia.luckydokiapi.domain.order.controllor.AdminOrderController;
     import com.himedia.luckydokiapi.domain.order.dto.OrderHistDTO;
     import com.himedia.luckydokiapi.domain.order.entity.Order;
+    import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
     import com.himedia.luckydokiapi.domain.product.entity.Product;
     import com.himedia.luckydokiapi.dto.PageResponseDTO;
 

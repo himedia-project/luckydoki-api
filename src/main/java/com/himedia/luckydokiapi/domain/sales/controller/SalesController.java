@@ -8,6 +8,9 @@ import com.himedia.luckydokiapi.domain.sales.dto.SalesData;
 import com.himedia.luckydokiapi.domain.sales.service.SalesService;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Collections;
@@ -15,8 +18,10 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,13 +35,16 @@ public class SalesController {
 
   private final SalesService salesService;
 
+  /**
+   * /api/sales/forecast
+   * 일별 매출 데이터 전체를 조회 후 Python에 전달, 예측값을 받아옴
+   */
   @PostMapping("/forecast")
   public ResponseEntity<?> getSalesForecast() {
     try {
-      // 1) DB 등에서 데이터 조회 (예: SalesService)
-      // SalesData는 'date'(String or LocalDateTime) + 'totalSales'(Double) 필드를 가정
+      // 1) DB 등에서 데이터 조회
       List<SalesData> salesDataList = salesService.getDailySalesData();
-      log.info("Sales Data: " + salesDataList);
+      log.info("Sales Data: {}", salesDataList);
 
       // 2) JSON 직렬화
       ObjectMapper objectMapper = new ObjectMapper();
@@ -44,21 +52,31 @@ public class SalesController {
       objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
       String jsonData = objectMapper.writeValueAsString(salesDataList);
-      log.info("Serialized JSON: " + jsonData);
+      log.info("Serialized JSON: {}", jsonData);
 
-      // 3) Python 스크립트 실행
-      String pythonFilePath = "F:/notebook/luckydoki/luckydoki-api/src/main/resources/python/sales_forecast.py";
-      ProcessBuilder processBuilder = new ProcessBuilder("python3", pythonFilePath);
+      // 3) ClassPathResource로 파이썬 스크립트 로드 → 임시 파일로 복사
+      ClassPathResource resource = new ClassPathResource("python/sales_forecast.py");
+      File tempScriptFile = File.createTempFile("sales_forecast", ".py");
+      tempScriptFile.deleteOnExit(); // JVM 종료 시 임시 파일 삭제
+
+      try (InputStream is = resource.getInputStream();
+          FileOutputStream fos = new FileOutputStream(tempScriptFile)) {
+        StreamUtils.copy(is, fos); // 스크립트 파일 복사
+      }
+
+      // 4) 복사된 임시 파일 경로로 파이썬 프로세스 실행
+      ProcessBuilder processBuilder = new ProcessBuilder("python", tempScriptFile.getAbsolutePath());
       processBuilder.redirectErrorStream(false);
       Process process = processBuilder.start();
 
-      // 4) Python에 JSON 데이터 전달
-      try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), "UTF-8"))) {
+      // 5) Python에 JSON 데이터 전달
+      try (BufferedWriter writer = new BufferedWriter(
+          new OutputStreamWriter(process.getOutputStream(), "UTF-8"))) {
         writer.write(jsonData);
         writer.flush();
       }
 
-      // 5) Python stdout 결과 읽기
+      // 6) Python stdout 읽기
       BufferedReader stdOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
       StringBuilder outBuilder = new StringBuilder();
       String line;
@@ -67,7 +85,7 @@ public class SalesController {
       }
       stdOut.close();
 
-      // 5-1) Python stderr 결과 읽기
+      // 7) Python stderr 읽기
       BufferedReader stdErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
       StringBuilder errBuilder = new StringBuilder();
       while ((line = stdErr.readLine()) != null) {
@@ -75,28 +93,30 @@ public class SalesController {
       }
       stdErr.close();
 
-      log.info("Python STDOUT: " + outBuilder.toString());
-      log.error("Python STDERR: " + errBuilder.toString());
+      log.info("Python STDOUT: {}", outBuilder.toString());
+      log.error("Python STDERR: {}", errBuilder.toString());
 
-      // 6) 결과 파싱
       String output = outBuilder.toString();
       if (output == null || output.trim().isEmpty()) {
         throw new RuntimeException("Python script returned no output");
       }
 
-      // Python 스크립트가 JSON으로 결과를 반환하므로 Map으로 파싱
+      // 8) Python 출력(JSON)을 다시 파싱
       Map<String, Object> result = objectMapper.readValue(output, Map.class);
 
-      // 예: {"forecast_message":"...","image_url":"/static/sales_trend.png"}
       return ResponseEntity.ok(result);
 
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Error in getSalesForecast(): ", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Collections.singletonMap("error", "예측 실패: " + e.getMessage()));
     }
   }
 
+  /**
+   * /api/sales/forecast/date
+   * 요청 바디(selectedDate)를 받아 해당 날짜의 매출 데이터를 조회 후 Python에 전달, 예측값을 받아옴
+   */
   @PostMapping("/forecast/date")
   public ResponseEntity<?> getSalesForecastByDate(@RequestBody Map<String, Object> requestBody) {
     try {
@@ -111,21 +131,31 @@ public class SalesController {
       String selectedDateValue = (selectedDate != null ? selectedDate : "");
       PythonRequest pythonRequest = new PythonRequest(salesDataList, selectedDateValue);
       String jsonInput = objectMapper.writeValueAsString(pythonRequest);
-      log.info("Serialized JSON to Python: " + jsonInput);
+      log.info("Serialized JSON to Python: {}", jsonInput);
 
-      String pythonFilePath = "F:/notebook/luckydoki/luckydoki-api/src/main/resources/python/sales_forecast.py";
-      ProcessBuilder processBuilder = new ProcessBuilder("python", pythonFilePath);
+      // 1) 마찬가지로 ClassPathResource로 파이썬 스크립트 로드
+      ClassPathResource resource = new ClassPathResource("python/sales_forecast.py");
+      File tempScriptFile = File.createTempFile("sales_forecast", ".py");
+      tempScriptFile.deleteOnExit();
+
+      try (InputStream is = resource.getInputStream();
+          FileOutputStream fos = new FileOutputStream(tempScriptFile)) {
+        StreamUtils.copy(is, fos);
+      }
+
+      // 2) 파이썬 프로세스 실행
+      ProcessBuilder processBuilder = new ProcessBuilder("python", tempScriptFile.getAbsolutePath());
       processBuilder.redirectErrorStream(false);
       Process process = processBuilder.start();
 
-      // Python 프로세스에 JSON 데이터 전달
+      // 3) JSON 데이터 전달
       try (BufferedWriter writer = new BufferedWriter(
           new OutputStreamWriter(process.getOutputStream(), "UTF-8"))) {
         writer.write(jsonInput);
         writer.flush();
       }
 
-      // Python stdout 읽기
+      // 4) stdout 읽기
       BufferedReader stdOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
       StringBuilder outBuilder = new StringBuilder();
       String line;
@@ -134,7 +164,7 @@ public class SalesController {
       }
       stdOut.close();
 
-      // Python stderr 읽기
+      // 5) stderr 읽기
       BufferedReader stdErr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
       StringBuilder errBuilder = new StringBuilder();
       while ((line = stdErr.readLine()) != null) {
@@ -142,8 +172,8 @@ public class SalesController {
       }
       stdErr.close();
 
-      log.info("Python STDOUT: " + outBuilder.toString());
-      log.error("Python STDERR: " + errBuilder.toString());
+      log.info("Python STDOUT: {}", outBuilder.toString());
+      log.error("Python STDERR: {}", errBuilder.toString());
 
       String output = outBuilder.toString();
       if (output == null || output.trim().isEmpty()) {
@@ -152,8 +182,9 @@ public class SalesController {
 
       Map<String, Object> result = objectMapper.readValue(output, Map.class);
       return ResponseEntity.ok(result);
+
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Error in getSalesForecastByDate(): ", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Collections.singletonMap("error", "예측 실패: " + e.getMessage()));
     }
