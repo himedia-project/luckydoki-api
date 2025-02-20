@@ -48,7 +48,7 @@ public class SalesController {
 
       // 3) Python 스크립트 실행
       String pythonFilePath = "F:/notebook/luckydoki/luckydoki-api/src/main/resources/python/sales_forecast.py";
-      ProcessBuilder processBuilder = new ProcessBuilder("python", pythonFilePath);
+      ProcessBuilder processBuilder = new ProcessBuilder("python3", pythonFilePath);
       processBuilder.redirectErrorStream(false);
       Process process = processBuilder.start();
 
