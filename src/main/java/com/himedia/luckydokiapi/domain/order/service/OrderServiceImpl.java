@@ -82,6 +82,8 @@ public class OrderServiceImpl implements OrderService {
         }
         // 총 할인 금액 계산
         int totalDiscountPrice = 0;
+        // 주문에 사용한 쿠폰
+        Coupon useCoupon = null;
 
         // 쿠폰이 있는 경우의 처리
         if (couponId != null) {
@@ -94,10 +96,11 @@ public class OrderServiceImpl implements OrderService {
 //            }
 
             totalDiscountPrice = couponDiscountPrice;  // 지금 현재 할인금액 쿠폰 밖에 없음!
+            useCoupon = coupon;
         }
 
         // 주문 생성
-        Order newOrder = Order.from(member, orderItemList, totalDiscountPrice);
+        Order newOrder = Order.from(member, useCoupon, orderItemList, totalDiscountPrice);
         log.info("new Order with code: {}, productsPrice: {}", newOrder.getCode(), newOrder.getTotalPrice());
 
         // 주문 저장

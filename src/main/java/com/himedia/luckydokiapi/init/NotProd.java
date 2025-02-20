@@ -44,7 +44,7 @@ public class NotProd {
                 return;
             } else {
                 log.info("초기 쿠폰 데이터가 없어 초기화합니다.");
-                couponService.initCoupon();
+                couponService.createWelcomeCoupon();
                 log.info("Coupon 초기 데이터 생성 완료");
             }
 
@@ -118,7 +118,7 @@ public class NotProd {
                 couponService.issueCoupon(1L, members.stream().map(Member::getEmail).toList());
 
                 shopRepository.saveAll(shops);
-                log.info("Coupon, Member, Shop 초기 데이터 생성 완료");
+                log.info("Welcome Coupon, Member, Shop 초기 데이터 생성 완료");
             }
 
         };

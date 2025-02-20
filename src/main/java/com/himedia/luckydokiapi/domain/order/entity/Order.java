@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.order.entity;
 
 
+import com.himedia.luckydokiapi.domain.coupon.entity.Coupon;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.order.enums.OrderStatus;
 import com.himedia.luckydokiapi.domain.payment.entity.Payment;
@@ -55,6 +56,10 @@ public class Order {
     @ColumnDefault("0")
     private int totalDiscountPrice;
 
+    @OneToOne(fetch = FetchType.LAZY)  // ✳️ 주문 1개당 1개의 쿠폰만 사용 가능
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
@@ -70,9 +75,10 @@ public class Order {
     }
 
     // 주문 생성
-    public static Order from(Member member, List<OrderItem> orderItems, int totalDiscountPrice) {
+    public static Order from(Member member, Coupon useCoupon, List<OrderItem> orderItems, int totalDiscountPrice) {
         Order order = Order.builder()
                 .member(member)
+                .coupon(useCoupon)
                 .orderDate(LocalDateTime.now())
                 .orderStatus(OrderStatus.ORDER)
                 .code(orderCodeGenerator()) // 주문 코드 생성

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class CouponServiceImpl implements CouponService {
 
     private final CouponRepository couponRepository;
@@ -36,6 +36,7 @@ public class CouponServiceImpl implements CouponService {
 
     private final MemberRepository memberRepository;
 
+    @Transactional(readOnly = true)
     @Override
     public PageResponseDTO<CouponResponseDto> getAllCoupons(CouponRequestDto requestDto) {
         Page<Coupon> result = couponRepository.findListBy(requestDto);
@@ -47,6 +48,7 @@ public class CouponServiceImpl implements CouponService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CouponResponseDto> getActiveCoupons() {
         return couponRepository.findActiveCoupons().stream()
@@ -54,6 +56,7 @@ public class CouponServiceImpl implements CouponService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CouponResponseDto getCouponById(Long id) {
         Coupon coupon = couponRepository.findCouponById(id)
@@ -61,6 +64,7 @@ public class CouponServiceImpl implements CouponService {
         return convertToResponseDto(coupon);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CouponResponseDto getCouponByCode(String code) {
         Coupon coupon = couponRepository.findByCode(code);
@@ -71,7 +75,6 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    @Transactional
     public Long createCoupon(CouponRequestDto requestDto) {
         Coupon coupon = Coupon.builder()
                 .code(NumberGenerator.generateRandomNumber(10)) // ✅ 랜덤 코드 생성
@@ -89,7 +92,6 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    @Transactional
     public CouponResponseDto updateCoupon(Long id, CouponRequestDto requestDto) {
         // ✅ QueryDSL 기반의 updateCoupon() 호출
         couponRepository.updateCoupon(id, requestDto);
@@ -97,7 +99,6 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    @Transactional
     public void deleteCoupon(Long couponId) {
         Coupon coupon = getCoupon(couponId);
 
@@ -110,6 +111,7 @@ public class CouponServiceImpl implements CouponService {
         couponRepository.delete(coupon);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public PageResponseDTO<CouponRecordResponseDTO> getCouponRecords(CouponRecordSearchDTO requestDto) {
         Page<CouponRecord> result = couponRecordRepository.findListBy(requestDto);
@@ -121,7 +123,7 @@ public class CouponServiceImpl implements CouponService {
                 .build();
     }
 
-    @Transactional
+
     @Override
     public void issueCoupon(Long couponId, List<String> memberEmails) {
         Coupon coupon = getCoupon(couponId);
@@ -163,6 +165,7 @@ public class CouponServiceImpl implements CouponService {
      * @param email 회원 이메일
      * @return 쿠폰 목록
      */
+    @Transactional(readOnly = true)
     @Override
     public List<CouponResponseDto> getCouponList(String email) {
         Member member = memberRepository.findByEmail(email)
@@ -172,14 +175,18 @@ public class CouponServiceImpl implements CouponService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public int countAllCoupon() {
         return couponRepository.findAll().size();
     }
 
-    @Transactional
+
+    /**
+     * 회원가입 쿠폰 생성
+     */
     @Override
-    public void initCoupon() {
+    public void createWelcomeCoupon() {
         // ✅ 쿠폰 초기화
         // 회원가입 쿠폰 생성
         // INSERT INTO `coupon` (`end_date`, `start_date`, `id`,`code`, `content`, `name`, `status`, `discount_price`, `minimum_usage_amount`) VALUES ('2026-02-12', '2025-02-12', 1, '3285037658', '😊첫회원가입축하쿠폰! 3000원 할인이 됩니다!', '🎉회원가입축하쿠폰', 'ACTIVE', 3000, 30000);
@@ -194,6 +201,20 @@ public class CouponServiceImpl implements CouponService {
                 .endDate(LocalDate.now().plusMonths(12))
                 .build();
         couponRepository.save(coupon);
+    }
+
+    /**
+     * 쿠폰 사용 -> 쿠폰발급 목록에 사용일시 기록
+     * @param email 회원 이메일
+     * @param coupon 쿠폰
+     */
+    @Override
+    public void useCoupon(String email, Coupon coupon) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with email: " + email));
+        CouponRecord couponRecord = couponRecordRepository.findByMemberAndCoupon(member.getEmail(), coupon)
+                .orElseThrow(() -> new EntityNotFoundException("Coupon not found with member: " + email));
+        couponRecord.useCoupon();
     }
 
     private CouponResponseDto convertToResponseDto(Coupon coupon) {

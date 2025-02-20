@@ -28,5 +28,7 @@ public interface CouponService {
 
 	int countAllCoupon();
 
-	void initCoupon();
+	void createWelcomeCoupon();
+
+    void useCoupon(String email, Coupon coupon);
 }
