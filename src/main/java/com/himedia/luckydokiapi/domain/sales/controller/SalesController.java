@@ -35,10 +35,6 @@ public class SalesController {
 
   private final SalesService salesService;
 
-  /**
-   * /api/sales/forecast
-   * 일별 매출 데이터 전체를 조회 후 Python에 전달, 예측값을 받아옴
-   */
   @PostMapping("/forecast")
   public ResponseEntity<?> getSalesForecast() {
     try {
@@ -59,13 +55,9 @@ public class SalesController {
       File tempScriptFile = File.createTempFile("sales_forecast", ".py");
       tempScriptFile.deleteOnExit(); // JVM 종료 시 임시 파일 삭제
 
-      try (InputStream is = resource.getInputStream();
-          FileOutputStream fos = new FileOutputStream(tempScriptFile)) {
-        StreamUtils.copy(is, fos); // 스크립트 파일 복사
-      }
-
-      // 4) 복사된 임시 파일 경로로 파이썬 프로세스 실행
-      ProcessBuilder processBuilder = new ProcessBuilder("python", tempScriptFile.getAbsolutePath());
+      // 3) Python 스크립트 실행
+      String pythonFilePath = "F:/notebook/luckydoki/luckydoki-api/src/main/resources/python/sales_forecast.py";
+      ProcessBuilder processBuilder = new ProcessBuilder("python3", pythonFilePath);
       processBuilder.redirectErrorStream(false);
       Process process = processBuilder.start();
 
