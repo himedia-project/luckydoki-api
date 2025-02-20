@@ -68,7 +68,7 @@
          * @param orderId 주문 ID(주문코드)
          * @return 주문 엔티티
          */
-        Order getEntity(String orderId);
+        Order getEntityByCode(String orderId);
 
-
+        void removeCartItemsMatchedOrderItemsBy(List<OrderItem> orderItems);
     }

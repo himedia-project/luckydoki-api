@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.member.service;
 
+import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
@@ -45,7 +46,14 @@ public class SocialService {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
 
+    private final CouponService couponService;
 
+
+    /**
+     * 카카오 access_token 받기
+     * @param code 카카오 인가 코드
+     * @return access_token
+     */
     public String getKakaoAccessToken(String code) {
         log.info("getKakaoAccessToken start...");
 
@@ -89,28 +97,15 @@ public class SocialService {
         String email = getEmailFromKakaoAccessToken(accessToken);
         log.info("getKakaoMember email: {}", email);
 
-        Optional<Member> result = memberRepository.findById(email);
-
-        // 기존 회원이 존재하는 경우
-        if (result.isPresent()) {
-            Member member = result.get();
-
-            // active = N인 경우 로그인 차단
-            if (member.getActive() == MemberActive.N) {
-                throw new RuntimeException("탈퇴한 회원입니다. 다시 가입할 수 없습니다.");
-            }
-
-            return memberService.entityToDTO(member);
-        }
-
-        // 새로운 회원 가입 (active = Y 설정)
-        Member member = this.makeSocialMember(email);
-
-        memberRepository.save(member);
-        return memberService.entityToDTO(member);
+        return getSocialMemberDTO(email);
     }
 
 
+    /**
+     * 구글 access_token 받기
+     * @param code 구글 인가 코드
+     * @return access_token
+     */
     public String getGoogleAccessToken(String code) {
         log.info("getGoogleAccessToken start...");
 
@@ -155,22 +150,15 @@ public class SocialService {
         String email = getEmailFromGoogleAccessToken(accessToken);
         log.info("getGoogleMember email: {}", email);
 
-        Optional<Member> result = memberRepository.findById(email);
-
-        // 기존의 회원
-        if (result.isPresent()) {
-            MemberDTO memberDTO = memberService.entityToDTO(result.get());
-            return memberDTO;
-        }
-
-        // 회원이 아니었다면 닉네임은 '소셜 회원'으로 패스워드는 임의로 생성
-        Member socialMember = this.makeSocialMember(email);
-        memberRepository.save(socialMember);
-        MemberDTO memberDTO = memberService.entityToDTO(socialMember);
-        return memberDTO;
+        return this.getSocialMemberDTO(email);
     }
 
 
+    /**
+     * 페이스북 access_token 받기
+     * @param code 페이스북 인가 코드
+     * @return access_token
+     */
     public String getFacebookAccessToken(String code) {
         log.info("getFacebookAccessToken start...");
 
@@ -214,22 +202,16 @@ public class SocialService {
         // 페이스북은 이메일을 바로 제공해주기 때문에 바로 사용
         String email = getEmailFromFacebookAccessToken(accessToken);
         log.info("getFacebookMember email: {}", email);
-        Optional<Member> result = memberRepository.findById(email);
-
-        // 기존의 회원
-        if (result.isPresent()) {
-            MemberDTO memberDTO = memberService.entityToDTO(result.get());
-            return memberDTO;
-        }
-
-        // 회원이 아니었다면 닉네임은 '소셜 회원'으로 패스워드는 임의로 생성
-        Member socialMember = this.makeSocialMember(email);
-        memberRepository.save(socialMember);
-        MemberDTO memberDTO = memberService.entityToDTO(socialMember);
-        return memberDTO;
+        return this.getSocialMemberDTO(email);
     }
 
 
+    /**
+     * 네이버 access_token 받기
+     * @param code 네이버 인가 코드
+     * @param state 네이버 상태값
+     * @return access_token
+     */
     public String getNaverAccessToken(String code, String state) {
         log.info("getNaverAccessToken start...");
 
@@ -269,23 +251,15 @@ public class SocialService {
         // 네이버는 이메일을 바로 제공해주기 때문에 바로 사용
         String email = getEmailFromNaverAccessToken(accessToken);
         log.info("getNaverMember email: {}", email);
-
-        Optional<Member> result = memberRepository.findById(email);
-
-        // 기존의 회원
-        if (result.isPresent()) {
-            MemberDTO memberDTO = memberService.entityToDTO(result.get());
-            return memberDTO;
-        }
-
-        // 회원이 아니었다면 닉네임은 '소셜 회원'으로 패스워드는 임의로 생성
-        Member socialMember = this.makeSocialMember(email);
-        memberRepository.save(socialMember);
-        MemberDTO memberDTO = memberService.entityToDTO(socialMember);
-        return memberDTO;
+        return this.getSocialMemberDTO(email);
     }
 
 
+    /**
+     * 깃허브 access_token 받기
+     * @param code 깃허브 인가 코드
+     * @return access_token
+     */
     public String getGithubAccessToken(String code) {
         log.info("getGithubAccessToken start...");
 
@@ -326,23 +300,15 @@ public class SocialService {
 
         String email = getEmailFromGithubAccessToken(accessToken);
         log.info("getGithubMember email: {}", email);
-
-        Optional<Member> result = memberRepository.findById(email);
-
-        // 기존의 회원
-        if (result.isPresent()) {
-            MemberDTO memberDTO = memberService.entityToDTO(result.get());
-            return memberDTO;
-        }
-
-        // 회원이 아니었다면 닉네임은 '소셜 회원'으로 패스워드는 임의로 생성
-        Member socialMember = this.makeSocialMember(email);
-        memberRepository.save(socialMember);
-        MemberDTO memberDTO = memberService.entityToDTO(socialMember);
-        return memberDTO;
+        return this.getSocialMemberDTO(email);
     }
 
 
+    /**
+     * 카카오 access_token으로 이메일 받기
+     * @param accessToken 카카오 access_token
+     * @return 이메일
+     */
     private String getEmailFromKakaoAccessToken(String accessToken) {
 
         log.info("getEmailFromKakaoAccessToken start...");
@@ -375,6 +341,11 @@ public class SocialService {
         return kakaoAccount.get("email");
     }
 
+    /**
+     * 구글 access_token으로 이메일 받기
+     * @param accessToken 구글 access_token
+     * @return 이메일
+     */
     private String getEmailFromGoogleAccessToken(String accessToken) {
         log.info("getEmailFromGoogleAccessToken start...");
         // 리소스 uri
@@ -405,6 +376,11 @@ public class SocialService {
         return bodyMap.get("email");
     }
 
+    /**
+     * 페이스북 access_token으로 이메일 받기
+     * @param accessToken 페이스북 access_token
+     * @return 이메일
+     */
     private String getEmailFromFacebookAccessToken(String accessToken) {
         log.info("getEmailFromFacebookAccessToken start...");
         // 페이스북은 이메일을 바로 제공해주기 때문에 바로 사용, fields=email 로 꼭 지정해야
@@ -436,6 +412,11 @@ public class SocialService {
         return bodyMap.get("email");
     }
 
+    /**
+     * 네이버 access_token으로 이메일 받기
+     * @param accessToken 네이버 access_token
+     * @return 이메일
+     */
     private String getEmailFromNaverAccessToken(String accessToken) {
         log.info("getEmailFromNaverAccessToken start...");
 
@@ -468,6 +449,11 @@ public class SocialService {
     }
 
 
+    /**
+     * 깃허브 access_token으로 이메일 받기
+     * @param accessToken 깃허브 access_token
+     * @return 이메일
+     */
     private String getEmailFromGithubAccessToken(String accessToken) {
         log.info("getEmailFromGithubAccessToken start...");
 
@@ -509,11 +495,49 @@ public class SocialService {
     }
 
 
+    /**
+     * 소셜 로그인 회원가입 처리
+     * @param email 이메일
+     * @return 회원 정보
+     */
+    private MemberDTO getSocialMemberDTO(String email) {
+        Optional<Member> result = memberRepository.findById(email);
+
+        // 기존 회원이 존재하는 경우
+        if (result.isPresent()) {
+            Member member = result.get();
+
+            // active = N인 경우 로그인 차단
+            if (member.getActive() == MemberActive.N) {
+                throw new RuntimeException("탈퇴한 회원입니다. 다시 가입할 수 없습니다. member: " + member.getEmail());
+            }
+            return memberService.entityToDTO(member);
+        }
+
+        // 새로운 회원 가입 (active = Y 설정)
+        Member member = this.makeSocialMember(email);
+        memberRepository.save(member);
+
+        // 회원 저장 후 쿠폰 발급 처리
+        try {
+            couponService.issueCoupon(1L, List.of(member.getEmail()));
+        } catch (Exception e) {
+            log.error("Failed to issue welcome coupon for member: {} ", member.getEmail(), e);
+            // 쿠폰 발급 실패는 회원가입 실패로 이어지지 않도록 함
+        }
+        return memberService.entityToDTO(member);
+    }
+
+    /**
+     * 소셜 회원 생성
+     * @param email 이메일
+     * @return 회원 정보
+     */
     public Member makeSocialMember(String email) {
         String tempPassword = memberService.makeTempPassword();
+        log.info("tempPassword: {}", tempPassword);
         String encodedTempPassword = passwordEncoder.encode(tempPassword);
-        log.info("tempPassword: " + tempPassword);
-        return fromSocialMember(email, encodedTempPassword);
+        return Member.fromSocialMember(email, encodedTempPassword);
     }
 
 }

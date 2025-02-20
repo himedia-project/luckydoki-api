@@ -1,7 +1,6 @@
 package com.himedia.luckydokiapi.domain.product.entity;
 
 import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
-import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
 import com.himedia.luckydokiapi.domain.product.enums.*;
 import com.himedia.luckydokiapi.domain.review.entity.Review;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
@@ -25,7 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Setter
-@ToString(exclude = {"imageList", "shop", "category", "productTagList"})
+@ToString(exclude = {"imageList", "shop", "category", "productTagList", "productLikes", "productReviews", "categoryBridges"})
 @Table(name = "product", indexes = {
     @Index(name = "idx_product_name", columnList = "name"),
     @Index(name = "idx_product_code", columnList = "code")
@@ -235,5 +234,23 @@ public class Product extends BaseEntity {
         return productReviews.stream().mapToDouble(Review::getRating).average().orElse(0);
     }
 
+    /**
+     * 상품 재고 감소
+     * @param count 감소할 수량
+     */
+    public void decreaseStock(int count) {
+        if (this.stockNumber - count < 0) {
+            throw new IllegalArgumentException("재고가 부족합니다.");
+        }
+        this.stockNumber -= count;
+    }
+
+    /**
+     * 상품 리뷰 카운트
+     * @return 리뷰 카운트
+     */
+    public int getReviewCount() {
+        return this.productReviews.size();
+    }
 
 }

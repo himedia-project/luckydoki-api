@@ -45,7 +45,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void preparePayment(PaymentPrepareDTO dto) {
         log.info("PaymentService preparePayment...");
-        Order order = orderService.getEntity(dto.getOrderId());
+        Order order = orderService.getEntityByCode(dto.getOrderId());
 
         Payment payment = Payment.builder()
                 .order(order)
@@ -108,6 +108,12 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.setRequestedAt(Objects.requireNonNull(response.getBody()).getRequestedAt().toLocalDateTime());
                 payment.setApprovedAt(Objects.requireNonNull(response.getBody()).getApprovedAt().toLocalDateTime());
                 paymentRepository.save(payment);
+
+                Order order = orderService.getEntityByCode(orderId);
+                order.changeStatusToConfirm();
+                // 장바구니 상품 삭제
+                orderService.removeCartItemsMatchedOrderItemsBy(order.getOrderItems());
+
                 log.info("Payment confirmation successful: {}", response.getBody());
             }
 

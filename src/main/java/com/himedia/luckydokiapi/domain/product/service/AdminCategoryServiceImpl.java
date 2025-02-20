@@ -38,7 +38,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         // 파일 s3 업로드
         if (dto.getFile() != null || dto.getFile().isEmpty()) {
             MultipartFile file = dto.getFile();
-            String uploadFileName = fileUtil.uploadS3File(file);
+            String uploadFileName = fileUtil.uploadToThumbnailS3File(file);
             dto.setFileName(uploadFileName);
         }
         Category result = categoryRepository.save(this.dtoToEntity(dto));
@@ -57,7 +57,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
             }
 
             MultipartFile file = categoryDTO.getFile();
-            String uploadFileName = fileUtil.uploadS3File(file);
+            String uploadFileName = fileUtil.uploadToThumbnailS3File(file);
             category.changeLogo(uploadFileName);
         }
 

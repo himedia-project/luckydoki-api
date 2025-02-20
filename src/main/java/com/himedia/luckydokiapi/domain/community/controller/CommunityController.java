@@ -20,7 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommunityController {
 
-    private final CustomFileUtil fileUtil;
     private final CommunityService communityService;
 
     @GetMapping("/detail/{id}")
@@ -30,9 +29,10 @@ public class CommunityController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<CommunityResponseDTO>> searchCommunities(CommunitySearchDTO requestDTO) {
-        log.info("searchCommunities: {}", requestDTO);
-        return ResponseEntity.ok(communityService.getAllCommunities(requestDTO));
+    public ResponseEntity<List<CommunityResponseDTO>> searchCommunities(CommunitySearchDTO requestDTO, @AuthenticationPrincipal MemberDTO memberDTO) {
+        String email =  (memberDTO !=null) ? memberDTO.getEmail() : null;
+        log.info("searchCommunities requestDTO: {}, email: {}", requestDTO, email);
+        return ResponseEntity.ok(communityService.list(requestDTO, email));
     }
 
     @PostMapping

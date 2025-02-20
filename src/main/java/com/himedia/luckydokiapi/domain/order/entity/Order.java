@@ -8,6 +8,7 @@ import com.himedia.luckydokiapi.domain.payment.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+@DynamicUpdate
 @AllArgsConstructor
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,6 +41,7 @@ public class Order {
     private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
+    @ColumnDefault("'ORDER'")
     private OrderStatus orderStatus;
 
     // 주문한 상품 합계금액
@@ -137,4 +140,12 @@ public class Order {
                 .orElse(null);
     }
 
+    /**
+     * 주문 상태 변경 -> 결제 완료
+     */
+    public void changeStatusToConfirm() {
+        this.orderStatus = OrderStatus.CONFIRM;
+        // 해당 order의 orderItems 의 product count 만큼 stock 감소
+        orderItems.forEach(OrderItem::decreaseStock);
+    }
 }

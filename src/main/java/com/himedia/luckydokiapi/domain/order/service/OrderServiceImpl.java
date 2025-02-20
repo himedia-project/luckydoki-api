@@ -102,12 +102,6 @@ public class OrderServiceImpl implements OrderService {
 
         // 주문 저장
         Order savedOrder = orderRepository.save(newOrder);
-
-        // 주문 후, 장바구니로 주문하는 거라면, 해당 장바구니 cart items 삭제
-        cartService.getCartItemList(email).forEach(cartItemDTO -> {
-            cartItemRepository.delete(cartItemRepository.findByProductId(cartItemDTO.getProductId()));
-        });
-
         return savedOrder.getId();
     }
 
@@ -127,7 +121,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void validateOrder(Long orderId, String email) {
-        Order order = findOrder(orderId);
+        Order order = getEntity(orderId);
         Member curMember = memberService.getEntity(email);
         if (!curMember.getEmail().equals(order.getMember().getEmail())) {
             throw new IllegalArgumentException("해당 주문한 고객이 아닙니다!");
@@ -136,7 +130,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void cancelOrder(Long orderId, String email) {
-        Order order = findOrder(orderId);
+        Order order = getEntity(orderId);
         order.cancelOrder(); // 주문 취소
     }
 
@@ -148,19 +142,19 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     @Override
     public OrderHistDTO getOne(Long orderId) {
-        return this.createOrderHistDTO(this.findOrder(orderId));
+        return this.createOrderHistDTO(this.getEntity(orderId));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Order getEntity(String orderId) {
+    public Order getEntityByCode(String orderId) {
         return orderRepository.findByCode(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 주문이 없습니다."));
     }
 
 
     // 주문 조회
-    private Order findOrder(Long orderId) {
+    private Order getEntity(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 주문이 없습니다."));
     }
@@ -168,5 +162,18 @@ public class OrderServiceImpl implements OrderService {
     // Order -> OrderHistDTO 변환
     private OrderHistDTO createOrderHistDTO(Order order) {
         return OrderHistDTO.from(order);
+    }
+
+
+    /**
+     * 주문 완료후, 장바구니로 주문하는 거라면, 해당 장바구니 cart items 삭제
+     * @param orderItems 주문 아이템 리스트
+     */
+    @Override
+    public void removeCartItemsMatchedOrderItemsBy(List<OrderItem> orderItems) {
+        // 주문 후, 장바구니로 주문하는 거라면, 해당 장바구니 cart items 삭제
+        orderItems.forEach(orderItem -> {
+            cartItemRepository.delete(cartItemRepository.findByProductId(orderItem.getProduct().getId()));
+        });
     }
 }
