@@ -157,6 +157,13 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public Long deleteChatRoom(String email, Long roomId) {
+        Member member = getMember(email);
+        chatRoomRepository.deleteByRoomIdAndEmail(member.getEmail(), roomId);
+        return roomId;
+    }
+
+    @Override
     @Transactional(readOnly = true)//안읽은 알림 리스트
     public List<MessageNotificationDTO> getUnreadNotifications(String email) {
         Member member = getMember(email);
@@ -179,12 +186,12 @@ public class ChatServiceImpl implements ChatService {
                             .email(member.getEmail())  // 수신자(현재 사용자)
                             .notificationMessage(sender + "님에게 새 메세지가 도착하였습니다")
                             .timestamp(room.getLastMessageTime())
+                            .shopImages(room.getShop().getImage())
                             .isRead(false)
                             .build();
                 })
                 .toList();
     }
-
 
 
     private Boolean getSellerAndBuyer(String email) {

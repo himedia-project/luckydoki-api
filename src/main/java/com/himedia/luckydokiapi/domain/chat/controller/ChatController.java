@@ -113,6 +113,14 @@ public class ChatController {
         chatService.changeRead(memberDTO.getEmail(), roomId);
         return ResponseEntity.ok().build();
     }
+
+    //대화방 나가기
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<Long> deleteChatRoom(@AuthenticationPrincipal final MemberDTO memberDTO, @PathVariable Long roomId) {
+        log.info("memberDTO {}", memberDTO);
+        Long deleteRoomId = chatService.deleteChatRoom(memberDTO.getEmail(), roomId);
+        return ResponseEntity.ok(deleteRoomId);
+    }
 //    @GetMapping
 //    public ResponseEntity<Boolean> existsChatRoom(@AuthenticationPrincipal final MemberDTO memberDTO, @RequestParam Long shopId) {
 //        log.info("memberDTO {}", memberDTO);
@@ -120,4 +128,4 @@ public class ChatController {
 //        return ResponseEntity.ok(chatService.findChatRoom(memberDTO.getEmail(), shopId));
 //    }
 
-}
+}//TODO: 새메세지 알림 시 seller images 보내기 + 마지막 메세지 같이 출력  , 대화방 나가기

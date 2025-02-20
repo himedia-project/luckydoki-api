@@ -17,5 +17,6 @@ public class MessageNotificationDTO {
     private String sender; //보낸 사람
     private String email; //받는사람
     private boolean isRead;
+    private String shopImages;
 
 }

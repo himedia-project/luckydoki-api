@@ -29,5 +29,11 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     @Modifying
     @Query("update ChatRoom c set c.isRead = true where c.id = :roomId and c.member.email= :email")
     void modifyIsRead(@Param("roomId") Long RoomId, @Param("email") String email);
+
+
+    @Modifying
+    @Query("delete ChatRoom c where c.member.email =:email and c.id =:roomId")
+    void deleteByRoomIdAndEmail(@Param("email") String email, @Param("roomId") Long roomId);
+
 }
 

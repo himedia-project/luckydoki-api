@@ -69,16 +69,6 @@ public interface ChatService {
     }
 
 
-    default MessageNotificationDTO convertToMessageNotificationDTO(ChatRoom chatRoom) {
-        return MessageNotificationDTO.builder()
-                .notificationMessage("새 메세지가 도착했습니다")
-                .email(chatRoom.getMember().getEmail())
-                .isRead(chatRoom.getIsRead())
-                .timestamp(chatRoom.getLastMessageTime())
-                .roomId(chatRoom.getId())
-                .build();
-    }
-
 
     Set<String> getRoomMembers(Long roomId);
 
@@ -87,5 +77,7 @@ public interface ChatService {
 
 
     void changeRead(String email, Long roomId);
+
+    Long deleteChatRoom(String email, Long roomId);
 //    Boolean findChatRoom(String email, Long shopId);
 }
