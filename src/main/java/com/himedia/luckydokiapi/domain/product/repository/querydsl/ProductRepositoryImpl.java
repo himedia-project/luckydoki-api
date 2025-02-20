@@ -31,6 +31,7 @@ import static com.himedia.luckydokiapi.domain.product.entity.QProductImage.produ
 import static com.himedia.luckydokiapi.domain.product.entity.QProductTag.productTag;
 import static com.himedia.luckydokiapi.domain.product.entity.QTag.tag;
 import static com.himedia.luckydokiapi.domain.product.enums.LastType.Y;
+import static com.himedia.luckydokiapi.domain.review.entity.QReview.review;
 import static com.himedia.luckydokiapi.domain.shop.entity.QShop.shop;
 
 @Slf4j
@@ -111,6 +112,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return queryFactory
                 .selectFrom(product)
                 .leftJoin(product.imageList, productImage).on(productImage.ord.eq(0))
+                .leftJoin(product.productReviews, review)
                 .leftJoin(product.productTagList, productTag).fetchJoin()
                 .leftJoin(productTag.tag, tag).fetchJoin()
                 .where(
