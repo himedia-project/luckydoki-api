@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -59,7 +58,7 @@ public class ReviewServiceImpl implements ReviewService {
         // 만약 리뷰 이미지가 있으면 s3에 업로드
         String reviewImage = null;
         if (reviewRequestDTO.getImage() != null && !reviewRequestDTO.getImage().isEmpty()) {
-            reviewImage = customFileUtil.uploadS3File(reviewRequestDTO.getImage());
+            reviewImage = customFileUtil.uploadToThumbnailS3File(reviewRequestDTO.getImage());
         }
         Review review = dtoToEntity(reviewRequestDTO, member, shop, product, reviewImage);
         reviewRepository.save(review);

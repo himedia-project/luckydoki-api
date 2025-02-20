@@ -47,14 +47,28 @@ public class CustomFileUtil {
         return s3Util.uploadFiles(files);
     }
 
-    /**
-     * 파일 s3 업로드
-     * @param file 업로드할 파일
-     * @return 업로드된 파일명
-     */
     public String uploadS3File(MultipartFile file) {
         return s3Util.uploadFile(file);
     }
+
+    /**
+     * 파일 썸네일로 s3 업로드
+     * @param file 업로드할 파일
+     * @return 업로드된 파일명
+     */
+    public String uploadToThumbnailS3File(MultipartFile file) {
+        return s3Util.uploadToThumbnailS3File(file);
+    }
+
+    /**
+     * 파일리스트 썸네일로 s3 업로드
+     * @param files 업로드할 파일 리스트
+     * @return 업로드된 파일명 리스트
+     */
+    public List<String> uploadToProductS3Files(List<MultipartFile> files) {
+        return s3Util.uploadToThumbnailS3Files(files);
+    }
+
 
     /**
      * 파일 가져오기
