@@ -1,29 +1,16 @@
 #!/usr/bin/env python
 
-import base64
-import json
-import matplotlib.pyplot as plt
-import pandas as pd
 import sys
-import threading
 import traceback
+import json
+import pandas as pd
+import matplotlib
+matplotlib.use('Agg')  # Headless 환경(서버)에서 GUI 백엔드 문제 없게 설정
+import matplotlib.pyplot as plt
 from io import BytesIO
+import base64
 
-plt.rcParams["font.family"] = "Noto Sans CJK"
-
-def read_stdin_with_timeout(timeout=3.0):
-    result = []
-    def read_input():
-        try:
-            result.append(sys.stdin.read().strip())
-        except Exception:
-            result.append("")
-    thread = threading.Thread(target=read_input)
-    thread.start()
-    thread.join(timeout)
-    if thread.is_alive():
-        return None
-    return result[0]
+plt.rcParams["font.family"] = "Malgun Gothic"
 
 def generate_daily_sales_plot(df, unit="원"):
     daily_sales = df['totalSales'].resample('D').sum()
@@ -33,8 +20,8 @@ def generate_daily_sales_plot(df, unit="원"):
     plt.ylabel(f"Total Sales ({unit})")
     plt.title("날짜 별 판매 추세")
     plt.grid()
-    import matplotlib.ticker as mtick
-    plt.gca().yaxis.set_major_formatter(mtick.StrMethodFormatter('{x:,.0f} ' + unit))
+    from matplotlib.ticker import StrMethodFormatter
+    plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f} ' + unit))
     buffer = BytesIO()
     plt.savefig(buffer, format="png", dpi=100)
     plt.close()
@@ -59,9 +46,8 @@ def generate_hourly_sales_plot(df, unit="원", selected_date=None):
     plt.title(title)
     plt.xticks(range(0, 24))
     plt.grid()
-    import matplotlib.ticker as mtick
-    plt.gca().yaxis.set_major_formatter(mtick.StrMethodFormatter('{x:,.0f} ' + unit))
-
+    from matplotlib.ticker import StrMethodFormatter
+    plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f} ' + unit))
     buffer = BytesIO()
     plt.savefig(buffer, format="png", dpi=100)
     plt.close()
@@ -70,18 +56,15 @@ def generate_hourly_sales_plot(df, unit="원", selected_date=None):
 
 def main():
     try:
-        json_data = read_stdin_with_timeout(3.0)
-        if json_data is None:
-            raise Exception("No input received within timeout period")
-        if not json_data:
-            raise Exception("Received empty input")
+        # stdin 전체 읽기 (타임아웃 없음)
+        raw_input = sys.stdin.read().strip()
+        if not raw_input:
+            raise ValueError("No input data received")
 
-        json_data = json_data.encode('utf-8').decode('utf-8-sig')
-        print("DEBUG: Received input: " + json_data, file=sys.stderr)
+        # JSON 파싱
+        json_obj = json.loads(raw_input)
 
-        # 여기서 'Object jsonObj = ...' 대신 아래처럼 수정
-        json_obj = json.loads(json_data)
-
+        # salesData & selectedDate 파악
         if isinstance(json_obj, dict) and "salesData" in json_obj:
             sales_data = json_obj["salesData"]
             selected_date = json_obj.get("selectedDate", None)
@@ -89,35 +72,36 @@ def main():
             sales_data = json_obj
             selected_date = None
         else:
-            raise Exception("Input JSON must be either a list or a dict containing 'salesData' field")
+            raise ValueError("Input JSON must be a dict with 'salesData' or a list")
 
         df = pd.DataFrame(sales_data)
-        if 'date' not in df.columns or 'totalSales' not in df.columns:
-            raise Exception("Input JSON must contain 'date' and 'totalSales' fields")
+        if "date" not in df.columns or "totalSales" not in df.columns:
+            raise ValueError("JSON must contain 'date' and 'totalSales' fields")
+
         df['date'] = pd.to_datetime(df['date'])
         df.set_index('date', inplace=True)
-        # df = df.asfreq('D')
 
         unit = "원"
-        daily_img_base64 = generate_daily_sales_plot(df, unit)
-        hourly_img_base64 = generate_hourly_sales_plot(df, unit, selected_date)
+        daily_b64 = generate_daily_sales_plot(df, unit)
+        hourly_b64 = generate_hourly_sales_plot(df, unit, selected_date)
 
         result = {
-            "forecast_message": f"Hourly graph generated for {selected_date}" if selected_date else "Hourly graph generated for all data",
-            "daily_image_base64": daily_img_base64,
-            "hourly_image_base64": hourly_img_base64,
+            "forecast_message": f"Hourly graph generated for {selected_date}" if selected_date else "Hourly graph generated (all dates)",
+            "daily_image_base64": daily_b64,
+            "hourly_image_base64": hourly_b64,
             "sales_unit": unit
         }
-        output = json.dumps(result)
-        print(output)
+
+        # stdout으로 결과 JSON 출력
+        print(json.dumps(result, ensure_ascii=False))
         sys.stdout.flush()
 
     except Exception as e:
-        error_result = {
+        error_info = {
             "error": str(e),
             "trace": traceback.format_exc()
         }
-        print(json.dumps(error_result))
+        print(json.dumps(error_info, ensure_ascii=False))
         sys.stdout.flush()
         sys.exit(1)
 
