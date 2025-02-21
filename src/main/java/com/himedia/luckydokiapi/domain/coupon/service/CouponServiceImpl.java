@@ -12,6 +12,8 @@ import com.himedia.luckydokiapi.domain.coupon.repository.CouponRecordRepository;
 import com.himedia.luckydokiapi.domain.coupon.repository.CouponRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
+import com.himedia.luckydokiapi.domain.notification.enums.NotificationType;
+import com.himedia.luckydokiapi.domain.notification.service.NotificationService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.NumberGenerator;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,6 +36,8 @@ public class CouponServiceImpl implements CouponService {
     private final CouponRecordRepository couponRecordRepository;
 
     private final MemberRepository memberRepository;
+
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     @Override
@@ -134,7 +138,7 @@ public class CouponServiceImpl implements CouponService {
             }
 
             Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with email: " + email));
+                    .orElseThrow(() -> new EntityNotFoundException("Member not found with email: " + email));
 
             CouponRecord couponRecord = CouponRecord.builder()
                     .coupon(coupon)
@@ -142,6 +146,12 @@ public class CouponServiceImpl implements CouponService {
                     .status(CouponRecordStatus.UNUSED)
                     .build();
             couponRecordRepository.save(couponRecord);
+            // ✅ 쿠폰 발급 시 알림 발송
+            if (coupon.getId().equals(1L)) {
+                notificationService.sendWelcomeCouponToMember(member);
+            } else {
+                notificationService.sendCouponToMember(member, coupon.getName(), coupon.getContent(), NotificationType.COUPON_ISSUE);
+            }
         });
         // 쿠폰 발급상태로 변경
         coupon.changeStatus(CouponStatus.ISSUED);
@@ -204,7 +214,8 @@ public class CouponServiceImpl implements CouponService {
 
     /**
      * 쿠폰 사용 -> 쿠폰발급 목록에 사용일시 기록
-     * @param email 회원 이메일
+     *
+     * @param email  회원 이메일
      * @param coupon 쿠폰
      */
     @Override

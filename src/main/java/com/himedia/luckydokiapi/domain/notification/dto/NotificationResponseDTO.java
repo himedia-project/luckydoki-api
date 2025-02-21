@@ -27,7 +27,7 @@ public class NotificationResponseDTO {
 
     public static NotificationResponseDTO from(Notification notification) {
         return NotificationResponseDTO.builder()
-                .shopImage(notification.getMember().getShop().getImage())
+                .shopImage(notification.getMember().getShop() == null ? notification.getMember().getProfileImage() : notification.getMember().getShop().getImage())
                 .targetEmail(notification.getMember().getEmail())
                 .title(notification.getTitle())
                 .body(notification.getBody())

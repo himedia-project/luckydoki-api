@@ -7,14 +7,17 @@ import com.google.firebase.messaging.Notification;
 import com.himedia.luckydokiapi.domain.notification.enums.NotificationType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Slf4j
 @Service
+@Transactional
 public class FCMService {
 
     public void sendNotification(String token, String title, String body, NotificationType type) {
+        log.info("sendNotification token: {}, title: {}, body: {}, type: {}", token, title, body, type);
         Message message = Message.builder()
                 .setNotification(Notification.builder()
                         .setTitle(title)

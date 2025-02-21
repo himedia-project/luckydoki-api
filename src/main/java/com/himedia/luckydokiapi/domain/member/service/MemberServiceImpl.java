@@ -11,6 +11,7 @@ import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
+import com.himedia.luckydokiapi.domain.notification.enums.NotificationType;
 import com.himedia.luckydokiapi.domain.notification.service.NotificationService;
 import com.himedia.luckydokiapi.domain.phone.service.PhoneVerificationService;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
@@ -46,8 +47,6 @@ public class MemberServiceImpl implements MemberService {
     private final ShopRepository shopRepository;
     private final PhoneVerificationService phoneVerificationService;
     private final CouponService couponService;
-
-    private final NotificationService notificationService;
 
 
     @Transactional(readOnly = true)
