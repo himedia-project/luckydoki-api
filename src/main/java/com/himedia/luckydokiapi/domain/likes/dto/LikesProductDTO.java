@@ -30,4 +30,7 @@ public class LikesProductDTO {
     private ProductBest best;
     private ProductEvent event;
     private Boolean likes;
+    private double reviewAverage;
+    private int reviewCount;
+
 }
