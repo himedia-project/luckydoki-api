@@ -3,7 +3,6 @@ package com.himedia.luckydokiapi.domain.chat.controller;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatHistoryDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatRoomDTO;
-import com.himedia.luckydokiapi.domain.chat.dto.MessageNotificationDTO;
 import com.himedia.luckydokiapi.domain.chat.service.ChatService;
 import com.himedia.luckydokiapi.exception.NotAccessChatRoom;
 import com.himedia.luckydokiapi.security.MemberDTO;
@@ -78,7 +77,7 @@ public class ChatController {
         return ResponseEntity.ok(chatService.getChattingHistory(memberDTO.getEmail(), roomId));
     }
 
-    //유저의 채팅방 리스트 보기 확인 완료
+    //유저의 채팅방 리스트 보기
     @GetMapping("/history")
     public ResponseEntity<List<ChatRoomDTO>> getChatRooms(@AuthenticationPrincipal final MemberDTO memberDTO) {
         log.info("memberDTO {}", memberDTO);
@@ -92,7 +91,7 @@ public class ChatController {
         log.info("chatRoomDTO {}", chatRoomDTO);
         log.info("memberDTO {}", memberDTO);
         //로그인 한 회원 (보낸 회원의 이메일을 회원 필드에 주입)
-        chatRoomDTO.setMember(memberDTO.getEmail());
+        chatRoomDTO.setSender(memberDTO.getEmail());
         if (chatRoomDTO.getId() != null) {
             throw new NotAccessChatRoom("이미 존재하는 채팅방 입니다 ");
         }
@@ -101,19 +100,19 @@ public class ChatController {
     }
 
     //안읽은 알림 리스트 /history 와 다른점 : isRead 값 false 인걸로 조회
-    @GetMapping("/notifications")
-    public ResponseEntity<List<MessageNotificationDTO>> getMessageNotifications(@AuthenticationPrincipal final MemberDTO memberDTO) {
-        log.info("memberDTO {}", memberDTO);
-        return ResponseEntity.ok(chatService.getUnreadNotifications(memberDTO.getEmail()));
-    }
+//    @GetMapping("/notifications")
+//    public ResponseEntity<List<MessageNotificationDTO>> getMessageNotifications(@AuthenticationPrincipal final MemberDTO memberDTO) {
+//        log.info("memberDTO {}", memberDTO);
+//        return ResponseEntity.ok(chatService.getUnreadNotifications(memberDTO.getEmail()));
+//    }
 
     //읽음 상태 바꾸기
-    @PatchMapping("/{roomId}")
-    public ResponseEntity<?> changeReadStatus(@AuthenticationPrincipal final MemberDTO memberDTO, @PathVariable Long roomId) {
-        log.info("notificationId {}", roomId);
-        chatService.changeRead(memberDTO.getEmail(), roomId);
-        return ResponseEntity.ok().build();
-    }
+//    @PatchMapping("/{roomId}")
+//    public ResponseEntity<?> changeReadStatus(@AuthenticationPrincipal final MemberDTO memberDTO, @PathVariable Long roomId) {
+//        log.info("notificationId {}", roomId);
+//        chatService.changeRead(memberDTO.getEmail(), roomId);
+//        return ResponseEntity.ok().build();
+//    }
 
     //대화방 나가기
     @DeleteMapping("/{roomId}")

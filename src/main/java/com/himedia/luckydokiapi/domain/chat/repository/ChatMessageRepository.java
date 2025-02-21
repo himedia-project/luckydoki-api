@@ -1,6 +1,8 @@
 package com.himedia.luckydokiapi.domain.chat.repository;
 
 import com.himedia.luckydokiapi.domain.chat.document.ChatMessage;
+import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -19,14 +21,26 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage, Stri
 
     List<ChatMessage> findByEmail(String email);
 
-    @Query(value = "{ 'roomId': ?0 }", sort = "{ 'sendTime': -1 }")
-    Optional<ChatMessage> findLastMessageByRoomId(@Param("roomId") Long roomId);
+//    @Query(value = "{ 'roomId': ?0 }", sort = "{ 'sendTime': -1 }")
+//    Optional<ChatMessage> findLastMessageByRoomId(@Param("roomId") Long roomId);
+
+//    @Aggregation(pipeline = {
+//            "{ $match: { 'roomId': { $in: ?0 },'isRead': false } }",
+//            "{ $sort: { 'sendTime': -1 } }",
+//            "{ $group: { " +
+//                    "'_id': '$roomId'," +
+//                    "'document': { $first: '$$CURRENT' } " +  // 현재 문서 전체를 가져옴
+//                    "} }",
+//            "{ $replaceRoot: { 'newRoot': '$document' } }"  // 원래 문서 구조로 복원
+//    })
+//    List<ChatMessage> findLastMessagesAndIsReadFalseByRoomIds(@Param("roomIds") List<Long> roomIds);
+
 
     @Aggregation(pipeline = {
-            "{ $match: { 'roomId': { $in: ?0 } } }",
+            "{ $match: { 'roomId': { $in: ?0 }}}",
             "{ $sort: { 'sendTime': -1 } }",
             "{ $group: { " +
-                    "'_id': '$roomId', " +
+                    "'_id': '$roomId'," +
                     "'document': { $first: '$$CURRENT' } " +  // 현재 문서 전체를 가져옴
                     "} }",
             "{ $replaceRoot: { 'newRoot': '$document' } }"  // 원래 문서 구조로 복원
@@ -35,6 +49,15 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage, Stri
 
 
     List<ChatMessage> findByShopId(Long shopId);
+
+
+//    @Modifying
+//    @Query("db.messages.update({ 'roomId': ?0, 'email': ?1 }, { '$set': { 'isRead': true }})")
+//    void modifyIsRead(Long roomId, String email);
+
+
+//    @Query(value = "{ 'email': ?0 ,'isRead' : ?1}", sort = "{ 'sendTime': -1 }")
+//    List<ChatMessage> findByMemberAndIsRead(String email, boolean b);
 }
 
 

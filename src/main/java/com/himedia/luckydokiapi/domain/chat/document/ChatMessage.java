@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.chat.document;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -37,6 +38,8 @@ public class ChatMessage {
     private String message;     // 채팅 내용
     private LocalDateTime sendTime;
 
+//    @Builder.Default
+//    private Boolean isRead = false; // 읽음 상태
 //    public LocalDateTime getSendTimeAsInstant() {
 //        return this.sendTime.atZone(ZoneOffset.UTC).toInstant();
 //    }

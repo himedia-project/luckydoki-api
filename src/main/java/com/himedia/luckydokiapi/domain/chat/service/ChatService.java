@@ -4,7 +4,6 @@ import com.himedia.luckydokiapi.domain.chat.document.ChatMessage;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatHistoryDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatRoomDTO;
-import com.himedia.luckydokiapi.domain.chat.dto.MessageNotificationDTO;
 
 import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
@@ -38,7 +37,7 @@ public interface ChatService {
     default ChatMessageDTO convertToDTO(ChatMessage chatMessage,String sender) {
         return ChatMessageDTO.builder()
                 .roomId(chatMessage.getRoomId())
-                .ShopId(chatMessage.getShopId())
+                .shopId(chatMessage.getShopId())
                 .sender(sender)
                 .email(chatMessage.getEmail())
                 .message(chatMessage.getMessage())
@@ -52,7 +51,6 @@ public interface ChatService {
                 .shop(shop)
                 .member(member)
                 .shopImage(shop.getImage())
-                .isRead(false)
                 .lastMessageTime(LocalDateTime.now())
                 .build();
     }
@@ -60,12 +58,10 @@ public interface ChatService {
     default ChatRoomDTO convertToChatRoomDTO(ChatRoom chatRoom, String sender, String message) {
         return ChatRoomDTO.builder()
                 .id(chatRoom.getId())
-                .member(chatRoom.getMember().getEmail())
                 .sender(sender)
                 .shopId(chatRoom.getShop().getId())
                 .shopImage(chatRoom.getShopImage())
                 .shopName(chatRoom.getShop().getMember().getNickName())
-                .isRead(chatRoom.getIsRead())
                 .lastMessage(message == null ? null : message)
                 .lastMessageTime(chatRoom.getLastMessageTime())
                 .build();
@@ -76,10 +72,10 @@ public interface ChatService {
     Set<String> getRoomMembers(Long roomId);
 
 
-    List<MessageNotificationDTO> getUnreadNotifications(String email);
+//    List<MessageNotificationDTO> getUnreadNotifications(String email);
 
 
-    void changeRead(String email, Long roomId);
+//    void changeRead(String email, Long roomId);
 
     Long deleteChatRoom(String email, Long roomId);
 //    Boolean findChatRoom(String email, Long shopId);

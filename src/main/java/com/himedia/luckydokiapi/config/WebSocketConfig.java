@@ -1,14 +1,22 @@
 package com.himedia.luckydokiapi.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.himedia.luckydokiapi.interceptor.WebSocketAuthChannelInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -21,7 +29,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic" , "/queue"); //구독 주소
+        config.enableSimpleBroker("/topic", "/queue"); //구독 주소
         config.setApplicationDestinationPrefixes("/app"); // 메시지 발행 경로
     }
 
@@ -39,14 +47,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     }
 
+    @Override
+    public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
+        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        converter.setObjectMapper(objectMapper);
+        messageConverters.add(converter);
+        return false;
+    }
 
-//    @Override
-//    public boolean configureMessageConverters(List<MessageConverter> converters) {
-//        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.registerModule(new JavaTimeModule());
-//        converter.setObjectMapper(objectMapper);
-//        converters.add(converter);
-//        return true;
-//    }
+
 }

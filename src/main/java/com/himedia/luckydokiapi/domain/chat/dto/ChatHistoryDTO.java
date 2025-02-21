@@ -12,9 +12,10 @@ import java.time.LocalDateTime;
 public class ChatHistoryDTO {
     private Long roomId;
     private String email;
-    private Long ShopId;
+    private Long shopId;
     private String shopImage;
     private String message;     // 채팅 내용
-    private String image;
+
+//    @JsonFormat( pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime lastMessageTime; //마지막 대화 시간
 }

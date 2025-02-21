@@ -37,9 +37,7 @@ public class ChatRoom {
     @JoinColumn(name = "email")
     private Member member;
 
-    @Column
-    @Builder.Default
-    private Boolean isRead = false;
+
 
     private String shopImage;
 

@@ -4,7 +4,6 @@ import com.himedia.luckydokiapi.domain.chat.document.ChatMessage;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatHistoryDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatRoomDTO;
-import com.himedia.luckydokiapi.domain.chat.dto.MessageNotificationDTO;
 import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
 import com.himedia.luckydokiapi.domain.chat.repository.ChatMessageRepository;
 import com.himedia.luckydokiapi.domain.chat.repository.ChatRoomRepository;
@@ -109,7 +108,7 @@ public class ChatServiceImpl implements ChatService {
                 .map(chatMessage -> ChatHistoryDTO.builder()
                         .roomId(chatRoom.getId())
                         .email(chatMessage.getEmail())
-                        .ShopId(chatRoom.getShop().getId())
+                        .shopId(chatRoom.getShop().getId())
                         .shopImage(chatRoom.getShop().getImage())
                         .message(chatMessage.getMessage())
                         .lastMessageTime(LocalDateTime.from(chatMessage.getSendTime()))
@@ -157,12 +156,13 @@ public class ChatServiceImpl implements ChatService {
     }
 
 
-    @Transactional
-    @Override  // 읽음 상태 바꾸기
-    public void changeRead(String email, Long roomId) {
-        Member member = getMember(email);
-        chatRoomRepository.modifyIsRead(roomId, member.getEmail());
-    }
+//    @Transactional
+//    @Override  // 읽음 상태 바꾸기
+//    public void changeRead(String email, Long roomId) {
+//        Member member = getMember(email);
+//        ChatRoom chatRoom = getChatroom(roomId);
+//        chatMessageRepository.modifyIsRead(chatRoom.getId(), member.getEmail());
+//    }
 
     @Override
     public Long deleteChatRoom(String email, Long roomId) {
@@ -171,46 +171,46 @@ public class ChatServiceImpl implements ChatService {
         return roomId;
     }
 
-    @Override
-    @Transactional(readOnly = true)//안읽은 알림 리스트
-    public List<MessageNotificationDTO> getUnreadNotifications(String email) {
-        Member member = getMember(email);
-        //안읽은 채티방 리스트에 참여한 멤버들을 찾기
-// 해당 사용자의 안 읽은 채팅방들을 가져옴
-        List<ChatRoom> unreadRooms = chatRoomRepository.findByMemberAndIsRead(member.getEmail(), false);
-        List<Long> roomIds = unreadRooms.stream().map(ChatRoom::getId).toList();
-        //메세지룸의 룸 아이디들을 가져오기
-        List<ChatMessage> lastMessages = chatMessageRepository.findLastMessagesByRoomIds(roomIds);
-        //룸 아이디들로 마지막 메세지 찾기
-//아이디 리스트 들 + 메세지 리스트 하나씩 빼서 convertToChatRoomDTO로 변환 시키고 가시 list 처리
-        Map<Long, ChatMessage> lastMessageMap = lastMessages.stream()
-                .filter(msg -> msg.getRoomId() != null)
-                .collect(Collectors.toMap(
-                        ChatMessage::getRoomId,
-                        message -> message,
-                        (existing, replacement) -> replacement  // 혹시 중복이 있을 경우 처리
-                ));
-        // 각 채팅방의 마지막 메시지 발신자 정보와 함께 DTO로 변환
-        return unreadRooms.stream()
-                .map(room -> {
-                    // 채팅방의 마지막 메시지 발신자 찾기
-                    String sender = this.getRoomMembers(room.getId()).stream()
-                            .filter(roomMember -> !roomMember.equals(member.getEmail()))
-                            .findFirst()
-                            .orElse(null);
-                    ChatMessage lastMessage = lastMessageMap.get(room.getId());
-                    return MessageNotificationDTO.builder()
-                            .roomId(room.getId())
-                            .sender(sender)  // 발신자 설정
-                            .email(member.getEmail())  // 수신자(현재 사용자)
-                            .notificationMessage(String.valueOf(lastMessage))
-                            .timestamp(room.getLastMessageTime())
-                            .shopImages(room.getShop().getImage())
-                            .isRead(false)
-                            .build();
-                })
-                .toList();
-    }
+//    @Override
+//    @Transactional(readOnly = true)//안읽은 알림 리스트
+//    public List<MessageNotificationDTO> getUnreadNotifications(String email) {
+//        Member member = getMember(email);
+//        //안읽은 채티방 리스트에 참여한 멤버들을 찾기
+//        // 해당 사용자의 채팅방들을 가져옴
+//        List<ChatRoom> chatRooms = chatRoomRepository.findByMemberOrShopMember(member.getEmail());
+//        List<Long> roomIds = chatRooms.stream().map(ChatRoom::getId).toList();
+//        //메세지룸의 룸 아이디들을 가져오기
+//        List<ChatMessage> lastMessages = chatMessageRepository.findLastMessagesAndIsReadFalseByRoomIds(roomIds);
+//        //룸 아이디들로 마지막 메세지 찾기
+////아이디 리스트 들 + 메세지 리스트 하나씩 빼서 convertToChatRoomDTO로 변환 시키고 가시 list 처리
+//        Map<Long, ChatMessage> lastMessageMap = lastMessages.stream()
+//                .filter(msg -> msg.getRoomId() != null)
+//                .collect(Collectors.toMap(
+//                        ChatMessage::getRoomId,
+//                        message -> message,
+//                        (existing, replacement) -> replacement  // 혹시 중복이 있을 경우 처리
+//                ));
+//        // 각 채팅방의 마지막 메시지 발신자 정보와 함께 DTO로 변환
+//        return chatRooms.stream()
+//                .map(room -> {
+//                    // 채팅방의 마지막 메시지 발신자 찾기
+//                    String sender = this.getRoomMembers(room.getId()).stream()
+//                            .filter(roomMember -> !roomMember.equals(member.getEmail()))
+//                            .findFirst()
+//                            .orElse(null);
+//                    ChatMessage lastMessage = lastMessageMap.get(room.getId());
+//                    return MessageNotificationDTO.builder()
+//                            .roomId(room.getId())
+//                            .sender(sender)  // 발신자 설정
+//                            .email(member.getEmail())  // 수신자(현재 사용자)
+//                            .notificationMessage(lastMessage.getMessage())
+//                            .timestamp(room.getLastMessageTime())
+//                            .shopImages(room.getShop().getImage())
+//                            .isRead(false)
+//                            .build();
+//                })
+//                .toList();
+//    }
 
 
     private Boolean getSellerAndBuyer(String email) {
@@ -247,9 +247,9 @@ public class ChatServiceImpl implements ChatService {
         // document 변환
         ChatMessage chatMessage = this.convertToDocument(chatMessageDTO, member, shop, chatRoom.getId());
         //mongodb 에 저장된 document
-        mongoTemplate.save(chatMessage );
+        mongoTemplate.save(chatMessage);
         //저장된 document 를 다시 dto 로 변환하여 전달
-        return this.convertToDTO(chatMessage ,sender);
+        return this.convertToDTO(chatMessage, sender);
     }
 
 
