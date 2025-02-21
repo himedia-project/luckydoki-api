@@ -94,7 +94,7 @@ public class SalesServiceImpl implements SalesService {
 
       // 4) ProcessBuilder (stderr와 stdout 분리: redirectErrorStream(false))
       ProcessBuilder processBuilder = new ProcessBuilder(
-          "python",
+          "python3",
           tempScriptFile.getAbsolutePath()
       );
       processBuilder.redirectErrorStream(false); // <-- 핵심: 분리
@@ -190,7 +190,7 @@ public class SalesServiceImpl implements SalesService {
 
       // 4) ProcessBuilder (stderr와 stdout 분리)
       ProcessBuilder processBuilder = new ProcessBuilder(
-          "python",
+          "python3",
           tempScriptFile.getAbsolutePath()
       );
       processBuilder.redirectErrorStream(false);
