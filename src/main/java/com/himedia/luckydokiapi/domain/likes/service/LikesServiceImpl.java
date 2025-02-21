@@ -56,7 +56,7 @@ public class LikesServiceImpl implements LikesService {
     @Override
     public List<LikesProductDTO> getProductLikesByMember(String email) {
         Member member = getMember(email);
-        List<LikesProductDTO> likesList = productLikeRepository.findByEmail(member.getEmail()).stream().map(this::EntityToDTO).toList();
+        List<LikesProductDTO> likesList = productLikeRepository.findByEmail(member.getEmail()).stream().map(this::entityToDTO).toList();
         return likesList;
     }
 

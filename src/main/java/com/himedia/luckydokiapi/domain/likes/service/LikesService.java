@@ -6,7 +6,6 @@ import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
 import com.himedia.luckydokiapi.domain.likes.entity.ShopLike;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.entity.ProductImage;
-import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public interface LikesService {
     List<LikesProductDTO> getProductLikesByMember(String email);
 
 
-    default LikesProductDTO EntityToDTO(ProductLike productLike) {
+    default LikesProductDTO entityToDTO(ProductLike productLike) {
         Product product = productLike.getProduct();
         List<ProductImage> imageList = product.getImageList();
 
@@ -35,6 +34,8 @@ public interface LikesService {
                 .price(productLike.getProduct().getPrice())
                 .discountPrice(productLike.getProduct().getDiscountPrice())
                 .likesCount(product.productLikesCount(productLike))
+                .reviewAverage(product.getReviewAverage())
+                .reviewCount(product.getReviewCount())
                 .isNew(product.getIsNew())
                 .best(product.getBest())
                 .event(product.getEvent())
