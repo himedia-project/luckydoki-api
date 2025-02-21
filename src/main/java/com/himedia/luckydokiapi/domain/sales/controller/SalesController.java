@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/sales")
+@RequestMapping("/api/admin/sales")
 @Log4j2
 @RequiredArgsConstructor
 public class SalesController {
