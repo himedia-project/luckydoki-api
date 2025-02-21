@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.payment.service;
 
 
+import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import com.himedia.luckydokiapi.domain.order.entity.Order;
 import com.himedia.luckydokiapi.domain.order.service.OrderService;
 import com.himedia.luckydokiapi.domain.payment.dto.PaymentCancelDTO;
@@ -41,6 +42,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
 
     private final OrderService orderService;
+
+    private final CouponService couponService;
 
     @Override
     public void preparePayment(PaymentPrepareDTO dto) {
@@ -109,8 +112,13 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.setApprovedAt(Objects.requireNonNull(response.getBody()).getApprovedAt().toLocalDateTime());
                 paymentRepository.save(payment);
 
+                // 주문상태, 결제완료 처리
                 Order order = orderService.getEntityByCode(orderId);
                 order.changeStatusToConfirm();
+                // 쿠폰 사용시, 쿠폰 사용 처리
+                if (order.getCoupon() != null) {
+                    couponService.useCoupon(order.getMember().getEmail(), order.getCoupon());
+                }
                 // 장바구니 상품 삭제
                 orderService.removeCartItemsMatchedOrderItemsBy(order.getOrderItems());
 

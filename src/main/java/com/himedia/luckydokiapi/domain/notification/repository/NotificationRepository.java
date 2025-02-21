@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    @Query("select n from Notification n where n.member.email = :targetEmail")
+    @Query("select n from Notification n where n.member.email = :targetEmail order by n.id desc")
     List<Notification> findByEmail(@Param("targetEmail") String targetEmail);
 }
