@@ -1,7 +1,7 @@
 package com.himedia.luckydokiapi.domain.member.controller;
 
 
-import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
+import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDTO;
 import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import com.himedia.luckydokiapi.domain.member.dto.*;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
@@ -136,7 +136,7 @@ public class MemberController {
 
     // 해당 유저의 쿠폰 리스트
     @GetMapping("/coupon/list")
-    public List<CouponResponseDto> getUserCoupons(@AuthenticationPrincipal MemberDTO memberDTO) {
+    public List<CouponResponseDTO> getUserCoupons(@AuthenticationPrincipal MemberDTO memberDTO) {
         log.info("getUserCoupons memberDTO: {}", memberDTO);
         return couponService.getCouponList(memberDTO.getEmail());
     }

@@ -3,7 +3,7 @@ package com.himedia.luckydokiapi.domain.coupon.service;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRecordResponseDTO;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRecordSearchDTO;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponRequestDto;
-import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
+import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDTO;
 import com.himedia.luckydokiapi.domain.coupon.entity.Coupon;
 import com.himedia.luckydokiapi.domain.coupon.entity.CouponRecord;
 import com.himedia.luckydokiapi.domain.coupon.enums.CouponRecordStatus;
@@ -12,6 +12,8 @@ import com.himedia.luckydokiapi.domain.coupon.repository.CouponRecordRepository;
 import com.himedia.luckydokiapi.domain.coupon.repository.CouponRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
+import com.himedia.luckydokiapi.domain.notification.enums.NotificationType;
+import com.himedia.luckydokiapi.domain.notification.service.NotificationService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.NumberGenerator;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,13 +23,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class CouponServiceImpl implements CouponService {
 
     private final CouponRepository couponRepository;
@@ -36,42 +37,47 @@ public class CouponServiceImpl implements CouponService {
 
     private final MemberRepository memberRepository;
 
+    private final NotificationService notificationService;
+
+    @Transactional(readOnly = true)
     @Override
-    public PageResponseDTO<CouponResponseDto> getAllCoupons(CouponRequestDto requestDto) {
+    public PageResponseDTO<CouponResponseDTO> getAllCoupons(CouponRequestDto requestDto) {
         Page<Coupon> result = couponRepository.findListBy(requestDto);
 
-        return PageResponseDTO.<CouponResponseDto>withAll()
-                .dtoList(result.getContent().stream().map(this::convertToResponseDto).toList())
+        return PageResponseDTO.<CouponResponseDTO>withAll()
+                .dtoList(result.getContent().stream().map(CouponResponseDTO::from).toList())
                 .totalCount(result.getTotalElements())
                 .pageRequestDTO(requestDto)
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<CouponResponseDto> getActiveCoupons() {
+    public List<CouponResponseDTO> getActiveCoupons() {
         return couponRepository.findActiveCoupons().stream()
-                .map(this::convertToResponseDto)
+                .map(CouponResponseDTO::from)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public CouponResponseDto getCouponById(Long id) {
+    public CouponResponseDTO getCouponById(Long id) {
         Coupon coupon = couponRepository.findCouponById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Coupon not found with id: " + id));
-        return convertToResponseDto(coupon);
+        return CouponResponseDTO.from(coupon);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public CouponResponseDto getCouponByCode(String code) {
+    public CouponResponseDTO getCouponByCode(String code) {
         Coupon coupon = couponRepository.findByCode(code);
         if (coupon == null) {
             throw new EntityNotFoundException("Coupon not found with code: " + code);
         }
-        return convertToResponseDto(coupon);
+        return CouponResponseDTO.from(coupon);
     }
 
     @Override
-    @Transactional
     public Long createCoupon(CouponRequestDto requestDto) {
         Coupon coupon = Coupon.builder()
                 .code(NumberGenerator.generateRandomNumber(10)) // ✅ 랜덤 코드 생성
@@ -89,15 +95,13 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    @Transactional
-    public CouponResponseDto updateCoupon(Long id, CouponRequestDto requestDto) {
+    public CouponResponseDTO updateCoupon(Long id, CouponRequestDto requestDto) {
         // ✅ QueryDSL 기반의 updateCoupon() 호출
         couponRepository.updateCoupon(id, requestDto);
         return getCouponById(id);
     }
 
     @Override
-    @Transactional
     public void deleteCoupon(Long couponId) {
         Coupon coupon = getCoupon(couponId);
 
@@ -110,18 +114,19 @@ public class CouponServiceImpl implements CouponService {
         couponRepository.delete(coupon);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public PageResponseDTO<CouponRecordResponseDTO> getCouponRecords(CouponRecordSearchDTO requestDto) {
         Page<CouponRecord> result = couponRecordRepository.findListBy(requestDto);
 
         return PageResponseDTO.<CouponRecordResponseDTO>withAll()
-                .dtoList(result.getContent().stream().map(this::convertToRecordResponseDto).toList())
+                .dtoList(result.getContent().stream().map(CouponRecordResponseDTO::from).toList())
                 .totalCount(result.getTotalElements())
                 .pageRequestDTO(requestDto)
                 .build();
     }
 
-    @Transactional
+
     @Override
     public void issueCoupon(Long couponId, List<String> memberEmails) {
         Coupon coupon = getCoupon(couponId);
@@ -133,7 +138,7 @@ public class CouponServiceImpl implements CouponService {
             }
 
             Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with email: " + email));
+                    .orElseThrow(() -> new EntityNotFoundException("Member not found with email: " + email));
 
             CouponRecord couponRecord = CouponRecord.builder()
                     .coupon(coupon)
@@ -141,6 +146,12 @@ public class CouponServiceImpl implements CouponService {
                     .status(CouponRecordStatus.UNUSED)
                     .build();
             couponRecordRepository.save(couponRecord);
+            // ✅ 쿠폰 발급 시 알림 발송
+            if (coupon.getId().equals(1L)) {
+                notificationService.sendWelcomeCouponToMember(member);
+            } else {
+                notificationService.sendCouponToMember(member, coupon.getName(), coupon.getContent(), NotificationType.COUPON_ISSUE);
+            }
         });
         // 쿠폰 발급상태로 변경
         coupon.changeStatus(CouponStatus.ISSUED);
@@ -163,23 +174,28 @@ public class CouponServiceImpl implements CouponService {
      * @param email 회원 이메일
      * @return 쿠폰 목록
      */
+    @Transactional(readOnly = true)
     @Override
-    public List<CouponResponseDto> getCouponList(String email) {
+    public List<CouponResponseDTO> getCouponList(String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with email: " + email));
         return couponRecordRepository.findCouponListByMemberEmail(member.getEmail()).stream()
-                .map(this::convertToResponseDto)
+                .map(CouponResponseDTO::from)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public int countAllCoupon() {
         return couponRepository.findAll().size();
     }
 
-    @Transactional
+
+    /**
+     * 회원가입 쿠폰 생성
+     */
     @Override
-    public void initCoupon() {
+    public void createWelcomeCoupon() {
         // ✅ 쿠폰 초기화
         // 회원가입 쿠폰 생성
         // INSERT INTO `coupon` (`end_date`, `start_date`, `id`,`code`, `content`, `name`, `status`, `discount_price`, `minimum_usage_amount`) VALUES ('2026-02-12', '2025-02-12', 1, '3285037658', '😊첫회원가입축하쿠폰! 3000원 할인이 됩니다!', '🎉회원가입축하쿠폰', 'ACTIVE', 3000, 30000);
@@ -196,31 +212,19 @@ public class CouponServiceImpl implements CouponService {
         couponRepository.save(coupon);
     }
 
-    private CouponResponseDto convertToResponseDto(Coupon coupon) {
-        return CouponResponseDto.builder()
-                .id(coupon.getId())
-                .code(coupon.getCode())
-                .name(coupon.getName())
-                .content(coupon.getContent())
-                .minimumUsageAmount(coupon.getMinimumUsageAmount())
-                .discountPrice(coupon.getDiscountPrice())
-                .startDate(coupon.getStartDate())
-                .endDate(coupon.getEndDate())
-                .status(coupon.getStatus())
-                .build();
+    /**
+     * 쿠폰 사용 -> 쿠폰발급 목록에 사용일시 기록
+     *
+     * @param email  회원 이메일
+     * @param coupon 쿠폰
+     */
+    @Override
+    public void useCoupon(String email, Coupon coupon) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with email: " + email));
+        CouponRecord couponRecord = couponRecordRepository.findByMemberAndCoupon(member.getEmail(), coupon)
+                .orElseThrow(() -> new EntityNotFoundException("Coupon not found with member: " + email));
+        couponRecord.useCoupon();
     }
 
-    private CouponRecordResponseDTO convertToRecordResponseDto(CouponRecord couponRecord) {
-        return CouponRecordResponseDTO.builder()
-                .id(couponRecord.getId())
-                .name(couponRecord.getCoupon().getName())
-                .code(couponRecord.getCoupon().getCode())
-                .email(couponRecord.getMember().getEmail())
-                .issuedAt(couponRecord.getIssuedAt())
-                .expiredAt(couponRecord.getExpiredAt())
-                .used(couponRecord.getUsedDatetime() != null)
-                // 쿠폰 유효기간 계산
-                .validPeriod(ChronoUnit.DAYS.between(couponRecord.getCoupon().getStartDate(), couponRecord.getCoupon().getEndDate()) + 1)
-                .build();
-    }
 }

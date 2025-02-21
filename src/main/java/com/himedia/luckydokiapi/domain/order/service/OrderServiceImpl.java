@@ -82,6 +82,8 @@ public class OrderServiceImpl implements OrderService {
         }
         // 총 할인 금액 계산
         int totalDiscountPrice = 0;
+        // 주문에 사용한 쿠폰
+        Coupon useCoupon = null;
 
         // 쿠폰이 있는 경우의 처리
         if (couponId != null) {
@@ -94,10 +96,11 @@ public class OrderServiceImpl implements OrderService {
 //            }
 
             totalDiscountPrice = couponDiscountPrice;  // 지금 현재 할인금액 쿠폰 밖에 없음!
+            useCoupon = coupon;
         }
 
         // 주문 생성
-        Order newOrder = Order.from(member, orderItemList, totalDiscountPrice);
+        Order newOrder = Order.from(member, useCoupon, orderItemList, totalDiscountPrice);
         log.info("new Order with code: {}, productsPrice: {}", newOrder.getCode(), newOrder.getTotalPrice());
 
         // 주문 저장
@@ -173,6 +176,11 @@ public class OrderServiceImpl implements OrderService {
     public void removeCartItemsMatchedOrderItemsBy(List<OrderItem> orderItems) {
         // 주문 후, 장바구니로 주문하는 거라면, 해당 장바구니 cart items 삭제
         orderItems.forEach(orderItem -> {
+            // 만일 장바구니에 해당 상품이 없으면,
+            if (!cartItemRepository.existByProductId(orderItem.getProduct().getId())) {
+                return;
+            }
+            // 만일 장바구니에 해당 상품이 있으면, 해당 상품 삭제
             cartItemRepository.delete(cartItemRepository.findByProductId(orderItem.getProduct().getId()));
         });
     }

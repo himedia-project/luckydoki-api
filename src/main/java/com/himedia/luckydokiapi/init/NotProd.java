@@ -6,6 +6,8 @@ import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.PushActive;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
+import com.himedia.luckydokiapi.domain.notification.enums.NotificationType;
+import com.himedia.luckydokiapi.domain.notification.service.NotificationService;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class NotProd {
     private final ShopRepository shopRepository;
 
     private final CouponService couponService;
+    private final NotificationService notificationService;
 
 
     @Bean
@@ -44,7 +47,7 @@ public class NotProd {
                 return;
             } else {
                 log.info("초기 쿠폰 데이터가 없어 초기화합니다.");
-                couponService.initCoupon();
+                couponService.createWelcomeCoupon();
                 log.info("Coupon 초기 데이터 생성 완료");
             }
 
@@ -114,11 +117,12 @@ public class NotProd {
                     shops.add(shop);
                 }
 
-                // 쿠폰 회원가입 쿠폰 발급
+                // 쿠폰 회원가입 쿠폰 발급 + 발급 알림전송
                 couponService.issueCoupon(1L, members.stream().map(Member::getEmail).toList());
-
+                members.forEach(notificationService::sendWelcomeCouponToMember);
+                // 샵 생성
                 shopRepository.saveAll(shops);
-                log.info("Coupon, Member, Shop 초기 데이터 생성 완료");
+                log.info("Welcome Coupon, Member, Shop 초기 데이터 생성 완료");
             }
 
         };

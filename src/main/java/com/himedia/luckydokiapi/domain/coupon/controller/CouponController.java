@@ -1,6 +1,6 @@
 package com.himedia.luckydokiapi.domain.coupon.controller;
 
-import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDto;
+import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDTO;
 import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ public class CouponController {
 
 	// 쿠폰 코드로 조회
 	@GetMapping("/{code}")
-	public CouponResponseDto getCouponByCode(@PathVariable String code) {
+	public CouponResponseDTO getCouponByCode(@PathVariable String code) {
 		
 		log.info("getCouponByCode: {}", code);
 		return couponService.getCouponByCode(code);

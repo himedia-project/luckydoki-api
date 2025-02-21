@@ -52,5 +52,8 @@ public class CouponRecord {
     }
 
 
-
+    public void useCoupon() {
+        this.status = CouponRecordStatus.USED;
+        this.usedDatetime = LocalDateTime.now();
+    }
 }

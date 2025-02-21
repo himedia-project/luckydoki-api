@@ -80,7 +80,7 @@ public class AdminShopServiceImpl implements AdminShopService {
         shopRepository.save(Shop.from(application, member));
 
         // ✅ 승인처리 알림
-        notificationService.sendSellerApprovalNotification(member.getEmail());
+        notificationService.sendSellerApproval(member.getEmail());
 
         return application.getId();
     }

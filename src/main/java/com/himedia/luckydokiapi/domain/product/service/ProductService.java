@@ -58,6 +58,13 @@ public interface ProductService {
         return product;
     }
 
+    /**
+     * 상품 수량 유효성 검사
+     * @param id 상품 ID
+     * @param count 상품 수량
+     */
+    void validateProductCount(Long id, Integer count);
+
 
     default ProductDTO.Response entityToDTO(Product product, Boolean productLike) {
         List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
@@ -103,5 +110,6 @@ public interface ProductService {
         return productDTO;
 
     }
+
 
 }
