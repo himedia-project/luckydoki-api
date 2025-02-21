@@ -35,10 +35,11 @@ public interface ChatService {
     }
 
     //클라이언트에 보낼 채팅 메세지 기록
-    default ChatMessageDTO convertToDTO(ChatMessage chatMessage) {
+    default ChatMessageDTO convertToDTO(ChatMessage chatMessage,String sender) {
         return ChatMessageDTO.builder()
                 .roomId(chatMessage.getRoomId())
                 .ShopId(chatMessage.getShopId())
+                .sender(sender)
                 .email(chatMessage.getEmail())
                 .message(chatMessage.getMessage())
                 .sendTime((chatMessage.getSendTime()))
@@ -51,14 +52,16 @@ public interface ChatService {
                 .shop(shop)
                 .member(member)
                 .shopImage(shop.getImage())
+                .isRead(false)
                 .lastMessageTime(LocalDateTime.now())
                 .build();
     }
 
-    default ChatRoomDTO convertToChatRoomDTO(ChatRoom chatRoom, String message) {
+    default ChatRoomDTO convertToChatRoomDTO(ChatRoom chatRoom, String sender, String message) {
         return ChatRoomDTO.builder()
                 .id(chatRoom.getId())
                 .member(chatRoom.getMember().getEmail())
+                .sender(sender)
                 .shopId(chatRoom.getShop().getId())
                 .shopImage(chatRoom.getShopImage())
                 .shopName(chatRoom.getShop().getMember().getNickName())

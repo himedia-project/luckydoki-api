@@ -39,7 +39,7 @@ public class ChatController {
         MemberDTO member = (MemberDTO) authentication.getPrincipal();
         // roomId가 null 인 경우 (첫 메시지) 채팅방 생성 후 메시지 저장
         // 생성된 채팅방 ID 설정
-        chatMessageDTO.setSender(member.getEmail());
+
         ChatMessageDTO savedMessage = chatService.saveMessage(chatMessageDTO, member.getEmail());
         messagingTemplate.convertAndSend("/topic/chat/message/" + chatMessageDTO.getRoomId(), savedMessage);
         //구독자에게 메세지 전송
@@ -52,15 +52,16 @@ public class ChatController {
         for (String roomMember : roomMembers) {
             if (!roomMember.equals(member.getEmail())) { // 발신자가 아니라면 ?
                 //roomMember : 알림을 받을 사람
-                MessageNotificationDTO notificationDTO = MessageNotificationDTO.builder()
-                        .notificationMessage("새 메세지가 도차했습니다")
-                        .roomId(chatMessageDTO.getRoomId())
-                        .timestamp(chatMessageDTO.getSendTime())
-                        .email(roomMember)
-                        .isRead(false)
-                        .build();
+//                MessageNotificationDTO notificationDTO = MessageNotificationDTO.builder()
+//                        .notificationMessage("새 메세지가 도차했습니다")
+//                        .roomId(chatMessageDTO.getRoomId())
+//                        .timestamp(chatMessageDTO.getSendTime())
+//                        .email(roomMember)
+//                        .isRead(false)
+//                        .build();
 
-                messagingTemplate.convertAndSendToUser(roomMember, "/queue/notification/", notificationDTO);
+                messagingTemplate.convertAndSendToUser(roomMember, "/queue/notification/", chatMessageDTO);
+                log.info("roomMember {} , 알림 수신 완료 ", roomMember);
             } ///queue 는 1;1 개인 알림 메세지에 사용됨
             // 프론트 단에서는 /queue/notification/ 앞에 user (roomMember)가 추가됨
         }
@@ -99,7 +100,7 @@ public class ChatController {
         return ResponseEntity.ok(newRoom);
     }
 
-    //안읽은 알림 리스트
+    //안읽은 알림 리스트 /history 와 다른점 : isRead 값 false 인걸로 조회
     @GetMapping("/notifications")
     public ResponseEntity<List<MessageNotificationDTO>> getMessageNotifications(@AuthenticationPrincipal final MemberDTO memberDTO) {
         log.info("memberDTO {}", memberDTO);
@@ -128,4 +129,6 @@ public class ChatController {
 //        return ResponseEntity.ok(chatService.findChatRoom(memberDTO.getEmail(), shopId));
 //    }
 
-}//TODO: 새메세지 알림 시 seller images 보내기 + 마지막 메세지 같이 출력  , 대화방 나가기
+}//TODO: 새메세지 알림 시 seller images 보내기 + 마지막 메세지 같이 출력
+//TODO: 안읽은 알림 리스트 빼고 그냥 채팅 리스트를 드랍다운 칸에다 넣어도 될거같음 (어차피 isRead 값만 다릅니다), 메세지 드랍다운 칸은 어차피 실시간 알람이 가면 보낸 메세지로 가므로 ..
+// 알림 띄워봤는데 서버 로고에는 잘 뜨지만 클라쪽 디버깅 콘솔로그가 안떠서 확인이 필요함

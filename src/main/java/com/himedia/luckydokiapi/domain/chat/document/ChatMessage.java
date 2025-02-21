@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.chat.document;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

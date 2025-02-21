@@ -75,7 +75,6 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatRoomDTO createChatRoom(ChatRoomDTO chatRoomDTO, String email) {
-        //메세지를 보내는 시점에서 채팅룸이 생성되므로 sender 의 email 로 생성
         //회원 조회
         log.info("createChatRoom : {}", chatRoomDTO);
         Member member = getMember(email);
@@ -85,10 +84,15 @@ public class ChatServiceImpl implements ChatService {
 
         ChatRoom chatRoom = createChatRoomEntity(member, shop, null);
         //새로운 chat room 생성 + 저장
+        //대화 상대방
+        String sender = this.getRoomMembers(chatRoom.getId()).stream()
+                .filter(roomMember -> !roomMember.equals(member.getEmail()))
+                .findFirst()
+                .orElse(null);
 
         chatRoomRepository.save(chatRoom);
         //다시 dto로 변환하여 리턴
-        return this.convertToChatRoomDTO(chatRoom, null);
+        return this.convertToChatRoomDTO(chatRoom, sender, null);
 
     }
 
@@ -137,8 +141,12 @@ public class ChatServiceImpl implements ChatService {
                 ));
 
         return chatRoomList.stream().map(chatRoom -> {
+            String sender = this.getRoomMembers(chatRoom.getId()).stream()
+                    .filter(roomMember -> !roomMember.equals(member.getEmail()))
+                    .findFirst()
+                    .orElse(null);
             ChatMessage lastMessage = lastMessageMap.get(chatRoom.getId());
-            return convertToChatRoomDTO(chatRoom,
+            return convertToChatRoomDTO(chatRoom, sender,
                     lastMessage != null ? lastMessage.getMessage() : null);
         }).toList();
     }
@@ -170,7 +178,18 @@ public class ChatServiceImpl implements ChatService {
         //안읽은 채티방 리스트에 참여한 멤버들을 찾기
 // 해당 사용자의 안 읽은 채팅방들을 가져옴
         List<ChatRoom> unreadRooms = chatRoomRepository.findByMemberAndIsRead(member.getEmail(), false);
-
+        List<Long> roomIds = unreadRooms.stream().map(ChatRoom::getId).toList();
+        //메세지룸의 룸 아이디들을 가져오기
+        List<ChatMessage> lastMessages = chatMessageRepository.findLastMessagesByRoomIds(roomIds);
+        //룸 아이디들로 마지막 메세지 찾기
+//아이디 리스트 들 + 메세지 리스트 하나씩 빼서 convertToChatRoomDTO로 변환 시키고 가시 list 처리
+        Map<Long, ChatMessage> lastMessageMap = lastMessages.stream()
+                .filter(msg -> msg.getRoomId() != null)
+                .collect(Collectors.toMap(
+                        ChatMessage::getRoomId,
+                        message -> message,
+                        (existing, replacement) -> replacement  // 혹시 중복이 있을 경우 처리
+                ));
         // 각 채팅방의 마지막 메시지 발신자 정보와 함께 DTO로 변환
         return unreadRooms.stream()
                 .map(room -> {
@@ -179,12 +198,12 @@ public class ChatServiceImpl implements ChatService {
                             .filter(roomMember -> !roomMember.equals(member.getEmail()))
                             .findFirst()
                             .orElse(null);
-
+                    ChatMessage lastMessage = lastMessageMap.get(room.getId());
                     return MessageNotificationDTO.builder()
                             .roomId(room.getId())
                             .sender(sender)  // 발신자 설정
                             .email(member.getEmail())  // 수신자(현재 사용자)
-                            .notificationMessage(sender + "님에게 새 메세지가 도착하였습니다")
+                            .notificationMessage(String.valueOf(lastMessage))
                             .timestamp(room.getLastMessageTime())
                             .shopImages(room.getShop().getImage())
                             .isRead(false)
@@ -221,14 +240,16 @@ public class ChatServiceImpl implements ChatService {
     private ChatMessageDTO saveMongoAndReturnChatDTO(ChatMessageDTO chatMessageDTO, Member member, Shop shop) {
         //채팅룸의 아이디로 엔티티 조회
         ChatRoom chatRoom = getChatroom(chatMessageDTO.getRoomId());
-
-
+        String sender = this.getRoomMembers(chatRoom.getId()).stream()
+                .filter(roomMember -> !roomMember.equals(member.getEmail()))
+                .findFirst()
+                .orElse(null);
         // document 변환
         ChatMessage chatMessage = this.convertToDocument(chatMessageDTO, member, shop, chatRoom.getId());
         //mongodb 에 저장된 document
-        mongoTemplate.save(chatMessage);
+        mongoTemplate.save(chatMessage );
         //저장된 document 를 다시 dto 로 변환하여 전달
-        return this.convertToDTO(chatMessage);
+        return this.convertToDTO(chatMessage ,sender);
     }
 
 
