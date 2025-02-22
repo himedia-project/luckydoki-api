@@ -201,7 +201,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                     review.rating.avg().multiply(2)  // 평점 평균값 (가중치 2배)
                         .add(review.count())         // 리뷰 수
                         .add(productLike.count())    // 좋아요 수
-                        .add(orderItem.count())      // 주문 수
+                        .add(orderItem.count())      // 주문 구매 수
                         .desc(),
                     product.id.desc()  // 같은 순위일 경우 최신 상품 우선
                 )

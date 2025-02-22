@@ -87,7 +87,11 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                         member.active.ne(MemberActive.N)
                 )
                 .groupBy(member)
-                .orderBy(orderItem.count().desc())
+                .orderBy(
+                        orderItem.count().desc(),                    // 판매량(주문 상품 수)
+                        orderItem.orderPrice.sum().desc(),           // 판매액(주문 상품 가격의 합)
+                        member.createdAt.desc()                             // 같은 순위일 경우 최신 판매자 우선
+                )
                 .limit(5)
                 .fetch();
     }

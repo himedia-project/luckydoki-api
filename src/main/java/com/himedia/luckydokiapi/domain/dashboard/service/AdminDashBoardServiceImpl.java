@@ -1,5 +1,7 @@
 package com.himedia.luckydokiapi.domain.dashboard.service;
 
+import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
+import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
 import com.himedia.luckydokiapi.domain.dashboard.dto.DashboardDTO;
 import com.himedia.luckydokiapi.domain.member.dto.MemberDetailDTO;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
@@ -24,6 +26,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final CommunityRepository communityRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -53,7 +56,11 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
          List<ProductDTO.Response> top10Products = productRepository.findTop10ByOrderByLikeCountAndReviewCountDesc().stream()
                 .map(ProductDTO.Response::from).toList();
 
-         // top 5 sellers(많이 판매한)
+        // 인기 커뮤니티 게시글 Top 10 (좋아요 수 + 답글 수)
+        List<CommunityResponseDTO> top10Communities = communityRepository.findTop10ByOrderByLikeCountAndCommentCountDesc().stream()
+                .map(CommunityResponseDTO::from).toList();
+
+         // top 5 sellers(좋아요 수 + 판매량)
         List<MemberDetailDTO> top5Sellers = memberRepository.findTop5Sellers().stream()
                 .map(MemberDetailDTO::from).toList();
         // top 5 GoodConsumer(많이 구매하고 && review를 content를 10자 이상 쓴)

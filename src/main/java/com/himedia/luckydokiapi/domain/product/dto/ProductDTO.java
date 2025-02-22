@@ -60,6 +60,8 @@ public class ProductDTO {
         private double reviewAverage;
         private int reviewCount;
         private int likesCount;
+        // 판매량
+        private int salesCount;
         private String name;
         private Integer price;
         private Integer discountPrice;
@@ -99,6 +101,7 @@ public class ProductDTO {
                     .reviewAverage(product.getReviewAverage())
                     .reviewCount(product.getReviewCount())
                     .likesCount(product.getLikesCount())
+                    .salesCount(product.getSalesCount())
                     .name(product.getName())
                     .price(product.getPrice())
                     .discountPrice(product.getDiscountPrice())

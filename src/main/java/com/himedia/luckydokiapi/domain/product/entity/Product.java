@@ -265,4 +265,12 @@ public class Product extends BaseEntity {
     public int getLikesCount() {
         return this.productLikes.size();
     }
+
+    /**
+     * 상품 판매량
+     * @return 판매량
+     */
+    public int getSalesCount() {
+        return this.orderItems.stream().mapToInt(OrderItem::getCount).sum();
+    }
 }

@@ -38,6 +38,12 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .fetch();
     }
 
+    @Override
+    public List<Community> findTop10ByOrderByLikeCountAndCommentCountDesc() {
+        // TODO: 추후 구현
+        return List.of();
+    }
+
     private BooleanExpression containsKeyword(String searchKeyword) {
         if (searchKeyword == null) {
             return null;
