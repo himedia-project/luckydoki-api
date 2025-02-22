@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.dashboard.service;
 
 import com.himedia.luckydokiapi.domain.dashboard.dto.DashboardDTO;
+import com.himedia.luckydokiapi.domain.member.dto.MemberDetailDTO;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.order.enums.OrderStatus;
 import com.himedia.luckydokiapi.domain.order.repository.OrderRepository;
@@ -47,15 +48,24 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         Long totalProductCount = productRepository.count();
 
         // 인기 상품 Top 10 (기준: 좋아요수, 구매수)
-         List<ProductDTO.Response> topProducts = productRepository.findTop10ByOrderByLikeCountDesc().stream()
+         List<ProductDTO.Response> top10Products = productRepository.findTop10ByOrderByLikeCountDesc().stream()
                 .map(ProductDTO.Response::from).toList();
+
+         // top 5 sellers(많이 판매한)
+        List<MemberDetailDTO> top5Sellers = memberRepository.findTop5Sellers().stream()
+                .map(MemberDetailDTO::from).toList();
+        // top 5 GoodConsumer(많이 구매하고 && review를 content를 10자 이상 쓴)
+        List<MemberDetailDTO> top5GoodConsumers = memberRepository.findTop5GoodConsumers().stream()
+                .map(MemberDetailDTO::from).toList();
 
         return DashboardDTO.builder()
                 .totalOrderCount(totalOrderCount)
                 .todayRevenue(todayRevenue)
                 .newMemberCount(newMemberCount)
                 .totalProductCount(totalProductCount)
-                .topProducts(topProducts)
+                .top10Products(top10Products)
+                .top5Sellers(top5Sellers)
+                .top5GoodConsumers(top5GoodConsumers)
                 .build();
     }
 }

@@ -56,7 +56,11 @@ public class SecurityConfig {
                 authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(new AntPathRequestMatcher("/api/phone/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/shop/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/member/**")).permitAll()
+                        // /api/admin/join, /api/admin/login,logout 모두 접근 가능
+                        .requestMatchers(new AntPathRequestMatcher("/api/member/join")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/member/login")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/member/logout")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/member/refresh")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/category/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/product/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/content/**")).permitAll()

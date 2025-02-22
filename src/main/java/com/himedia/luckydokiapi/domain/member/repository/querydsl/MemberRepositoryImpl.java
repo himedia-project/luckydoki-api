@@ -3,6 +3,8 @@ package com.himedia.luckydokiapi.domain.member.repository.querydsl;
 
 import com.himedia.luckydokiapi.domain.member.dto.MemberRequestDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
+import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -21,6 +23,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.himedia.luckydokiapi.domain.member.entity.QMember.member;
+import static com.himedia.luckydokiapi.domain.order.entity.QOrder.order;
+import static com.himedia.luckydokiapi.domain.order.entity.QOrderItem.orderItem;
+import static com.himedia.luckydokiapi.domain.product.entity.QProduct.product;
+import static com.himedia.luckydokiapi.domain.review.entity.QReview.review;
+import static com.himedia.luckydokiapi.domain.shop.entity.QShop.shop;
 
 @Slf4j
 @Repository
@@ -63,6 +70,43 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 );
 
         return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+    }
+
+    @Override
+    public List<Member> findTop5Sellers() {
+        return queryFactory
+                .selectFrom(member)
+                .leftJoin(member.shop, shop)
+                .leftJoin(shop.productList, product)
+                .leftJoin(product.orderItems, orderItem)
+                .where(
+                        member.shop.isNotNull(),
+                        member.memberRoleList.contains(MemberRole.SELLER),
+                        member.active.ne(MemberActive.N)
+                )
+                .groupBy(member)
+                .orderBy(orderItem.count().desc())
+                .limit(5)
+                .fetch();
+    }
+
+    @Override
+    public List<Member> findTop5GoodConsumers() {
+        return queryFactory
+                .selectFrom(member)
+                .leftJoin(member.orderList, order)
+                .leftJoin(member.reviewList, review)
+                .where(
+                        member.active.ne(MemberActive.N),
+                        review.content.length().goe(10)
+                )
+                .groupBy(member)
+                .orderBy(
+                        order.count().add(review.count()).desc()
+                )
+                .limit(5)
+                .fetch();
+
     }
 
 
