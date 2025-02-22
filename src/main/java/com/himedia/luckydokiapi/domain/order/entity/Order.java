@@ -78,7 +78,7 @@ public class Order {
     public static Order from(Member member, Coupon useCoupon, List<OrderItem> orderItems, int totalDiscountPrice) {
         Order order = Order.builder()
                 .member(member)
-//                .coupon(useCoupon)
+                .coupon(useCoupon)
                 .orderDate(LocalDateTime.now())
                 .orderStatus(OrderStatus.ORDER)
                 .code(orderCodeGenerator()) // 주문 코드 생성

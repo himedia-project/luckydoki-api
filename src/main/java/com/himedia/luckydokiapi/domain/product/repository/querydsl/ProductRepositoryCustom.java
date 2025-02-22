@@ -19,4 +19,6 @@ public interface ProductRepositoryCustom {
 
     List<Product> findByProductCategoryId(Long CategoryId);
 
+    List<Product> findTop10ByOrderByLikeCountDesc();
+
 }
