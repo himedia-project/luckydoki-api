@@ -49,7 +49,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         // 총 상품 등록 수
         Long totalProductCount = productRepository.count();
 
-        // 인기 상품 Top 10 (기준: 리뷰평점 + 리뷰수 + 좋아요수, 구매수)
+        // 인기 상품 Top 10 (기준: 리뷰평점(평균 평점 × 2) + 리뷰 수 + 좋아요 수 + 주문 수)
          List<ProductDTO.Response> top10Products = productRepository.findTop10ByOrderByLikeCountAndReviewCountDesc().stream()
                 .map(ProductDTO.Response::from).toList();
 
