@@ -186,18 +186,23 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     @Override
-    public List<Product> findTop10ByOrderByLikeCountDesc() {
+    public List<Product> findTop10ByOrderByLikeCountAndReviewCountDesc() {
         return queryFactory
                 .selectFrom(product)
                 .leftJoin(product.imageList, productImage).on(productImage.ord.eq(0))
                 .leftJoin(product.productLikes, productLike)
                 .leftJoin(product.orderItems, orderItem)
+                .leftJoin(product.productReviews, review)
                 .where(
                     product.delFlag.eq(false)
                 )
                 .groupBy(product)
                 .orderBy(
-                    productLike.count().add(orderItem.count()).desc(),  // 좋아요 수 + 주문 수로 정렬
+                    review.rating.avg().multiply(2)  // 평점 평균값 (가중치 2배)
+                        .add(review.count())         // 리뷰 수
+                        .add(productLike.count())    // 좋아요 수
+                        .add(orderItem.count())      // 주문 수
+                        .desc(),
                     product.id.desc()  // 같은 순위일 경우 최신 상품 우선
                 )
                 .limit(10)

@@ -258,4 +258,11 @@ public class Product extends BaseEntity {
         return this.productReviews.size();
     }
 
+    /**
+     * 상품 좋아요 카운트
+     * @return 좋아요 카운트
+     */
+    public int getLikesCount() {
+        return this.productLikes.size();
+    }
 }
