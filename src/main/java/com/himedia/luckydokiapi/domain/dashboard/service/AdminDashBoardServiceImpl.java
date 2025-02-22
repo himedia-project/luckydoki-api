@@ -51,14 +51,16 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
         // 총 상품 등록 수
         Long totalProductCount = productRepository.count();
+        // 총 커뮤니티 게시글 수
+        Long totalCommunityCount = communityRepository.count();
 
         // 인기 상품 Top 10 (기준: 리뷰평점(평균 평점 × 2) + 리뷰 수 + 좋아요 수 + 주문 수)
          List<ProductDTO.Response> top10Products = productRepository.findTop10ByOrderByLikeCountAndReviewCountDesc().stream()
                 .map(ProductDTO.Response::from).toList();
 
         // 인기 커뮤니티 게시글 Top 10 (좋아요 수 + 답글 수)
-        List<CommunityResponseDTO> top10Communities = communityRepository.findTop10ByOrderByLikeCountAndCommentCountDesc().stream()
-                .map(CommunityResponseDTO::from).toList();
+//        List<CommunityResponseDTO> top10Communities = communityRepository.findTop10ByOrderByLikeCountAndCommentCountDesc().stream()
+//                .map(CommunityResponseDTO::from).toList();
 
          // top 5 sellers(좋아요 수 + 판매량)
         List<MemberDetailDTO> top5Sellers = memberRepository.findTop5Sellers().stream()
@@ -75,6 +77,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 .todayRevenue(todayRevenue)
                 .newMemberCount(newMemberCount)
                 .totalProductCount(totalProductCount)
+                .totalCommunityCount(totalCommunityCount)
                 .top10Products(top10Products)
                 .top5Sellers(top5Sellers)
                 .top5GoodConsumers(top5GoodConsumers)
