@@ -123,11 +123,10 @@ public class PaymentServiceImpl implements PaymentService {
                 Cart cart = cartRepository.getCartOfMember(order.getMember().getEmail())
                         .orElseThrow(() -> new EntityNotFoundException("해당 회원의 장바구니가 없습니다. email: " + order.getMember().getEmail()));
                 order.changeStatusToConfirm();
-                // TODO: 잠시 보류 -> 주문 데이터 추가시, 주석풀기
                 // 쿠폰 사용시, 쿠폰 사용 처리
-//                if (order.getCoupon() != null) {
-//                    couponService.useCoupon(order.getMember().getEmail(), order.getCoupon());
-//                }
+                if (order.getCoupon() != null) {
+                    couponService.useCoupon(order.getMember().getEmail(), order.getCoupon());
+                }
                 // 장바구니 상품 삭제
                 orderService.removeCartItemsMatchedOrderItemsBy(cart, order.getOrderItems());
 

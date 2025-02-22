@@ -56,10 +56,9 @@ public class Order {
     @ColumnDefault("0")
     private int totalDiscountPrice;
 
-    // TODO: 잠시 보류 -> 주문 데이터 추가시, 주석풀기
-//    @ManyToOne(fetch = FetchType.LAZY)  // ✳️ 1개의 쿠폰으로 여러개의 주문 가능
-//    @JoinColumn(name = "coupon_id")
-//    private Coupon coupon;
+    @ManyToOne(fetch = FetchType.LAZY)  // ✳️ 1개의 쿠폰으로 여러개의 주문 가능
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
