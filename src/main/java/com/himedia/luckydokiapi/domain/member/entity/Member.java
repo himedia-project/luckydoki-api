@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@ToString(exclude = {"shop", "memberRoleList", "communityList", "couponRecordList"})
+@ToString(exclude = {"shop", "memberRoleList", "communityList", "couponRecordList", "sellerApplicationList", "orderList", "reviewList"})
 @Table(name = "member")
 public class Member extends BaseEntity {
 

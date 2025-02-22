@@ -34,9 +34,11 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();  // 오늘 0시
         LocalDateTime endOfDay = startOfDay.plusDays(1);    // 오늘 24시
 
-        // 총 주문수
+        // 최근 한달간 총 주문수
         Long totalOrderCount = orderRepository.findAll().stream()
-                .filter(order -> order.getOrderStatus() == OrderStatus.CONFIRM).count();
+                .filter(order -> order.getOrderStatus() == OrderStatus.CONFIRM 
+                        && order.getOrderDate().isAfter(monthAgo))
+                .count();
         // 오늘의 매출
         Long todayRevenue = orderRepository.calculateTodayRevenue(startOfDay, endOfDay);
 
@@ -58,6 +60,9 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         List<MemberDetailDTO> top5GoodConsumers = memberRepository.findTop5GoodConsumers().stream()
                 .map(MemberDetailDTO::from).toList();
 
+        // 승인 안된 셀러 신청 수
+        Long sellerNotApprovedRequestCount = memberRepository.countBySellerApprovedIsFalse();
+
         return DashboardDTO.builder()
                 .totalOrderCount(totalOrderCount)
                 .todayRevenue(todayRevenue)
@@ -66,6 +71,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 .top10Products(top10Products)
                 .top5Sellers(top5Sellers)
                 .top5GoodConsumers(top5GoodConsumers)
+                .sellerNotApprovedRequestCount(sellerNotApprovedRequestCount)
                 .build();
     }
 }

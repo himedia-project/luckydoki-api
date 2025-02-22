@@ -5,6 +5,7 @@ import com.himedia.luckydokiapi.domain.member.dto.MemberRequestDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
+import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.himedia.luckydokiapi.domain.member.entity.QMember.member;
+import static com.himedia.luckydokiapi.domain.member.entity.QSellerApplication.sellerApplication;
 import static com.himedia.luckydokiapi.domain.order.entity.QOrder.order;
 import static com.himedia.luckydokiapi.domain.order.entity.QOrderItem.orderItem;
 import static com.himedia.luckydokiapi.domain.product.entity.QProduct.product;
@@ -107,6 +109,18 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .limit(5)
                 .fetch();
 
+    }
+
+    @Override
+    public Long countBySellerApprovedIsFalse() {
+        return queryFactory
+                .selectFrom(member)
+                .leftJoin(member.sellerApplicationList, sellerApplication)
+                .where(
+                        member.active.ne(MemberActive.N),
+                        sellerApplication.approved.eq(ShopApproved.N)
+                )
+                .fetchCount();
     }
 
 

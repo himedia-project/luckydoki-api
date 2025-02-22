@@ -5,7 +5,6 @@ import com.himedia.luckydokiapi.domain.member.dto.MemberRequestDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import org.springframework.data.domain.Page;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface MemberRepositoryCustom {
@@ -15,4 +14,6 @@ public interface MemberRepositoryCustom {
     List<Member> findTop5Sellers();
 
     List<Member> findTop5GoodConsumers();
+
+    Long countBySellerApprovedIsFalse();
 }

@@ -24,4 +24,6 @@ public class DashboardDTO {
     private List<MemberDetailDTO> top5Sellers;
     // top 5 buyers
     private List<MemberDetailDTO> top5GoodConsumers;
+
+    private Long sellerNotApprovedRequestCount; // 셀러 신청 수
 }
