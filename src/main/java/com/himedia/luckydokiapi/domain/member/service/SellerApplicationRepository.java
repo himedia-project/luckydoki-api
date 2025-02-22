@@ -16,8 +16,9 @@ public interface SellerApplicationRepository extends JpaRepository<SellerApplica
     @Query("select sa from SellerApplication sa where sa.approved = :approved")
     List<SellerApplication> findByIsApproved(@Param("approved") ShopApproved approved);
 
-    Optional<SellerApplication> findByEmail(String email);
+    @Query("select sa from SellerApplication sa where sa.member.email = :email")
+    Optional<SellerApplication> findByEmail(@Param("email") String email);
 
-    @Query("select case when count(sa) > 0 then true else false end from SellerApplication sa where sa.email = :email")
+    @Query("select case when count(sa) > 0 then true else false end from SellerApplication sa where sa.member.email = :email")
     Boolean existsByEmail(@Param("email") String email);
 }

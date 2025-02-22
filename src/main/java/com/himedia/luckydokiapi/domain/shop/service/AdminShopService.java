@@ -24,7 +24,7 @@ public interface AdminShopService {
     default SellerResponseDTO convertToDTO(SellerApplication application) {
         return SellerResponseDTO.builder()
                 .id(application.getId())
-                .email(application.getEmail())
+                .email(application.getMember().getEmail())
                 .nickName(application.getNickName())
                 .shopImage(application.getShopImage())
                 .introduction(application.getIntroduction())

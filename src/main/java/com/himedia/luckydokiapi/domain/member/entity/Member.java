@@ -10,6 +10,7 @@ import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.PushActive;
+import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.order.entity.Order;
 import com.himedia.luckydokiapi.domain.review.entity.Review;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
@@ -81,6 +82,9 @@ public class Member extends BaseEntity {
     @Builder.Default
     private List<Review> reviewList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<SellerApplication> sellerApplicationList = new ArrayList<>();
 
 //    @Builder.Default
 //    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
@@ -144,6 +148,7 @@ public class Member extends BaseEntity {
 
     /**
      * 소셜 맴버 엔티티 정적 팩토리 메서드
+     *
      * @param email
      * @param tempPassword
      * @return 소셜 맴버 엔티티
@@ -159,6 +164,14 @@ public class Member extends BaseEntity {
                 .build();
         member.addRole(MemberRole.USER);
         return member;
+    }
+
+    /**
+     * 셀러 신청여부
+     * @return 셀러 신청 여부
+     */
+    public boolean getSellerRequested() {
+        return !sellerApplicationList.isEmpty();
     }
 }
 
