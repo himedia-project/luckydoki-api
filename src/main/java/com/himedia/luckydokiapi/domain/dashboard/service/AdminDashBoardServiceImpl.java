@@ -64,9 +64,9 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
          List<ProductDTO.Response> top10Products = productRepository.findTop10ByOrderByLikeCountAndReviewCountDesc().stream()
                 .map(ProductDTO.Response::from).toList();
 
-        // 인기 커뮤니티 게시글 Top 10 (좋아요 수 + 답글 수)
-//        List<CommunityResponseDTO> top10Communities = communityRepository.findTop10ByOrderByLikeCountAndCommentCountDesc().stream()
-//                .map(CommunityResponseDTO::from).toList();
+        // 인기 커뮤니티 게시글 Top 10 (답글 수)
+        List<CommunityResponseDTO> top10Communities = communityRepository.findTop10ByOrderByLikeCountAndCommentCountDesc().stream()
+                .map(CommunityResponseDTO::from).toList();
 
          // top 5 sellers(좋아요 수 + 판매량)
         List<MemberDetailDTO> top5Sellers = memberRepository.findTop5Sellers().stream()
@@ -87,6 +87,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 .totalProductCount(totalProductCount)
                 .totalCommunityCount(totalCommunityCount)
                 .top10Products(top10Products)
+                .top10Communities(top10Communities)
                 .top5Sellers(top5Sellers)
                 .top5GoodConsumers(top5GoodConsumers)
                 .sellerNotApprovedRequestCount(sellerNotApprovedRequestCount)

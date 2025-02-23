@@ -12,5 +12,4 @@ public interface CommunityRepositoryCustom {
 
 
     List<Community> findTop10ByOrderByLikeCountAndCommentCountDesc();
-
 }

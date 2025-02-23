@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.dashboard.dto;
 
+import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.member.dto.MemberDetailDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,10 @@ public class DashboardDTO {
     private Long newSellerCount;         // 신규 셀러 수 (1달 내)
     private Long totalProductCount;      // 총 상품 등록 수
     private Long totalCommunityCount;    // 총 커뮤니티 게시글 수
-    private List<ProductDTO.Response> top10Products; // 인기 상품 Top 10
+
+    private List<ProductDTO.Response> top10Products;     // 인기 상품 Top 10
+    private List<CommunityResponseDTO> top10Communities; // 인기 커뮤니티 Top 10
+
     // top 5 sellers
     private List<MemberDetailDTO> top5Sellers;
     // top 5 buyers
