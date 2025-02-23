@@ -5,6 +5,7 @@ import com.himedia.luckydokiapi.domain.member.dto.MemberRequestDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MemberRepositoryCustom {
@@ -16,4 +17,6 @@ public interface MemberRepositoryCustom {
     List<Member> findTop5GoodConsumers();
 
     Long countBySellerApprovedIsFalse();
+
+    Long countNewSellersInLastMonth(LocalDateTime monthAgo);
 }

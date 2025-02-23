@@ -16,6 +16,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.himedia.luckydokiapi.domain.order.entity.QOrder.*;
@@ -62,6 +63,17 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
     }
 
+    @Override
+    public Integer calculateMonthlyRevenue(LocalDateTime monthAgo, LocalDateTime now) {
+        return queryFactory
+                .select(order.totalPrice.sum())
+                .from(order)
+                .where(
+                        order.orderDate.between(monthAgo, now)
+                )
+                .fetchOne();
+
+    }
 
 
     /**

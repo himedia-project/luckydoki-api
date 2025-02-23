@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.dashboard.controller;
 
+import com.himedia.luckydokiapi.domain.dashboard.dto.DashboardDTO;
 import com.himedia.luckydokiapi.domain.dashboard.service.AdminDashBoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,8 @@ public class AdminDashBoardController {
     @GetMapping
     public ResponseEntity<?> getDashBoardData() {
         log.info("getDashBoardData");
-        return ResponseEntity.ok(dashBoardService.getDashBoard());
+        DashboardDTO dashBoard = dashBoardService.getDashBoard();
+        return ResponseEntity.ok(dashBoard);
     }
 
 

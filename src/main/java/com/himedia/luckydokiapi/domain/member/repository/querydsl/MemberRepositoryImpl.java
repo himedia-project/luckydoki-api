@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.himedia.luckydokiapi.domain.member.entity.QMember.member;
@@ -127,6 +128,18 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .fetchCount();
     }
 
+    @Override
+    public Long countNewSellersInLastMonth(LocalDateTime monthAgo) {
+        return queryFactory
+                .selectFrom(member)
+                .leftJoin(member.sellerApplicationList, sellerApplication)
+                .where(
+                        sellerApplication.isNotNull(),
+                        sellerApplication.approved.eq(ShopApproved.Y),
+                        sellerApplication.createdAt.after(monthAgo)
+                )
+                .fetchCount();
+    }
 
     /**
      * Sort 정보를 OrderSpecifier 배열로 변환

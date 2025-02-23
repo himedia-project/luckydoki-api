@@ -22,6 +22,9 @@ public class MemberDetailDTO {
     private String shopImage;
     private boolean sellerRequested; // seller_application 여부
     private Long activeCouponCount;  // 사용가능한 쿠폰 수
+    private Long monthlySales;       // 월간 판매액
+    private Long monthlyPurchase;   // 월간 구매액
+    private Long reviewCount;       // 리뷰 등록 수
 
     public static MemberDetailDTO from(Member member) {
         return MemberDetailDTO.builder()
@@ -33,6 +36,9 @@ public class MemberDetailDTO {
                 .shopId(member.getShop() == null ? null : member.getShop().getId())
                 .shopImage(member.getShop() == null ? null : member.getShop().getImage())
                 .activeCouponCount(member.getActiveCouponCount())
+                .monthlySales(member.getMonthlySales())
+                .monthlyPurchase(member.getMonthlyPurchase())
+                .reviewCount(member.getReviewCount())
                 .build();
     }
 }

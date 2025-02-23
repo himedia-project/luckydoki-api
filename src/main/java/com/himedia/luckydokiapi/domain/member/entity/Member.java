@@ -12,6 +12,7 @@ import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.enums.PushActive;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.order.entity.Order;
+import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
 import com.himedia.luckydokiapi.domain.review.entity.Review;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.entity.BaseEntity;
@@ -23,6 +24,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.time.LocalDateTime.now;
 
 @DynamicUpdate
 @SuperBuilder
@@ -172,6 +175,45 @@ public class Member extends BaseEntity {
      */
     public boolean getSellerRequested() {
         return !sellerApplicationList.isEmpty();
+    }
+
+    /**
+     * 월간 구매액
+     * @return 월간 구매액
+     */
+    public Long getMonthlyPurchase() {
+        return orderList.stream()
+                .filter(order -> order.getOrderDate().isAfter(now().minusMonths(1)))
+                .mapToLong(Order::getTotalPrice)
+                .sum();
+    }
+
+    /**
+     * 월간 판매액
+     * 셀러가 등록한 상품 중 최근 한달간 판매된 상품의 총액
+     * @return 월간 판매액
+     */
+    public Long getMonthlySales() {
+        if(this.getShop() == null) {
+            return 0L;
+        }
+        return this.getShop().getProductList().stream()
+                .filter(product -> product.getOrderItems().stream()
+                        .anyMatch(orderItem -> orderItem.getOrder().getOrderDate().isAfter(now().minusMonths(1))))
+                .mapToLong(product -> product.getOrderItems().stream()
+                        .filter(orderItem -> orderItem.getOrder().getOrderDate().isAfter(now().minusMonths(1)))
+                        .mapToLong(OrderItem::getTotalPrice)
+                        .sum())
+                .sum();
+    }
+
+
+    /**
+     * 리뷰 등록 수
+     * @return 리뷰 등록 수
+     */
+    public Long getReviewCount() {
+        return (long) reviewList.size();
     }
 }
 

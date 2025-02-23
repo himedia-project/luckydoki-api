@@ -42,12 +42,18 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 .filter(order -> order.getOrderStatus() == OrderStatus.CONFIRM 
                         && order.getOrderDate().isAfter(monthAgo))
                 .count();
+        // 최근 한달간 총 매출
+        Integer monthlyRevenue = orderRepository.calculateMonthlyRevenue(monthAgo, now);
+
         // 오늘의 매출
         Long todayRevenue = orderRepository.calculateTodayRevenue(startOfDay, endOfDay);
 
         // 한달 내 신규 회원수
         Long newMemberCount = memberRepository.findAll().stream()
                 .filter(member -> member.getCreatedAt().isAfter(monthAgo)).count();
+
+        // 한달 내 신규 셀러수
+        Long newSellerCount = memberRepository.countNewSellersInLastMonth(monthAgo);
 
         // 총 상품 등록 수
         Long totalProductCount = productRepository.count();
@@ -74,8 +80,10 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
         return DashboardDTO.builder()
                 .totalOrderCount(totalOrderCount)
+                .monthlyRevenue(monthlyRevenue)
                 .todayRevenue(todayRevenue)
                 .newMemberCount(newMemberCount)
+                .newSellerCount(newSellerCount)
                 .totalProductCount(totalProductCount)
                 .totalCommunityCount(totalCommunityCount)
                 .top10Products(top10Products)
