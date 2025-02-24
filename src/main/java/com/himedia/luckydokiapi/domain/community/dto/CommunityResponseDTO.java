@@ -20,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CommunityResponseDTO {
     private Long id;
+    private Long shopId;
     private String shopImage;
     private String nickName;
     private String title;
@@ -35,6 +36,7 @@ public class CommunityResponseDTO {
     public static CommunityResponseDTO from(Community community) {
         return CommunityResponseDTO.builder()
                 .id(community.getId())
+                .shopId(community.getMember().getShop() == null ? null : community.getMember().getShop().getId())
                 .shopImage(community.getSellerShopImage())
                 .nickName(community.getMember().getNickName())
                 .title(community.getTitle())
