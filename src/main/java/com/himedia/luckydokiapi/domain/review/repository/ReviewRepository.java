@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    @Query("select r from Review r where r.member.email =:email")
+    @Query("select r from Review r where r.member.email =:email order by r.id desc")
     List<Review> findByMemberReviews(@Param("email") String email);
 
     @Query("select r from Review r where r.product.id =:id")

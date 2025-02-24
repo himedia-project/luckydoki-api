@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.dashboard.dto;
 import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.member.dto.MemberDetailDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
+import com.himedia.luckydokiapi.domain.sales.dto.SalesData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,4 +34,8 @@ public class DashboardDTO {
     private List<MemberDetailDTO> top5GoodConsumers;
 
     private Long sellerNotApprovedRequestCount; // 셀러 신청 수
+
+    private List<SalesData> dailySalesData;
+
+    private List<SalesData> hourlySalesData;
 }

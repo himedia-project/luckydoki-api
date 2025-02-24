@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.order.repository.querydsl;
 
 import com.himedia.luckydokiapi.domain.order.controllor.AdminOrderController;
 import com.himedia.luckydokiapi.domain.order.entity.Order;
+import com.himedia.luckydokiapi.domain.order.enums.OrderStatus;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -73,6 +74,20 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 )
                 .fetchOne();
 
+    }
+
+
+
+    @Override
+    public Long calculateMonthlyTotalCount(LocalDateTime monthAgo, LocalDateTime now) {
+        return queryFactory
+                .select(order.count())
+                .from(order)
+                .where(
+                        order.orderStatus.eq(OrderStatus.CONFIRM),
+                        order.orderDate.between(monthAgo, now)
+                )
+                .fetchOne();
     }
 
 

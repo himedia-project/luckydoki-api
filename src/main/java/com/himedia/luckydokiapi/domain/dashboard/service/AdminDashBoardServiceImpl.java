@@ -9,6 +9,10 @@ import com.himedia.luckydokiapi.domain.order.enums.OrderStatus;
 import com.himedia.luckydokiapi.domain.order.repository.OrderRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
+import com.himedia.luckydokiapi.domain.sales.dto.SalesData;
+import com.himedia.luckydokiapi.domain.sales.service.SalesService;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +31,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final CommunityRepository communityRepository;
+    private final SalesService salesService;
 
     @Transactional(readOnly = true)
     @Override
@@ -38,10 +43,9 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         LocalDateTime endOfDay = startOfDay.plusDays(1);    // 오늘 24시
 
         // 최근 한달간 총 주문수
-        Long totalOrderCount = orderRepository.findAll().stream()
-                .filter(order -> order.getOrderStatus() == OrderStatus.CONFIRM 
-                        && order.getOrderDate().isAfter(monthAgo))
-                .count();
+        Long totalOrderCount = orderRepository.calculateMonthlyTotalCount(monthAgo, now);
+
+
         // 최근 한달간 총 매출
         Integer monthlyRevenue = orderRepository.calculateMonthlyRevenue(monthAgo, now);
 
@@ -61,14 +65,14 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         Long totalCommunityCount = communityRepository.count();
 
         // 인기 상품 Top 10 (기준: 리뷰평점(평균 평점 × 2) + 리뷰 수 + 좋아요 수 + 주문 수)
-         List<ProductDTO.Response> top10Products = productRepository.findTop10ByOrderByLikeCountAndReviewCountDesc().stream()
+        List<ProductDTO.Response> top10Products = productRepository.findTop10ByOrderByLikeCountAndReviewCountDesc().stream()
                 .map(ProductDTO.Response::from).toList();
 
         // 인기 커뮤니티 게시글 Top 10 (답글 수)
         List<CommunityResponseDTO> top10Communities = communityRepository.findTop10ByOrderByLikeCountAndCommentCountDesc().stream()
                 .map(CommunityResponseDTO::from).toList();
 
-         // top 5 sellers(좋아요 수 + 판매량)
+        // top 5 sellers(좋아요 수 + 판매량)
         List<MemberDetailDTO> top5Sellers = memberRepository.findTop5Sellers().stream()
                 .map(MemberDetailDTO::from).toList();
         // top 5 GoodConsumer(많이 구매하고 && review를 content를 10자 이상 쓴)
@@ -77,6 +81,18 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
         // 승인 안된 셀러 신청 수
         Long sellerNotApprovedRequestCount = memberRepository.countBySellerApprovedIsFalse();
+
+        // SalesService를 통해 일별 매출 데이터 조회
+        List<SalesData> dailySalesData = salesService.getDailySalesData();
+
+        // 최신 날짜의 시간별 매출 데이터 조회 (SalesData의 날짜는 LocalDateTime)
+        List<SalesData> hourlySalesData = Collections.emptyList();
+        if (!dailySalesData.isEmpty()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            // 최신 일자의 문자열(yyyy-MM-dd)
+            String latestDate = dailySalesData.get(dailySalesData.size() - 1).getDate().format(formatter);
+            hourlySalesData = salesService.getSalesDataByDate(latestDate);
+        }
 
         return DashboardDTO.builder()
                 .totalOrderCount(totalOrderCount)
@@ -91,6 +107,8 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 .top5Sellers(top5Sellers)
                 .top5GoodConsumers(top5GoodConsumers)
                 .sellerNotApprovedRequestCount(sellerNotApprovedRequestCount)
+                .dailySalesData(dailySalesData)
+                .hourlySalesData(hourlySalesData)
                 .build();
     }
 }

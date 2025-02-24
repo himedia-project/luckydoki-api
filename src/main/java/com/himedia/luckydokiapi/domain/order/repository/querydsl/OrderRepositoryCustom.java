@@ -11,4 +11,6 @@ public interface OrderRepositoryCustom {
     Page<Order> findListBy(AdminOrderController.OrderHisRequestDTO requestDTO);
 
     Integer calculateMonthlyRevenue(LocalDateTime monthAgo, LocalDateTime now);
+
+    Long calculateMonthlyTotalCount(LocalDateTime monthAgo, LocalDateTime now);
 }
