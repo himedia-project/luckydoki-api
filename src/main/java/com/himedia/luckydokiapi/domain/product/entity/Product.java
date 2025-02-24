@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.product.entity;
 
 import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
 import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
+import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
 import com.himedia.luckydokiapi.domain.product.enums.*;
 import com.himedia.luckydokiapi.domain.review.entity.Review;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
@@ -314,5 +315,14 @@ public class Product extends BaseEntity {
         }
         sb.append(childCategoryName);
         return sb.toString();
+    }
+
+    /**
+     * 상품 태그 리스트
+     * @return 태그 리스트
+     */
+    public List<TagDTO> getTagList() {
+        return this.productTagList.stream()
+                .map(productTag -> TagDTO.from(productTag.getTag())).toList();
     }
 }

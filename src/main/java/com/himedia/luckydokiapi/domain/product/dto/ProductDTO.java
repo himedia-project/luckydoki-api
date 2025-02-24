@@ -81,7 +81,7 @@ public class ProductDTO {
         @Builder.Default
         private List<String> uploadFileNames = new ArrayList<>();
 
-        private List<String> tagStrList;
+        private List<TagDTO> tagList;
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdAt;
@@ -116,7 +116,7 @@ public class ProductDTO {
                     .shopName(product.getShop().getMember().getNickName())
                     .shopImage(product.getShop().getMember().getProfileImage())
                     .stockNumber(product.getStockNumber())
-                    .tagStrList(product.getProductTagList().stream().map(tag -> tag.getTag().getName()).toList())
+                    .tagList(product.getTagList())
                     .createdAt(product.getCreatedAt())
                     .modifiedAt(product.getModifiedAt())
                     .build();

@@ -30,6 +30,7 @@ public interface CartService {
                 .discountPrice(cartItem.getDiscountPrice())
                 .discountRate(cartItem.getDiscountRate())
                 .imageName(cartItem.getProduct().getImageList().get(0).getImageName())
+                .tagList(cartItem.getProduct().getTagList())
                 .build();
     }
 

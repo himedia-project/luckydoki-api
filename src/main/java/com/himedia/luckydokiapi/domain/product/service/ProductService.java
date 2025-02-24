@@ -1,7 +1,6 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
 
-import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
@@ -67,8 +66,6 @@ public interface ProductService {
 
 
     default ProductDTO.Response entityToDTO(Product product, Boolean productLike) {
-        List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
-                .map(Tag::getName).toList();
         ProductDTO.Response productDTO = ProductDTO.Response.builder()
                 .id(product.getId())
                 .code(product.getCode())
@@ -93,7 +90,7 @@ public interface ProductService {
                 .stockNumber(product.getStockNumber())
                 .createdAt(product.getCreatedAt())
                 .modifiedAt(product.getModifiedAt())
-                .tagStrList(tags)
+                .tagList(product.getTagList())
                 .likes(productLike)
                 .build();
 

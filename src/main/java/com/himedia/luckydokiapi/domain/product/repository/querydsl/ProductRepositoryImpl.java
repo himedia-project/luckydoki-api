@@ -8,7 +8,6 @@ import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -120,8 +119,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .where(
                         product.delFlag.eq(false),
                         eqCategory(requestDTO.getCategoryId()),
+                        // 제외 조건
+                        neProductIdList(requestDTO.getExcludeIdList()),
                         eqTagId(requestDTO.getTagId()),
                         inTagStrList(requestDTO.getTagStrList()),
+                        inTagIdList(requestDTO.getTagIdList()),
                         eqIsNew(requestDTO.getIsNew()),
                         containsSearchKeyword(requestDTO.getSearchKeyword()),
                         eqBest(requestDTO.getBest()),
@@ -136,27 +138,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .fetch();
     }
 
-    /**
-     * 해당태그 리스트에 포함된 상품들만 조회
-     * @param tagStrList 태그 리스트
-     * @return  해당 태그 리스트에 포함된 상품들
-     */
-    private BooleanExpression inTagStrList(List<String> tagStrList) {
-        if (tagStrList == null || tagStrList.isEmpty()) {       // 순서 중요!
-            return null;
-        }
-        // any() : 하나라도 만족하면 true
-        // 태그 리스트가 ["신상", "할인"]일 때
-        // 둘 중 하나라도 "신상" 태그가 있는 상품 또는 "할인" 태그가 있는 상품 모두를 반환
-        return product.productTagList.any().tag.name.in(tagStrList);
-    }
 
-    private BooleanExpression goeDiscountRate(Integer discountRate) {
-        if (discountRate == null) {
-            return null;
-        }
-        return product.discountRate.goe(discountRate);
-    }
 
     @Override
     public List<Product> findProductByShopMemberEmail(String email) {
@@ -335,6 +317,55 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
             return null;
         }
         return product.productTagList.any().tag.id.eq(tagId);
+    }
+
+    /**
+     * 제외할 상품 ID
+     * @param excludeIdList 제외할 상품 ID
+     * @return 제외할 상품 ID 조건
+     */
+    private BooleanExpression neProductIdList(List<Long> excludeIdList) {
+        if (excludeIdList == null || excludeIdList.isEmpty()) {       // 순서 중요!
+            return null;
+        }
+        return product.id.notIn(excludeIdList);
+    }
+
+    /**
+     * 해당태그 리스트에 포함된 상품들만 조회
+     * @param tagStrList 태그 리스트
+     * @return  해당 태그 리스트에 포함된 상품들
+     */
+    private BooleanExpression inTagStrList(List<String> tagStrList) {
+        if (tagStrList == null || tagStrList.isEmpty()) {       // 순서 중요!
+            return null;
+        }
+        // any() : 하나라도 만족하면 true
+        // 태그 리스트가 ["신상", "할인"]일 때
+        // 둘 중 하나라도 "신상" 태그가 있는 상품 또는 "할인" 태그가 있는 상품 모두를 반환
+        return product.productTagList.any().tag.name.in(tagStrList);
+    }
+
+    /**
+     * 해당태그 리스트에 포함된 상품들만 조회
+     * @param tagIdList 태그 id 리스트
+     * @return  해당 태그 리스트에 포함된 상품들
+     */
+    private BooleanExpression inTagIdList(List<Long> tagIdList) {
+        if (tagIdList == null || tagIdList.isEmpty()) {       // 순서 중요!
+            return null;
+        }
+        // any() : 하나라도 만족하면 true
+        // 태그 리스트가 ["신상", "할인"]일 때
+        // 둘 중 하나라도 "신상" 태그가 있는 상품 또는 "할인" 태그가 있는 상품 모두를 반환
+        return product.productTagList.any().tag.id.in(tagIdList);
+    }
+
+    private BooleanExpression goeDiscountRate(Integer discountRate) {
+        if (discountRate == null) {
+            return null;
+        }
+        return product.discountRate.goe(discountRate);
     }
 
 }
