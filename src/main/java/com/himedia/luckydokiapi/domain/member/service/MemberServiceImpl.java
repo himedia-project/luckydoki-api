@@ -154,9 +154,8 @@ public class MemberServiceImpl implements MemberService {
     public MemberDetailDTO getMyInfo(String email) {
         Member member = getEntity(email);
         Shop seller = getSeller(member.getEmail());
-        // 셀러 신청 여부 확인
-        Boolean result = sellerApplicationRepository.existsByEmail(email);
-        return entityToMemberDetailDTO(member, seller, result);
+
+        return entityToMemberDetailDTO(member, seller);
     }
 
 
@@ -188,8 +187,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(email)
                 .orElseThrow(() -> new EntityNotFoundException("해당 회원이 존재하지 않습니다. email: " + email));
 
-        boolean alreadyExists = sellerApplicationRepository.findByEmail(email).isPresent();
-        if (alreadyExists) {
+        if (member.getSellerRequested()) {
             throw new IllegalStateException("이미 셀러 신청을 완료한 회원입니다.");
         }
 
@@ -202,7 +200,7 @@ public class MemberServiceImpl implements MemberService {
 
         // shopImage 값을 설정한 상태에서 SellerApplication 객체 생성
         SellerApplication application = SellerApplication.builder()
-                .email(member.getEmail())
+                .member(member)
                 .nickName(member.getNickName())
                 .introduction(requestDTO.getIntroduction())
                 .shopImage(uploadedImagePath)  // 여기서 바로 설정

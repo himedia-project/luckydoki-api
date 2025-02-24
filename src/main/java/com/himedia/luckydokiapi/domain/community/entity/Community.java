@@ -41,6 +41,10 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
     @Builder.Default
     private List<CommunityProduct> communityProductList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Comment> commentList = new ArrayList<>();
+
     /**
      * 커뮤니티 게시글 이미지, 커뮤니티에 추가
      * @param image
@@ -65,7 +69,7 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
 
     /**
      * 커뮤니티 게시글 상품, 커뮤니티에 추가
-     * @param communityProduct
+     * @param product 상품
      */
 
     public void addProduct(CommunityProduct product) {
@@ -82,10 +86,17 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
 
     /**
      * 셀러 샵이미지 반환 if, 단순 유저는 null 반환
-     * @return
+     * @return 셀러 샵이미지
      */
     public String getSellerShopImage() {
         // 게시글 작성자의 상점 이미지
         return member.getShop() != null ? member.getShop().getImage() : null;
+    }
+
+    /**
+     * 게시글 댓글 갯수
+     */
+    public int getCommentCount() {
+        return commentList.size();
     }
 }

@@ -32,7 +32,7 @@ public class TagServiceImpl implements TagService {
         return productIds.stream().map(productId -> {
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new EntityNotFoundException("해당 엔티티가 없습니다."));
-            return adminProductService.entityToDTO(product);
+            return ProductDTO.Response.from(product);
         }).toList();
     }
 }

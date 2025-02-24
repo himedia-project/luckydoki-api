@@ -56,7 +56,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         Page<Product> result = productRepository.findListBy(requestDTO);
 
         return PageResponseDTO.<ProductDTO.Response>withAll()
-                .dtoList(result.stream().map(this::entityToDTO).collect(Collectors.toList()))
+                .dtoList(result.stream().map(ProductDTO.Response::from).collect(Collectors.toList()))
                 .totalCount(result.getTotalElements())
                 .pageRequestDTO(requestDTO)
                 .build();
@@ -67,7 +67,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     @Override
     public ProductDTO.Response getOne(Long id) {
         Product product = this.getEntity(id);
-        return this.entityToDTO(product);
+        return ProductDTO.Response.from(product);
     }
 
     @Override

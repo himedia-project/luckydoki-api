@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.entity;
 
 import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
+import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
 import com.himedia.luckydokiapi.domain.product.enums.*;
 import com.himedia.luckydokiapi.domain.review.entity.Review;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
@@ -119,6 +120,10 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
     @Builder.Default
     private List<CategoryBridge> categoryBridges = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<OrderItem> orderItems = new ArrayList<>();
 
 
     public Integer productLikesCount(ProductLike productLike) {
@@ -253,4 +258,61 @@ public class Product extends BaseEntity {
         return this.productReviews.size();
     }
 
+    /**
+     * 상품 좋아요 카운트
+     * @return 좋아요 카운트
+     */
+    public int getLikesCount() {
+        return this.productLikes.size();
+    }
+
+    /**
+     * 상품 판매량
+     * @return 판매량
+     */
+    public int getSalesCount() {
+        return this.orderItems.stream().mapToInt(OrderItem::getCount).sum();
+    }
+
+    /**
+     * 상품 카테고리 전체 이름
+     * @return 카테고리 전체 이름 ex) "상의 > 티셔츠 > 반팔"
+     */
+    public String getCategoryAllName() {
+        String mainCategoryName = null;
+        String subCategoryName = null;
+        // 3차 카테고리는 무조건 있음
+        String childCategoryName = this.category.getName();
+        // 2차 카테고리 있다면
+        if (this.category.getParent() != null) {
+            subCategoryName = this.category.getParent().getName();
+            // 3차 카테고리 있다면
+            if(this.category.getParent().getParent() != null) {
+                mainCategoryName = this.category.getParent().getParent().getName();
+            } else {
+                // 2차 카테고리까지만 있는 경우
+                subCategoryName = this.category.getParent().getName();
+            }
+        }
+        return createCategoryAllName(mainCategoryName, subCategoryName, childCategoryName);
+    }
+
+    /**
+     * 카테고리 전체 이름 생성
+     * @param mainCategoryName 1차 카테고리 이름
+     * @param subCategoryName 2차 카테고리 이름
+     * @param childCategoryName 3차 카테고리 이름
+     * @return 카테고리 전체 이름
+     */
+    private String createCategoryAllName(String mainCategoryName, String subCategoryName, String childCategoryName) {
+        StringBuilder sb = new StringBuilder();
+        if (mainCategoryName != null) {
+            sb.append(mainCategoryName).append(" > ");
+        }
+        if (subCategoryName != null) {
+            sb.append(subCategoryName).append(" > ");
+        }
+        sb.append(childCategoryName);
+        return sb.toString();
+    }
 }

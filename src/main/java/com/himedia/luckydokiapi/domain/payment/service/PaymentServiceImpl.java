@@ -1,6 +1,9 @@
 package com.himedia.luckydokiapi.domain.payment.service;
 
 
+import com.himedia.luckydokiapi.domain.cart.entity.Cart;
+import com.himedia.luckydokiapi.domain.cart.repository.CartRepository;
+import com.himedia.luckydokiapi.domain.cart.service.CartService;
 import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import com.himedia.luckydokiapi.domain.order.entity.Order;
 import com.himedia.luckydokiapi.domain.order.service.OrderService;
@@ -32,6 +35,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
+    private final CartService cartService;
     @Value("${toss.secret-key}")
     private String secretKey;
 
@@ -44,6 +48,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderService orderService;
 
     private final CouponService couponService;
+
+    private final CartRepository cartRepository;
 
     @Override
     public void preparePayment(PaymentPrepareDTO dto) {
@@ -114,14 +120,16 @@ public class PaymentServiceImpl implements PaymentService {
 
                 // 주문상태, 결제완료 처리
                 Order order = orderService.getEntityByCode(orderId);
+
                 order.changeStatusToConfirm();
                 // 쿠폰 사용시, 쿠폰 사용 처리
                 if (order.getCoupon() != null) {
                     couponService.useCoupon(order.getMember().getEmail(), order.getCoupon());
                 }
                 // 장바구니 상품 삭제
-                orderService.removeCartItemsMatchedOrderItemsBy(order.getOrderItems());
-
+                cartRepository.getCartOfMember(order.getMember().getEmail()).ifPresent(cart -> {
+                    orderService.removeCartItemsMatchedOrderItemsBy(cart, order.getOrderItems());
+                });
                 log.info("Payment confirmation successful: {}", response.getBody());
             }
 

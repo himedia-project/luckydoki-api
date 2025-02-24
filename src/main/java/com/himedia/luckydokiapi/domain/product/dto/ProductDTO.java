@@ -56,9 +56,13 @@ public class ProductDTO {
         private Long id;
         private String code;
         private Long categoryId;
+        private String categoryAllName;
         private String categoryName;
         private double reviewAverage;
         private int reviewCount;
+        private int likesCount;
+        // 판매량
+        private int salesCount;
         private String name;
         private Integer price;
         private Integer discountPrice;
@@ -94,9 +98,12 @@ public class ProductDTO {
                     .nickName(product.getShop().getMember().getNickName())  // shop name으로 사용
                     .email(product.getShop().getMember().getEmail())
                     .categoryId(product.getCategory().getId())
+                    .categoryAllName(product.getCategoryAllName())
                     .categoryName(product.getCategory().getName())
                     .reviewAverage(product.getReviewAverage())
                     .reviewCount(product.getReviewCount())
+                    .likesCount(product.getLikesCount())
+                    .salesCount(product.getSalesCount())
                     .name(product.getName())
                     .price(product.getPrice())
                     .discountPrice(product.getDiscountPrice())

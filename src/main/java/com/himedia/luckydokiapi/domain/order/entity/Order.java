@@ -56,7 +56,7 @@ public class Order {
     @ColumnDefault("0")
     private int totalDiscountPrice;
 
-    @OneToOne(fetch = FetchType.LAZY)  // ✳️ 주문 1개당 1개의 쿠폰만 사용 가능
+    @ManyToOne(fetch = FetchType.LAZY)  // ✳️ 1개의 쿠폰으로 여러개의 주문 가능
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 

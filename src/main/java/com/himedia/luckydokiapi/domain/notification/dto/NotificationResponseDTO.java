@@ -23,7 +23,7 @@ public class NotificationResponseDTO {
     private String targetEmail;
     private String fcmToken;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDateTime createdAt;
+    private LocalDateTime timestamp;
 
     public static NotificationResponseDTO from(Notification notification) {
         return NotificationResponseDTO.builder()
@@ -33,7 +33,7 @@ public class NotificationResponseDTO {
                 .body(notification.getBody())
                 .type(notification.getType())
                 .fcmToken(notification.getFcmToken())
-                .createdAt(notification.getCreatedAt())
+                .timestamp(notification.getCreatedAt())
                 .build();
     }
 }

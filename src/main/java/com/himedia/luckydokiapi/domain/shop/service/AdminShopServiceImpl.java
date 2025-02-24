@@ -61,15 +61,15 @@ public class AdminShopServiceImpl implements AdminShopService {
     public Long approveSeller(Long applicationId) {
         SellerApplication application = getApplication(applicationId);
 
-        Member member = getMember(application.getEmail());
+        Member member = application.getMember();
         // 셀러 폼 승인 처리
         application.approve();
 
         // ✅ 승인된 셀러를 Shop에 자동 등록
         // 이메일을 기준으로 샵이 이미 있으면 예외처리
-        shopRepository.findByMemberEmail(application.getEmail())
+        shopRepository.findByMemberEmail(member.getEmail())
                 .ifPresent(shop -> {
-                    throw new IllegalArgumentException("이미 shop이 있는 회원입니다. shopId" + shop.getId());
+                    throw new IllegalArgumentException("이미 shop이 있는 회원입니다. shopId: " + shop.getId());
                 });
 
         // 셀러 권한 부여
