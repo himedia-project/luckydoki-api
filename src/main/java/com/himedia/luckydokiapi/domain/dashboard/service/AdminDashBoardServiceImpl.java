@@ -38,10 +38,9 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         LocalDateTime endOfDay = startOfDay.plusDays(1);    // 오늘 24시
 
         // 최근 한달간 총 주문수
-        Long totalOrderCount = orderRepository.findAll().stream()
-                .filter(order -> order.getOrderStatus() == OrderStatus.CONFIRM 
-                        && order.getOrderDate().isAfter(monthAgo))
-                .count();
+        Long totalOrderCount = orderRepository.calculateMonthlyTotalCount(monthAgo, now);
+
+
         // 최근 한달간 총 매출
         Integer monthlyRevenue = orderRepository.calculateMonthlyRevenue(monthAgo, now);
 
@@ -61,14 +60,14 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         Long totalCommunityCount = communityRepository.count();
 
         // 인기 상품 Top 10 (기준: 리뷰평점(평균 평점 × 2) + 리뷰 수 + 좋아요 수 + 주문 수)
-         List<ProductDTO.Response> top10Products = productRepository.findTop10ByOrderByLikeCountAndReviewCountDesc().stream()
+        List<ProductDTO.Response> top10Products = productRepository.findTop10ByOrderByLikeCountAndReviewCountDesc().stream()
                 .map(ProductDTO.Response::from).toList();
 
         // 인기 커뮤니티 게시글 Top 10 (답글 수)
         List<CommunityResponseDTO> top10Communities = communityRepository.findTop10ByOrderByLikeCountAndCommentCountDesc().stream()
                 .map(CommunityResponseDTO::from).toList();
 
-         // top 5 sellers(좋아요 수 + 판매량)
+        // top 5 sellers(좋아요 수 + 판매량)
         List<MemberDetailDTO> top5Sellers = memberRepository.findTop5Sellers().stream()
                 .map(MemberDetailDTO::from).toList();
         // top 5 GoodConsumer(많이 구매하고 && review를 content를 10자 이상 쓴)
