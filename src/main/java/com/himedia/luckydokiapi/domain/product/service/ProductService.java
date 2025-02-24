@@ -29,7 +29,10 @@ public interface ProductService {
     Long updateProduct(String email, ProductDTO.Request dto, Long productId);
 
     void deleteProductById(Long productId);
-    
+
+
+    List<ProductDTO.Response> recommendList(ProductDTO.Request request, String email);
+
     default Product dtoToEntity(ProductDTO.Request dto, Category category, Shop shop) {
         Product product = Product.builder()
                 .code(generateRandomNumber(10))
@@ -108,6 +111,4 @@ public interface ProductService {
         return productDTO;
 
     }
-
-
 }

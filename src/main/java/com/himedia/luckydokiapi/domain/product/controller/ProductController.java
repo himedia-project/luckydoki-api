@@ -37,6 +37,14 @@ public class ProductController {
         return ResponseEntity.ok(productService.list(requestDTO, email));
     }
 
+    @GetMapping("/recommend/list")
+    public ResponseEntity<List<ProductDTO.Response>> searchRecommendProducts(ProductDTO.Request request, @AuthenticationPrincipal MemberDTO memberDTO) {
+        String email = (memberDTO != null) ? memberDTO.getEmail() : null;
+        log.info("searchProducts request: {},email :{}", request, email);
+        return ResponseEntity.ok(productService.recommendList(request, email));
+    }
+
+
     @GetMapping("/{id}/tag/list")
     public ResponseEntity<List<TagDTO>> searchProducts(@PathVariable Long id) {
         log.info("searchProductsTag: {}", id);

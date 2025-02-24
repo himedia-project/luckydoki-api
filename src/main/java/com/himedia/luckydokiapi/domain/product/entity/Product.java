@@ -1,9 +1,13 @@
 package com.himedia.luckydokiapi.domain.product.entity;
 
+import com.himedia.luckydokiapi.domain.cart.entity.CartItem;
+import com.himedia.luckydokiapi.domain.community.entity.CommunityProduct;
 import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
 import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
-import com.himedia.luckydokiapi.domain.product.enums.*;
+import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
+import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
+import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.himedia.luckydokiapi.domain.review.entity.Review;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.entity.BaseEntity;
@@ -26,7 +30,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Setter
-@ToString(exclude = {"imageList", "shop", "category", "productTagList", "productLikes", "productReviews", "categoryBridges"})
+@ToString(exclude = {"imageList", "shop", "category", "productTagList", "productLikes", "productReviews", "categoryBridges", "orderItems", "cartItems", "communityProducts"})
 @Table(name = "product", indexes = {
     @Index(name = "idx_product_name", columnList = "name"),
     @Index(name = "idx_product_code", columnList = "code")
@@ -125,6 +129,14 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
     @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CartItem> cartItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CommunityProduct> communityProducts = new ArrayList<>();
 
 
     public Integer productLikesCount(ProductLike productLike) {
