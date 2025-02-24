@@ -77,6 +77,7 @@ public interface ProductService {
                 .nickName(product.getShop().getMember().getNickName())  // shop name으로 사용
                 .email(product.getShop().getMember().getEmail())
                 .categoryId(product.getCategory().getId())
+                .categoryAllName(product.getCategoryAllName())
                 .categoryName(product.getCategory().getName())
                 .name(product.getName())
                 .price(product.getPrice())

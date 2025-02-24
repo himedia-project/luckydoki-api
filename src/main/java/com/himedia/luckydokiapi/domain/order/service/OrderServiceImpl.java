@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.order.service;
 
 
 import com.himedia.luckydokiapi.domain.cart.dto.CartItemDTO;
+import com.himedia.luckydokiapi.domain.cart.entity.Cart;
 import com.himedia.luckydokiapi.domain.cart.repository.CartItemRepository;
 import com.himedia.luckydokiapi.domain.cart.service.CartService;
 import com.himedia.luckydokiapi.domain.coupon.entity.Coupon;
@@ -173,15 +174,18 @@ public class OrderServiceImpl implements OrderService {
      * @param orderItems 주문 아이템 리스트
      */
     @Override
-    public void removeCartItemsMatchedOrderItemsBy(List<OrderItem> orderItems) {
+    public void removeCartItemsMatchedOrderItemsBy(Cart cart, List<OrderItem> orderItems) {
         // 주문 후, 장바구니로 주문하는 거라면, 해당 장바구니 cart items 삭제
         orderItems.forEach(orderItem -> {
             // 만일 장바구니에 해당 상품이 없으면,
-            if (!cartItemRepository.existByProductId(orderItem.getProduct().getId())) {
+            if (!cartItemRepository.existByCartIdAndProductId(cart.getId(), orderItem.getProduct().getId())) {
                 return;
             }
             // 만일 장바구니에 해당 상품이 있으면, 해당 상품 삭제
-            cartItemRepository.delete(cartItemRepository.findByProductId(orderItem.getProduct().getId()));
+            cartItemRepository.delete(
+                    cartItemRepository.findByCartIdAndProductId(cart.getId(), orderItem.getProduct().getId())
+                            .orElseThrow(() -> new EntityNotFoundException("해당 상품이 장바구니에 없습니다. cartId: " + cart.getId() + ", productId: " + orderItem.getProduct().getId()))
+            );
         });
     }
 }

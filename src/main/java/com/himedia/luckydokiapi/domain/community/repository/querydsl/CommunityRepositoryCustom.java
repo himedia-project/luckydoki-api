@@ -11,4 +11,5 @@ public interface CommunityRepositoryCustom {
     List<Community> findByDTO(CommunitySearchDTO requestDTO);
 
 
+    List<Community> findTop10ByOrderByLikeCountAndCommentCountDesc();
 }

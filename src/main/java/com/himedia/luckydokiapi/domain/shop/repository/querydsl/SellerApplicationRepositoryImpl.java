@@ -51,8 +51,9 @@ public class SellerApplicationRepositoryImpl implements SellerApplicationReposit
         if (searchKeyword == null) {
             return null;  // 빠져나가는
         }
-        return sellerApplication.email.contains(searchKeyword)
-                .or(sellerApplication.introduction.contains(searchKeyword));
+//        return sellerApplication.member.email.contains(searchKeyword)
+//                .or(sellerApplication.introduction.contains(searchKeyword));
+        return null;
 
     }
 }

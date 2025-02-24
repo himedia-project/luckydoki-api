@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.himedia.luckydokiapi.util.TimeUtil.checkTime;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/member")
@@ -86,30 +88,40 @@ public class MemberController {
         return ResponseEntity.ok("logout success!");
     }
 
-//    @GetMapping("/refresh")
-//    public Map<String, Object> refresh(
-//            @CookieValue(value = "refreshToken") String refreshToken,
-//            HttpServletResponse response) {
-//        log.info("refresh refreshToken: {}", refreshToken);
-//
-//        // RefreshToken 검증
-//        Map<String, Object> claims = jwtUtil.validateToken(refreshToken);
-//        log.info("RefreshToken claims: {}", claims);
-//
-//        String newAccessToken = jwtUtil.generateToken(claims, jwtProps.getAccessTokenExpirationPeriod());
-//        String newRefreshToken = jwtUtil.generateToken(claims, jwtProps.getRefreshTokenExpirationPeriod());
-//
-//        // refreshToken 만료시간이 1시간 이하로 남았다면, 새로 발급
-//        if (checkTime((Integer) claims.get("exp"))) {
-//            // 새로 발급
-//            CookieUtil.setTokenCookie(response, "refreshToken", newRefreshToken, jwtProps.getRefreshTokenExpirationPeriod()); // 1day
-//        } else {
-//            // 만료시간이 1시간 이상이면, 기존 refreshToken 그대로
-//            CookieUtil.setNewRefreshTokenCookie(response, "refreshToken", refreshToken);
-//        }
-//
-//        return Map.of("newAccessToken", newAccessToken);
-//    }
+    @GetMapping("/refresh")
+    public ResponseEntity<LoginResponseDTO> refresh(
+            @CookieValue(value = "refreshToken") String refreshToken,
+            HttpServletResponse response) {
+        log.info("refresh refreshToken: {}", refreshToken);
+
+        // ✳️ RefreshToken 검증해서 맴버정보 다시 가져옴!
+        Map<String, Object> loginClaims = jwtUtil.validateToken(refreshToken);
+        log.info("RefreshToken loginClaims: {}", loginClaims);
+
+        String newAccessToken = jwtUtil.generateToken(loginClaims, jwtProps.getAccessTokenExpirationPeriod());
+        String newRefreshToken = jwtUtil.generateToken(loginClaims, jwtProps.getRefreshTokenExpirationPeriod());
+
+        // refreshToken 만료시간이 1시간 이하로 남았다면, 새로 발급
+        if (checkTime((Integer) loginClaims.get("exp"))) {
+            // 새로 발급
+            CookieUtil.setTokenCookie(response, "refreshToken", newRefreshToken, jwtProps.getRefreshTokenExpirationPeriod()); // 1day
+        } else {
+            // 만료시간이 1시간 이상이면, 기존 refreshToken 그대로
+            CookieUtil.setNewRefreshTokenCookie(response, "refreshToken", refreshToken);
+        }
+
+        LoginResponseDTO loginResponseDTO = LoginResponseDTO.builder()
+                .email(loginClaims.get("email").toString())
+                .nickName(loginClaims.get("nickName").toString())
+                .roles((List<String>) loginClaims.get("roleNames"))
+                .accessToken(newAccessToken)
+                .active(MemberActive.valueOf(loginClaims.get("active").toString()))
+                .build();
+
+        log.info("refresh loginResponseDTO: {}", loginResponseDTO);
+        // refresh 성공시, accessToken, email, name, roles 반환
+        return ResponseEntity.ok(loginResponseDTO);
+    }
 
 
     @PostMapping("/upgrade-to-seller")

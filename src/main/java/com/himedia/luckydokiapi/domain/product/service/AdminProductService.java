@@ -49,51 +49,6 @@ public interface AdminProductService {
     }
 
 
-    /**
-     * Product -> ProductDTO 변환
-     *
-     * @param product Product
-     * @return ProductDTO
-     */
-    default ProductDTO.Response entityToDTO(Product product) {
-        List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
-                .map(Tag::getName).toList();
-        ProductDTO.Response productDTO = ProductDTO.Response.builder()
-                .id(product.getId())
-                .code(product.getCode())
-                .categoryId(product.getCategory().getId())
-                .categoryName(product.getCategory().getName())
-                .name(product.getName())
-                .price(product.getPrice())
-                .discountPrice(product.getDiscountPrice())
-                .discountRate(product.getDiscountRate())
-                .description(product.getDescription())
-                .isNew(product.getIsNew())
-                .best(product.getBest())
-                .event(product.getEvent())
-                .email(product.getShop().getMember().getEmail())
-                .shopId(product.getShop().getId())
-                .shopName(product.getShop().getMember().getNickName())
-                .stockNumber(product.getStockNumber())
-                .createdAt(product.getCreatedAt())
-                .modifiedAt(product.getModifiedAt())
-                .tagStrList(tags)
-                .build();
-
-        List<ProductImage> imageList = product.getImageList();
-
-        if (imageList == null || imageList.isEmpty()) {
-            return productDTO;
-        }
-
-        List<String> fileNameList = imageList.stream().map(ProductImage::getImageName).toList();
-
-        productDTO.setUploadFileNames(fileNameList);
-        productDTO.setCategoryId(product.getCategory().getId());
-
-        return productDTO;
-    }
-
     void modifyProductBest(List<Long> modifyProductIdList);
 
     void modifyProductIsNew(List<Long> modifyProductIdList);

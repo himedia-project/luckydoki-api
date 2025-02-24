@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
@@ -26,9 +27,9 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     @Query("select ci from CartItem ci where ci.cart.id = :cartId")
     List<CartItem> getItemsOfCartByCartId(@Param("cartId") Long cartId);
 
-    // 특정 상품 ID로 장바구니 아이템을 조회하는 메소드
-    @Query("select ci from CartItem ci where ci.product.id = :productId")
-    CartItem findByProductId(@Param("productId") Long productId);
+    // 특정 장바구니 ID와 상품 ID로 장바구니 아이템을 조회하는 메소드
+    @Query("select ci from CartItem ci where ci.cart.id = :cartId and ci.product.id = :productId")
+    Optional<CartItem> findByCartIdAndProductId(@Param("cartId") Long cartId, @Param("productId") Long productId);
 
     // 장바구니 아이템 ID 리스트로 장바구니 아이템을 조회하는 메소드
     @Query("select ci from CartItem ci where ci.id in :cartItemIdList")
@@ -39,7 +40,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     @Query("delete from CartItem ci where ci.id in :cartItemIdList")
     void deleteBulk(@Param("cartItemIdList") List<Long> cartItemIdList);
 
-    // 특정 상품 ID로 장바구니 아이템이 존재하는지 확인하는 메소드
-    @Query("select case when count(ci) > 0 then true else false end from CartItem ci where ci.product.id = :productId")
-    boolean existByProductId(@Param("productId") Long productId);
+    // 특정 장바구니 ID와 상품 ID로 장바구니 아이템이 존재하는지 확인하는 메소드
+    @Query("select case when count(ci) > 0 then true else false end from CartItem ci where ci.cart.id = :cartId and ci.product.id = :productId")
+    boolean existByCartIdAndProductId(@Param("cartId") Long cartId, @Param("productId") Long productId);
 }

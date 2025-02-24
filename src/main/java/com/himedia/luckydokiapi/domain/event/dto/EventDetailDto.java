@@ -24,6 +24,7 @@ public class EventDetailDto {
     private LocalDate startAt;
     private LocalDate endAt;
 
+    @Builder.Default
     private List<ProductDTO.Response> productList = new ArrayList<>();
 
     public static EventDetailDto from(Event event) {

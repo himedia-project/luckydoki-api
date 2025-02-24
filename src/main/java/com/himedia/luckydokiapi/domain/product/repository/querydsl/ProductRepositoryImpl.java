@@ -24,6 +24,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.himedia.luckydokiapi.domain.likes.entity.QProductLike.productLike;
+import static com.himedia.luckydokiapi.domain.order.entity.QOrderItem.orderItem;
 import static com.himedia.luckydokiapi.domain.product.entity.QCategory.category;
 import static com.himedia.luckydokiapi.domain.product.entity.QCategoryBridge.categoryBridge;
 import static com.himedia.luckydokiapi.domain.product.entity.QProduct.product;
@@ -181,6 +183,30 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         (eqSubCategoryId(categoryId)))
                 .fetch();
         //파라미터로 받은 카테고리 아이디가 child 카테고리 일때 (최하위 카테고리 아이디로 product 조회)
+    }
+
+    @Override
+    public List<Product> findTop10ByOrderByLikeCountAndReviewCountDesc() {
+        return queryFactory
+                .selectFrom(product)
+                .leftJoin(product.imageList, productImage).on(productImage.ord.eq(0))
+                .leftJoin(product.productLikes, productLike)
+                .leftJoin(product.orderItems, orderItem)
+                .leftJoin(product.productReviews, review)
+                .where(
+                    product.delFlag.eq(false)
+                )
+                .groupBy(product)
+                .orderBy(
+                    review.rating.avg().multiply(2)  // 평점 평균값 (가중치 2배)
+                        .add(review.count())         // 리뷰 수
+                        .add(productLike.count())    // 좋아요 수
+                        .add(orderItem.count())      // 주문 구매 수
+                        .desc(),
+                    product.id.desc()  // 같은 순위일 경우 최신 상품 우선
+                )
+                .limit(10)
+                .fetch();
     }
 
     private BooleanExpression eqChildCategoryId(Long childCategoryId) {

@@ -3,6 +3,7 @@
 
 
     import com.himedia.luckydokiapi.domain.cart.dto.CartItemDTO;
+    import com.himedia.luckydokiapi.domain.cart.entity.Cart;
     import com.himedia.luckydokiapi.domain.order.controllor.AdminOrderController;
     import com.himedia.luckydokiapi.domain.order.dto.OrderHistDTO;
     import com.himedia.luckydokiapi.domain.order.entity.Order;
@@ -71,5 +72,5 @@
          */
         Order getEntityByCode(String orderId);
 
-        void removeCartItemsMatchedOrderItemsBy(List<OrderItem> orderItems);
+        void removeCartItemsMatchedOrderItemsBy(Cart cart, List<OrderItem> orderItems);
     }
