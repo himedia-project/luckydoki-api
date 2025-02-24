@@ -9,6 +9,10 @@ import com.himedia.luckydokiapi.domain.order.enums.OrderStatus;
 import com.himedia.luckydokiapi.domain.order.repository.OrderRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
+import com.himedia.luckydokiapi.domain.sales.dto.SalesData;
+import com.himedia.luckydokiapi.domain.sales.service.SalesService;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +31,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final CommunityRepository communityRepository;
+    private final SalesService salesService;
 
     @Transactional(readOnly = true)
     @Override
@@ -77,6 +82,18 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         // 승인 안된 셀러 신청 수
         Long sellerNotApprovedRequestCount = memberRepository.countBySellerApprovedIsFalse();
 
+        // SalesService를 통해 일별 매출 데이터 조회
+        List<SalesData> dailySalesData = salesService.getDailySalesData();
+
+        // 최신 날짜의 시간별 매출 데이터 조회 (SalesData의 날짜는 LocalDateTime)
+        List<SalesData> hourlySalesData = Collections.emptyList();
+        if (!dailySalesData.isEmpty()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            // 최신 일자의 문자열(yyyy-MM-dd)
+            String latestDate = dailySalesData.get(dailySalesData.size() - 1).getDate().format(formatter);
+            hourlySalesData = salesService.getSalesDataByDate(latestDate);
+        }
+
         return DashboardDTO.builder()
                 .totalOrderCount(totalOrderCount)
                 .monthlyRevenue(monthlyRevenue)
@@ -90,6 +107,8 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 .top5Sellers(top5Sellers)
                 .top5GoodConsumers(top5GoodConsumers)
                 .sellerNotApprovedRequestCount(sellerNotApprovedRequestCount)
+                .dailySalesData(dailySalesData)
+                .hourlySalesData(hourlySalesData)
                 .build();
     }
 }
