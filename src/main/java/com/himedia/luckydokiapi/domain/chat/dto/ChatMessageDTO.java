@@ -18,8 +18,8 @@ public class ChatMessageDTO {
     private String email;
     private Long shopId;
     private String message;
-
-//    @JsonFormat(pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
+    private boolean isRead;
+    //    @JsonFormat(pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime sendTime;
 
- }
+}

@@ -1,7 +1,6 @@
 package com.himedia.luckydokiapi.domain.member.repository;
 
 
-
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.querydsl.MemberRepositoryCustom;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -20,4 +19,7 @@ public interface MemberRepository extends JpaRepository<Member, String>
 
     @Query("select m from Member m where m.email = :email")
     Optional<Member> findByEmail(@Param("email") String email);
+
+    @Query("select m from Member m where m.nickName = :nickName")
+    Optional<Member> findByNickName(@Param("nickName") String nickName);
 }

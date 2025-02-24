@@ -46,24 +46,6 @@ public class ChatController {
         //mu sql 테이블에도 insert
         // /topic/chat/room/{roomId} 에게 전송
 
-        //해당 룸 아이디를 구독하고 있는 유저에게 메세지 알림 전송
-        Set<String> roomMembers = chatService.getRoomMembers(chatMessageDTO.getRoomId());
-        for (String roomMember : roomMembers) {
-            if (!roomMember.equals(member.getEmail())) { // 발신자가 아니라면 ?
-                //roomMember : 알림을 받을 사람
-//                MessageNotificationDTO notificationDTO = MessageNotificationDTO.builder()
-//                        .notificationMessage("새 메세지가 도차했습니다")
-//                        .roomId(chatMessageDTO.getRoomId())
-//                        .timestamp(chatMessageDTO.getSendTime())
-//                        .email(roomMember)
-//                        .isRead(false)
-//                        .build();
-
-                messagingTemplate.convertAndSendToUser(roomMember, "/queue/notification/", chatMessageDTO);
-                log.info("roomMember {} , 알림 수신 완료 ", roomMember);
-            } ///queue 는 1;1 개인 알림 메세지에 사용됨
-            // 프론트 단에서는 /queue/notification/ 앞에 user (roomMember)가 추가됨
-        }
 
     }
 
@@ -99,20 +81,20 @@ public class ChatController {
         return ResponseEntity.ok(newRoom);
     }
 
-    //안읽은 알림 리스트 /history 와 다른점 : isRead 값 false 인걸로 조회
-//    @GetMapping("/notifications")
-//    public ResponseEntity<List<MessageNotificationDTO>> getMessageNotifications(@AuthenticationPrincipal final MemberDTO memberDTO) {
-//        log.info("memberDTO {}", memberDTO);
-//        return ResponseEntity.ok(chatService.getUnreadNotifications(memberDTO.getEmail()));
-//    }
+//    안읽은 알림 리스트 /history 와 다른점 : isRead 값 false 인걸로 조회
+    @GetMapping("/notifications")
+    public ResponseEntity<List<ChatMessageDTO>> getMessageNotifications(@AuthenticationPrincipal final MemberDTO memberDTO) {
+        log.info("memberDTO {}", memberDTO);
+        return ResponseEntity.ok(chatService.getUnreadNotifications(memberDTO.getEmail()));
+    }
 
-    //읽음 상태 바꾸기
-//    @PatchMapping("/{roomId}")
-//    public ResponseEntity<?> changeReadStatus(@AuthenticationPrincipal final MemberDTO memberDTO, @PathVariable Long roomId) {
-//        log.info("notificationId {}", roomId);
-//        chatService.changeRead(memberDTO.getEmail(), roomId);
-//        return ResponseEntity.ok().build();
-//    }
+//    읽음 상태 바꾸기
+    @PatchMapping("/{roomId}")
+    public ResponseEntity<?> changeReadStatus(@AuthenticationPrincipal final MemberDTO memberDTO, @PathVariable Long roomId) {
+        log.info("notificationId {}", roomId);
+        chatService.changeRead(memberDTO.getEmail(), roomId);
+        return ResponseEntity.ok().build();
+    }
 
     //대화방 나가기
     @DeleteMapping("/{roomId}")

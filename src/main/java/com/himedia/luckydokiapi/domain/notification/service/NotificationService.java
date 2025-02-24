@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.notification.service;
 
+import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.notification.dto.NotificationResponseDTO;
@@ -77,6 +78,33 @@ public class NotificationService {
         notificationRepository.save(notification);
         this.fcmNotificationSender(member, title, body, NotificationType.SELLER_APPROVAL);
     }
+
+
+    /**
+     * 새 메세지 알림 전송
+     *
+     * @param targetEmail 알림을 받을 회원 이메일
+     */
+
+    public void sendChattingMessage(String targetEmail, ChatMessageDTO chatMessageDTO) {
+        log.info("sendChattingMessage notification: target targetEmail {}", targetEmail);
+        Member member = memberRepository.findByNickName(targetEmail)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 회원이 없습니다. targetEmail: " + targetEmail));
+        String title = chatMessageDTO.getEmail() + "님 에게 새 메세지가 도착하였습니다!";
+        String body = chatMessageDTO.getMessage();
+
+        Notification notification = Notification.of(
+                NotificationType.NEW_MESSAGE,
+                member,
+                title,
+                body,
+                member.getFcmToken()
+        );
+        notificationRepository.save(notification);
+        this.fcmNotificationSender(member, title, body, NotificationType.NEW_MESSAGE);
+    }
+
+
 
 
     /**

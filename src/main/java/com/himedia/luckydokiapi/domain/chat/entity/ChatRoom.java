@@ -38,9 +38,8 @@ public class ChatRoom {
     private Member member;
 
 
-
     private String shopImage;
 
-
+    private LocalDateTime createdAt;
     private LocalDateTime lastMessageTime;
 }

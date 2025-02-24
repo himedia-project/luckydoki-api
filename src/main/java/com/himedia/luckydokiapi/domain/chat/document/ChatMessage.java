@@ -37,9 +37,9 @@ public class ChatMessage {
     private Long shopId;     // 상품 ID
     private String message;     // 채팅 내용
     private LocalDateTime sendTime;
+    @Builder.Default
+    private boolean isRead = false;
 
-//    @Builder.Default
-//    private Boolean isRead = false; // 읽음 상태
 //    public LocalDateTime getSendTimeAsInstant() {
 //        return this.sendTime.atZone(ZoneOffset.UTC).toInstant();
 //    }

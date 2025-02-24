@@ -34,7 +34,7 @@ public interface ChatService {
     }
 
     //클라이언트에 보낼 채팅 메세지 기록
-    default ChatMessageDTO convertToDTO(ChatMessage chatMessage,String sender) {
+    default ChatMessageDTO convertToDTO(ChatMessage chatMessage, String sender) {
         return ChatMessageDTO.builder()
                 .roomId(chatMessage.getRoomId())
                 .shopId(chatMessage.getShopId())
@@ -42,6 +42,7 @@ public interface ChatService {
                 .email(chatMessage.getEmail())
                 .message(chatMessage.getMessage())
                 .sendTime((chatMessage.getSendTime()))
+                .isRead(chatMessage.isRead())
                 .build();
     }
 
@@ -49,6 +50,7 @@ public interface ChatService {
         return ChatRoom.builder()
                 .id(chatRoomId) //null 이면 자동으로 생성된다
                 .shop(shop)
+                .createdAt(LocalDateTime.now())
                 .member(member)
                 .shopImage(shop.getImage())
                 .lastMessageTime(LocalDateTime.now())
@@ -59,8 +61,10 @@ public interface ChatService {
         return ChatRoomDTO.builder()
                 .id(chatRoom.getId())
                 .sender(sender)
+                //문의를 받은 입장의 셀러의 'shopId'
                 .shopId(chatRoom.getShop().getId())
                 .shopImage(chatRoom.getShopImage())
+                .createdAt(chatRoom.getCreatedAt())
                 .shopName(chatRoom.getShop().getMember().getNickName())
                 .lastMessage(message == null ? null : message)
                 .lastMessageTime(chatRoom.getLastMessageTime())
@@ -68,14 +72,13 @@ public interface ChatService {
     }
 
 
-
     Set<String> getRoomMembers(Long roomId);
 
 
-//    List<MessageNotificationDTO> getUnreadNotifications(String email);
+    List<ChatMessageDTO> getUnreadNotifications(String email);
 
 
-//    void changeRead(String email, Long roomId);
+    void changeRead(String email, Long roomId);
 
     Long deleteChatRoom(String email, Long roomId);
 //    Boolean findChatRoom(String email, Long shopId);

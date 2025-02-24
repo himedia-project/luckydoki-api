@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.mongodb.repository.Update;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -21,19 +22,19 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage, Stri
 
     List<ChatMessage> findByEmail(String email);
 
-//    @Query(value = "{ 'roomId': ?0 }", sort = "{ 'sendTime': -1 }")
-//    Optional<ChatMessage> findLastMessageByRoomId(@Param("roomId") Long roomId);
+    @Query(value = "{ 'roomId': ?0 }", sort = "{ 'sendTime': -1 }")
+    Optional<ChatMessage> findLastMessageByRoomId(@Param("roomId") Long roomId);
 
-//    @Aggregation(pipeline = {
-//            "{ $match: { 'roomId': { $in: ?0 },'isRead': false } }",
-//            "{ $sort: { 'sendTime': -1 } }",
-//            "{ $group: { " +
-//                    "'_id': '$roomId'," +
-//                    "'document': { $first: '$$CURRENT' } " +  // 현재 문서 전체를 가져옴
-//                    "} }",
-//            "{ $replaceRoot: { 'newRoot': '$document' } }"  // 원래 문서 구조로 복원
-//    })
-//    List<ChatMessage> findLastMessagesAndIsReadFalseByRoomIds(@Param("roomIds") List<Long> roomIds);
+    @Aggregation(pipeline = {
+            "{ $match: { 'roomId': { $in: ?0 },'isRead': false } }",
+            "{ $sort: { 'sendTime': -1 } }",
+            "{ $group: { " +
+                    "'_id': '$roomId'," +
+                    "'document': { $first: '$$CURRENT' } " +  // 현재 문서 전체를 가져옴
+                    "} }",
+            "{ $replaceRoot: { 'newRoot': '$document' } }"  // 원래 문서 구조로 복원
+    })
+    List<ChatMessage> findLastMessagesAndIsReadFalseByRoomIds(@Param("roomIds") List<Long> roomIds);
 
 
     @Aggregation(pipeline = {
@@ -48,16 +49,14 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage, Stri
     List<ChatMessage> findLastMessagesByRoomIds(@Param("roomIds") List<Long> roomIds);
 
 
-    List<ChatMessage> findByShopId(Long shopId);
 
+    @Modifying
+    @Query("{ 'roomId': ?0, 'email': ?1 }")  // 조건
+    @Update("{ '$set': { 'isRead': true }}")  // 업데이트 내용
+    void modifyIsRead(Long roomId, String email);
 
-//    @Modifying
-//    @Query("db.messages.update({ 'roomId': ?0, 'email': ?1 }, { '$set': { 'isRead': true }})")
-//    void modifyIsRead(Long roomId, String email);
-
-
-//    @Query(value = "{ 'email': ?0 ,'isRead' : ?1}", sort = "{ 'sendTime': -1 }")
-//    List<ChatMessage> findByMemberAndIsRead(String email, boolean b);
+    @Query(value = "{ 'email': ?0 ,'isRead' : ?1}", sort = "{ 'sendTime': -1 }")
+    List<ChatMessage> findByMemberAndIsRead(String email, boolean b);
 }
 
 

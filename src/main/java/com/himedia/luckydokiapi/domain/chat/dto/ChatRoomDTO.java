@@ -18,9 +18,9 @@ public class ChatRoomDTO {
     private String shopImage;
     private String shopName;
     private String lastMessage;
+    private LocalDateTime createdAt;
 
-
-//    @JsonFormat( pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
+    //    @JsonFormat( pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime lastMessageTime;
 }
 //처음 채팅방이 생성될때 서버에 전달되는 dto
