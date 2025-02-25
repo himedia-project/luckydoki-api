@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.likes.dto;
 import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
 import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import lombok.*;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @Setter
+@Schema(description = "좋아요한 상품 정보 DTO")
 public class LikesProductDTO {
 
     private Long id;

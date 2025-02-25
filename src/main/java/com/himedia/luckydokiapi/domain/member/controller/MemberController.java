@@ -11,6 +11,7 @@ import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import com.himedia.luckydokiapi.util.CookieUtil;
 import com.himedia.luckydokiapi.util.JWTUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +29,16 @@ import static com.himedia.luckydokiapi.util.TimeUtil.checkTime;
 @RestController
 @RequestMapping("/api/member")
 @RequiredArgsConstructor
+@Tag(name = "member - api" , description = "로그인 , 회원가입 , 회원정보 조회 / 수정 / 쿠폰 조회 , 셀러 신청 , 알림 권한 등 member 관련 ")
 public class MemberController {
 
     private final MemberService memberService;
     private final JWTUtil jwtUtil;
     private final JwtProps jwtProps;
     private final CouponService couponService;
+
+
+
 
     @PostMapping("/join")
     public ResponseEntity<?> join(@Valid @RequestBody JoinRequestDTO joinRequestDTO) {

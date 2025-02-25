@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.likes.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @Setter
+@Schema(description = "좋아요한 shop 정보 DTO")
 public class LikesShopDTO {
 
     private Long id;
