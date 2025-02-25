@@ -209,15 +209,6 @@ public class ChatServiceImpl implements ChatService {
     }
 
 
-    private Boolean getSellerAndBuyer(String email) {
-        Member member = this.getMember(email);
-        if (member.getMemberRoleList().contains(SELLER)) {
-            return true; //핀매자
-        } else if (member.getMemberRoleList().contains(USER)) {
-            return false;
-        }//구매자
-        throw new NotAccessChatRoom("채팅 권한이 없습니다");
-    }
 
 
     private Member getMember(String email) {

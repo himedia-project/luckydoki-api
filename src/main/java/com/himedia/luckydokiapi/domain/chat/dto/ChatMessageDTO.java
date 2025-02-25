@@ -14,7 +14,7 @@ import java.time.ZoneOffset;
 @Builder
 public class ChatMessageDTO {
     private Long roomId;
-    private String sender;
+    private String sender;//null
     private String email;
     private Long shopId;
     private String message;

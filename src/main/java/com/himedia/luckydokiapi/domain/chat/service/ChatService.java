@@ -60,6 +60,7 @@ public interface ChatService {
     default ChatRoomDTO convertToChatRoomDTO(ChatRoom chatRoom, String sender, String message) {
         return ChatRoomDTO.builder()
                 .id(chatRoom.getId())
+                //대화 상대방
                 .sender(sender)
                 //문의를 받은 입장의 셀러의 'shopId'
                 .shopId(chatRoom.getShop().getId())

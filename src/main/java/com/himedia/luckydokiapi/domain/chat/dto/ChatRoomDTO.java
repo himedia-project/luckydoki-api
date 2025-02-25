@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ChatRoomDTO {
     private Long id;
-    private String sender; //먼저 보낸사람
+    private String sender;
     private Long shopId;
     private String shopImage;
     private String shopName;
