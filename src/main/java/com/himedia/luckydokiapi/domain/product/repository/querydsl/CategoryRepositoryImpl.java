@@ -1,7 +1,9 @@
 package com.himedia.luckydokiapi.domain.product.repository.querydsl;
 
 import com.himedia.luckydokiapi.domain.product.entity.Category;
+import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.entity.QCategory;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.himedia.luckydokiapi.domain.product.entity.QCategory.category;
+import static com.himedia.luckydokiapi.domain.product.entity.QProduct.product;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,13 +47,16 @@ public class CategoryRepositoryImpl implements CategoryRepositoryCustom {
     }
 
 
-//    @Override
-//    public List<Product> findListByCategory(Long categoryId) {
-//        return queryFactory
-//                .selectFrom(product)
-//                .where(product.category.id.eq(categoryId))
-//                .stream()
-//                .toList();
-//    }
+    @Override
+    public List<Product> findListByCategory(Long categoryId) {
+        return queryFactory
+                .selectFrom(product)
+                .where(
+                        product.category.id.eq(categoryId),
+                        product.approvalStatus.eq(ProductApproval.Y) // 승인된 상품만 조회
+                )
+                .fetch();
+    }
+
 }
 

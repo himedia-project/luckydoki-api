@@ -8,6 +8,7 @@ import com.himedia.luckydokiapi.domain.product.dto.ChildCategoryDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Category;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.repository.CategoryRepository;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -73,9 +74,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     @Override
     public List<ProductDTO.Response> getProductCategoryId(Long categoryId , String email) {
-        List<Product> productList = productRepository.findByProductCategoryId(categoryId);
-        return productList.stream().map(product -> productServiceImpl.entityToDTO(product,productLikeRepository.likes(email, product.getId()))).toList();
-    } // 람다식을 사용하여 각각의 요소들을 전달하여 하나씩 dto 로 변환 후 list 로 수집
+        List<Product> productList = productRepository.findByProductCategoryId(categoryId).stream()
+                .filter(product -> product.getApprovalStatus() == ProductApproval.Y) // 승인된 상품만 반환
+                .toList();
+
+        return productList.stream()
+                .map(product -> productServiceImpl.entityToDTO(product, productLikeRepository.likes(email, product.getId())))
+                .toList();
+    }
+    // 람다식을 사용하여 각각의 요소들을 전달하여 하나씩 dto 로 변환 후 list 로 수집
 
 
     // 해당 카테고리의 부모 카테고리를 조회

@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.product.repository.querydsl;
 
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
 import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
@@ -67,6 +68,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .leftJoin(productTag.tag, tag)
                 .where(
                         product.delFlag.eq(false),
+                        product.approvalStatus.eq(ProductApproval.Y),
                         containsSearchKeyword(requestDTO.getSearchKeyword()),
                         eqCategoryId(requestDTO.getCategoryId()),
                         eqIsNew(requestDTO.getIsNew()),

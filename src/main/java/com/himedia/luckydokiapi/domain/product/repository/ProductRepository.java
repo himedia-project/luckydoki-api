@@ -24,8 +24,9 @@ public interface ProductRepository extends JpaRepository<Product, Long>
     @Query("update Product p set p.delFlag = true where p.id = :id")
     void modifyDeleteFlag(@Param("id") Long id);
 
-    @Query("select p from Product p where p.delFlag = false and p.shop.id = :shopId")
+    @Query("select p from Product p where p.delFlag = false and p.approvalStatus = 'Y' and p.shop.id = :shopId")
     List<Product> findByShopId(@Param("shopId") Long shopId);
+
 
 
     @Query("SELECT p FROM Product p WHERE p.approvalStatus = :status")
