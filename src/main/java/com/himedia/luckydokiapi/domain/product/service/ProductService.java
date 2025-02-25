@@ -30,7 +30,6 @@ public interface ProductService {
 
     void deleteProductById(Long productId);
 
-
     List<ProductDTO.Response> recommendList(ProductDTO.Request request, String email);
 
     default Product dtoToEntity(ProductDTO.Request dto, Category category, Shop shop) {
