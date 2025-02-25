@@ -74,20 +74,6 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
 
-    @Override
-    public void approveProduct(Long id) {
-        Product product = getEntity(id);
-
-        if (product.getApprovalStatus() == ProductApproval.Y) {
-            throw new IllegalStateException("이미 승인된 상품입니다.");
-        }
-
-        product.setApprovalStatus(ProductApproval.Y); // 승인 완료 상태로 변경
-        productRepository.save(product);
-    }
-
-
-
     //admin 프로덕트 확인용
     @Transactional(readOnly = true)
     @Override
@@ -227,12 +213,12 @@ public class AdminProductServiceImpl implements AdminProductService {
         Product product = this.getEntity(id);
 
         // 만약 이벤트 상품이라면 삭제 불가
-        if(product.getEvent() == ProductEvent.Y){
+        if (product.getEvent() == ProductEvent.Y) {
             throw new IllegalStateException("이벤트 상품은 삭제할 수 없습니다.");
         }
 
         // 만약 주문된 이력이 있는 상품이라면 삭제 불가
-        if(orderService.checkProductOrder(product)){
+        if (orderService.checkProductOrder(product)) {
             throw new IllegalStateException("주문된 상품은 삭제할 수 없습니다.");
         }
 
@@ -267,15 +253,26 @@ public class AdminProductServiceImpl implements AdminProductService {
         idList.forEach(this::changeEnumIsNew);
     }
 
-//enums 값 변경
 
+    @Override
+    public void approveProduct(List<Long> productIdList) {
+        List<Product> idList = productRepository.findByIdList(productIdList);
+        idList.forEach(this::changeApproval);
+    }
+
+
+    //enums 값 변경
     public void changeEnumBest(Product product) {
         product.changeBest(product.getBest().equals(Y) ? N : Y);
     }
 
 
     public void changeEnumIsNew(Product product) {
-product.changeIsNew(product.getIsNew().equals(ProductIsNew.Y)?ProductIsNew.N:ProductIsNew.Y);
+        product.changeIsNew(product.getIsNew().equals(ProductIsNew.Y) ? ProductIsNew.N : ProductIsNew.Y);
+    }
+
+    public void changeApproval(Product product) {
+        product.changeApprovalStatus(product.getApprovalStatus().equals(ProductApproval.Y) ? ProductApproval.N : ProductApproval.Y);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.dto;
 
 
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
 import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
@@ -39,4 +40,6 @@ public class ProductSearchDTO extends PageRequestDTO {
     private List<Long> excludeIdList;     // 해당 상품 제외 pk
 
     private Long tagId; // 태그 pk
+
+    private ProductApproval approvalStatus; // 상품 승인 여부
 }

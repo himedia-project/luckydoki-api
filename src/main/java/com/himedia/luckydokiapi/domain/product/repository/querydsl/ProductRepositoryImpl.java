@@ -68,12 +68,12 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .leftJoin(productTag.tag, tag)
                 .where(
                         product.delFlag.eq(false),
-                        product.approvalStatus.eq(ProductApproval.Y),
                         containsSearchKeyword(requestDTO.getSearchKeyword()),
                         eqCategoryId(requestDTO.getCategoryId()),
                         eqIsNew(requestDTO.getIsNew()),
                         eqBest(requestDTO.getBest()),
                         eqEvent(requestDTO.getEvent()),
+                        eqApproval(requestDTO.getApprovalStatus()),
                         eqShopId(requestDTO.getShopId()),
                         betweenPrice(requestDTO.getMinPrice(), requestDTO.getMaxPrice())
                 )
@@ -100,6 +100,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         eqIsNew(requestDTO.getIsNew()),
                         eqBest(requestDTO.getBest()),
                         eqEvent(requestDTO.getEvent()),
+                        eqApproval(requestDTO.getApprovalStatus()),
                         eqShopId(requestDTO.getShopId()),
                         betweenPrice(requestDTO.getMinPrice(), requestDTO.getMaxPrice())
                 )
@@ -108,6 +109,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
     }
+
 
     //새로 추가된 옵션들도  (enums ) 검색 옵ㄱ션추가
     //member 용
@@ -350,6 +352,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
             return null;
         }
         return product.event.eq(event);
+    }
+
+    private BooleanExpression eqApproval(ProductApproval approval) {
+        if (approval == null) {
+            return null;
+        }
+        return product.approvalStatus.eq(approval);
     }
 
     private BooleanExpression eqShopId(Long shopId) {

@@ -89,11 +89,11 @@ public class AdminProductController {
 
 
     // 승인
-    @PutMapping("/approve/{id}")
-    public ResponseEntity<String> approveProduct(@PathVariable Long id) {
-        log.info("approveProduct: {}", id);
-        productService.approveProduct(id);
-        return ResponseEntity.ok("상품 승인 완료. productId: " + id);
+    @PutMapping("/approve")
+    public ResponseEntity<String> approveProduct(@RequestBody ModifyProductIdsDTO requestDTO) {
+        log.info("approveProduct requestDTO: {}", requestDTO);
+        productService.approveProduct(requestDTO.getProductIds());
+        return ResponseEntity.ok("상품 승인 완료. productId: " + requestDTO.getProductIds());
     }
 
     // 승인신청 목록 조회

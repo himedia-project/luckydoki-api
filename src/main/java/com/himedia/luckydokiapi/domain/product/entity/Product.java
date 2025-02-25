@@ -343,4 +343,8 @@ public class Product extends BaseEntity {
         return this.productTagList.stream()
                 .map(productTag -> TagDTO.from(productTag.getTag())).toList();
     }
+
+    public void changeApprovalStatus(ProductApproval productApproval) {
+        this.approvalStatus = productApproval;
+    }
 }
