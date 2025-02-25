@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
+import com.himedia.luckydokiapi.domain.notification.service.NotificationService;
 import com.himedia.luckydokiapi.domain.order.service.OrderService;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
@@ -47,6 +48,8 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final ProductService productService;
     private final ReviewService reviewService;
     private final OrderService orderService;
+
+    private final NotificationService notificationService;
 
 
     @Transactional(readOnly = true)
@@ -277,6 +280,9 @@ public class AdminProductServiceImpl implements AdminProductService {
     public void approveProduct(List<Long> productIdList) {
         List<Product> idList = productRepository.findByIdList(productIdList);
         idList.forEach(this::changeApproval);
+
+        // send notification
+        notificationService.sendProductApprovalNotification(idList);
     }
 
 
