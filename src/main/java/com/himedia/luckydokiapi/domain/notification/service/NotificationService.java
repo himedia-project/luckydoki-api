@@ -7,6 +7,7 @@ import com.himedia.luckydokiapi.domain.notification.dto.NotificationResponseDTO;
 import com.himedia.luckydokiapi.domain.notification.entity.Notification;
 import com.himedia.luckydokiapi.domain.notification.enums.NotificationType;
 import com.himedia.luckydokiapi.domain.notification.repository.NotificationRepository;
+import com.himedia.luckydokiapi.domain.product.entity.Product;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -108,6 +109,28 @@ public class NotificationService {
 
 
     /**
+     * 상품 승인 알림 전송
+     * @param idList 알림을 받을 상품 ID 목록
+     */
+    public void sendProductApprovalNotification(List<Product> idList) {
+        for (Product product : idList) {
+            Member member = product.getShop().getMember();
+            String title = "상품 승인";
+            String body = "상품 승인이 완료되었습니다.";
+            Notification notification = Notification.of(
+                    NotificationType.PRODUCT_APPROVAL,
+                    member,
+                    title,
+                    body,
+                    member.getFcmToken()
+            );
+            notificationRepository.save(notification);
+            this.fcmNotificationSender(member, title, body, NotificationType.PRODUCT_APPROVAL);
+        }
+    }
+
+
+    /**
      * 알림 목록 조회
      * @param targetEmail 알림을 받을 회원 이메일
      * @return 알림 목록
@@ -141,8 +164,5 @@ public class NotificationService {
         }
         log.info("sendSellerApprovalNotification 서비스 end");
     }
-
-
-
 
 }

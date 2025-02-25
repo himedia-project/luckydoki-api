@@ -54,6 +54,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers(new AntPathRequestMatcher("/api/email/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/phone/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/shop/**")).permitAll()
                         // /api/admin/join, /api/admin/login,logout 모두 접근 가능

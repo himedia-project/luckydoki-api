@@ -48,6 +48,20 @@ spring:
 #      data-locations: classpath:sql/data.sql # ddl-auto가 create, create-drop, update일 경우에만 해당, validate/none일 경우 무시됨
 #      mode: always # SQL 초기화 모드 (always, never, embedded, embedded-always)
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: yhome3@gmail.com
+    password: spha mpem idfp uxpf
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.trust: smtp.gmail.com
+
+
+
+
+
 app:
   props:
     social:

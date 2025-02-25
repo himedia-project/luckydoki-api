@@ -38,7 +38,7 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
 						Sort.by("id").ascending() : Sort.by("id").descending()
 		);
 
-		List<Event> list = queryFactory
+	List<Event> list = queryFactory
 				.selectFrom(event)
 				.leftJoin(event.eventBridgeList, eventBridge)
 				.where(
@@ -57,6 +57,7 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
 				);
 
 		return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+
 	}
 
 
@@ -65,7 +66,7 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
 		// KST 시간으로 변경
 //		LocalDateTime kstNow = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		LocalDate kstNow = LocalDate.now(ZoneId.of("Asia/Seoul"));
-		
+
 		return queryFactory
 				.selectFrom(event)
 				.where(
@@ -73,7 +74,8 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
 						event.endAt.goe(kstNow)
 				)
 				.fetch();
-	}
+
+}
 
 
 	private BooleanExpression containsSearchKeyword(String searchKeyword) {

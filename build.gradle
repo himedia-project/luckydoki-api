@@ -86,9 +86,13 @@ dependencies {
     // selenium
     implementation 'org.seleniumhq.selenium:selenium-java:4.25.0'
 
-
     // Firebase Admin SDK
     implementation 'com.google.firebase:firebase-admin:9.2.0'
+
+    // SMTP
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.eclipse.angus:jakarta.mail:1.0.0'
 
 
     //mongodb

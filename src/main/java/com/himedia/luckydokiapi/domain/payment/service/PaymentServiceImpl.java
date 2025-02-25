@@ -5,6 +5,7 @@ import com.himedia.luckydokiapi.domain.cart.entity.Cart;
 import com.himedia.luckydokiapi.domain.cart.repository.CartRepository;
 import com.himedia.luckydokiapi.domain.cart.service.CartService;
 import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
+import com.himedia.luckydokiapi.domain.email.service.EmailService;
 import com.himedia.luckydokiapi.domain.order.entity.Order;
 import com.himedia.luckydokiapi.domain.order.service.OrderService;
 import com.himedia.luckydokiapi.domain.payment.dto.PaymentCancelDTO;
@@ -36,6 +37,7 @@ import java.util.Objects;
 public class PaymentServiceImpl implements PaymentService {
 
     private final CartService cartService;
+    private final EmailService emailService;
     @Value("${toss.secret-key}")
     private String secretKey;
 
@@ -50,6 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final CouponService couponService;
 
     private final CartRepository cartRepository;
+
 
     @Override
     public void preparePayment(PaymentPrepareDTO dto) {
@@ -76,13 +79,76 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
+//    @Override
+//    public PaymentResponseDTO confirmPayment(String paymentKey, String orderId, Long amount) {
+//        log.info("PaymentService confirmPayment... paymentKey: {}, orderId: {}, amount: {}",
+//                paymentKey, orderId, amount);
+//        // 시크릿 키를 Base64로 인코딩
+//        String encodedSecretKey = Base64.getEncoder().encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8));
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set("Authorization", "Basic " + encodedSecretKey);
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("paymentKey", paymentKey);
+//        params.put("orderId", orderId);
+//        params.put("amount", amount);
+//
+//        HttpEntity<Map<String, Object>> request = new HttpEntity<>(params, headers);
+//
+//        // URL 변경
+//        String confirmUrl = TOSS_URL + "/payments/confirm";
+//
+//        log.info("Toss Payment API request URL: {}", confirmUrl);
+//        log.info("Toss Payment API request headers: {}", headers);
+//        log.info("Toss Payment API request body: {}", params);
+//
+//        try {
+//            ResponseEntity<PaymentResponseDTO> response = restTemplate.postForEntity(
+//                    confirmUrl,
+//                    request,
+//                    PaymentResponseDTO.class
+//            );
+//
+//            // 성공 시에만 DB 업데이트
+//            if (response.getStatusCode() == HttpStatus.OK) {
+//                Payment payment = getPayment(orderId);
+//                payment.setPaymentKey(paymentKey);
+//                payment.setStatus(PaymentStatus.DONE);
+//                payment.setMethod(Objects.requireNonNull(response.getBody()).getMethod());
+//                payment.setRequestedAt(Objects.requireNonNull(response.getBody()).getRequestedAt().toLocalDateTime());
+//                payment.setApprovedAt(Objects.requireNonNull(response.getBody()).getApprovedAt().toLocalDateTime());
+//                paymentRepository.save(payment);
+//
+//                // 주문상태, 결제완료 처리
+//                Order order = orderService.getEntityByCode(orderId);
+//
+//                order.changeStatusToConfirm();
+//                // 쿠폰 사용시, 쿠폰 사용 처리
+//                if (order.getCoupon() != null) {
+//                    couponService.useCoupon(order.getMember().getEmail(), order.getCoupon());
+//                }
+//                // 장바구니 상품 삭제
+//                cartRepository.getCartOfMember(order.getMember().getEmail()).ifPresent(cart -> {
+//                    orderService.removeCartItemsMatchedOrderItemsBy(cart, order.getOrderItems());
+//                });
+//                log.info("Payment confirmation successful: {}", response.getBody());
+//            }
+//
+//            return response.getBody();
+//        } catch (RestClientException e) {
+//            log.error("Payment confirmation failed", e);
+//            throw new RuntimeException("결제 승인 중 오류가 발생했습니다: " + e.getMessage());
+//        }
+//    }
+
     @Override
     public PaymentResponseDTO confirmPayment(String paymentKey, String orderId, Long amount) {
-        log.info("PaymentService confirmPayment... paymentKey: {}, orderId: {}, amount: {}",
-                paymentKey, orderId, amount);
-        // 시크릿 키를 Base64로 인코딩
-        String encodedSecretKey = Base64.getEncoder().encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8));
+        log.info("PaymentService confirmPayment... paymentKey: {}, orderId: {}, amount: {}", paymentKey, orderId, amount);
 
+        // Toss Payments API 요청 및 결제 확인
+        String encodedSecretKey = Base64.getEncoder().encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8));
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Basic " + encodedSecretKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -93,22 +159,12 @@ public class PaymentServiceImpl implements PaymentService {
         params.put("amount", amount);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(params, headers);
-
-        // URL 변경
         String confirmUrl = TOSS_URL + "/payments/confirm";
-
-        log.info("Toss Payment API request URL: {}", confirmUrl);
-        log.info("Toss Payment API request headers: {}", headers);
-        log.info("Toss Payment API request body: {}", params);
 
         try {
             ResponseEntity<PaymentResponseDTO> response = restTemplate.postForEntity(
-                    confirmUrl,
-                    request,
-                    PaymentResponseDTO.class
-            );
+                    confirmUrl, request, PaymentResponseDTO.class);
 
-            // 성공 시에만 DB 업데이트
             if (response.getStatusCode() == HttpStatus.OK) {
                 Payment payment = getPayment(orderId);
                 payment.setPaymentKey(paymentKey);
@@ -118,27 +174,36 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.setApprovedAt(Objects.requireNonNull(response.getBody()).getApprovedAt().toLocalDateTime());
                 paymentRepository.save(payment);
 
-                // 주문상태, 결제완료 처리
+                // 주문 상태 변경
                 Order order = orderService.getEntityByCode(orderId);
-
                 order.changeStatusToConfirm();
-                // 쿠폰 사용시, 쿠폰 사용 처리
+
+                // 쿠폰 사용 처리
                 if (order.getCoupon() != null) {
                     couponService.useCoupon(order.getMember().getEmail(), order.getCoupon());
                 }
-                // 장바구니 상품 삭제
+
+                // 장바구니 비우기
                 cartRepository.getCartOfMember(order.getMember().getEmail()).ifPresent(cart -> {
                     orderService.removeCartItemsMatchedOrderItemsBy(cart, order.getOrderItems());
                 });
-                log.info("Payment confirmation successful: {}", response.getBody());
+
+                log.info(" 결제 확인 성공: {}", response.getBody());
+
+                //  결제 성공 후 이메일 전송
+                String userEmail = order.getMember().getEmail();
+                emailService.sendPaymentConfirmation(userEmail, orderId, amount.toString());
+
+                return response.getBody();
             }
 
-            return response.getBody();
         } catch (RestClientException e) {
-            log.error("Payment confirmation failed", e);
-            throw new RuntimeException("결제 승인 중 오류가 발생했습니다: " + e.getMessage());
+            log.error(" 결제 승인 실패", e);
+            throw new RuntimeException("결제 승인 중 오류 발생: " + e.getMessage());
         }
+        return null;
     }
+
 
     @Override
     public PaymentResponseDTO cancelPayment(String orderId, PaymentCancelDTO cancelDTO) {
