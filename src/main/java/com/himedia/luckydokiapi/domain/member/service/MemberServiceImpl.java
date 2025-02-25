@@ -170,10 +170,26 @@ public class MemberServiceImpl implements MemberService {
         if (request.getPhone() != null && !request.getPhone().isEmpty()) {
             member.updatePhone(request.getPhone());
         }
-        memberRepository.save(member);
+
+        // 기존의 파일 무조건 있음 (데이터베이스에 존재하는 파일들 - 수정 과정에서 삭제되었을 수 있음)
+        String oldImageName = member.getProfileImage();
+
+        // 새로 업로드해야 하는 파일
+        // 화면에서 변화 없이 계속 유지될 파일
+        String uploadedImageName = oldImageName;
+
+        // 새로 업로드된 파일이 있으면(이미지를 바꿧으면)
+        if (request.getProfileImage() != null && !request.getProfileImage().isEmpty()) {
+            uploadedImageName = fileUtil.uploadToThumbnailS3File(request.getProfileImage());
+            // 기존 파일 삭제
+            fileUtil.deleteS3File(oldImageName);
+        }
+
+        member.changeProfileImage(uploadedImageName);
 
         return MemberDetailDTO.builder()
                 .email(member.getEmail())
+                .profileImage(member.getProfileImage())
                 .nickName(member.getNickName())
                 .phone(member.getPhone())
                 .build();

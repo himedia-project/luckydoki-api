@@ -142,7 +142,7 @@ public class MemberController {
     @PutMapping("/me")
     public MemberDetailDTO updateMyInfo(
             @AuthenticationPrincipal MemberDTO member,
-            @RequestBody UpdateMemberDTO request) {
+            UpdateMemberDTO request) {
         return memberService.updateMyInfo(member.getEmail(), request);
     }
 

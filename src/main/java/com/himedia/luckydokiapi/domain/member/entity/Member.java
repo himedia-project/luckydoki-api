@@ -215,5 +215,9 @@ public class Member extends BaseEntity {
     public Long getReviewCount() {
         return (long) reviewList.size();
     }
+
+    public void changeProfileImage(String uploadedImageName) {
+        this.profileImage = uploadedImageName;
+    }
 }
 
