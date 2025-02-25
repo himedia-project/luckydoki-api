@@ -11,8 +11,6 @@ import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.enums.ShopApproved;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
-import com.himedia.luckydokiapi.domain.notification.enums.NotificationType;
-import com.himedia.luckydokiapi.domain.notification.service.NotificationService;
 import com.himedia.luckydokiapi.domain.phone.service.PhoneVerificationService;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
@@ -179,8 +177,8 @@ public class MemberServiceImpl implements MemberService {
         String uploadedImageName = oldImageName;
 
         // 새로 업로드된 파일이 있으면(이미지를 바꿧으면)
-        if (request.getProfileImage() != null && !request.getProfileImage().isEmpty()) {
-            uploadedImageName = fileUtil.uploadToThumbnailS3File(request.getProfileImage());
+        if (request.getFile() != null && !request.getFile().isEmpty()) {
+            uploadedImageName = fileUtil.uploadToThumbnailS3File(request.getFile());
             // 기존 파일 삭제
             fileUtil.deleteS3File(oldImageName);
         }

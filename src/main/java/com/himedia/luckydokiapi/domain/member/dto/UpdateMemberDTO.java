@@ -13,5 +13,5 @@ public class UpdateMemberDTO {
     private String nickName;
     private String phone;
 
-    private MultipartFile profileImage; // 업로드할 파일
+    private MultipartFile file; // 업로드할 파일
 }
