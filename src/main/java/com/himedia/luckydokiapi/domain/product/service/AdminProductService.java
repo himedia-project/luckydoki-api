@@ -27,6 +27,7 @@ public interface AdminProductService {
 
     void approveProduct(Long id);
 
+    void approveProductAll(List<Long> productIds);
 
     List<ProductDTO.Response> getProductsByApprovalStatus(ProductApproval status);
 

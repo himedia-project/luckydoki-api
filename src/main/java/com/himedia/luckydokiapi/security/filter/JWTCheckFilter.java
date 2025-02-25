@@ -111,6 +111,12 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return true;
         }
 
+        // 이메일 경로 제외
+        if (path.startsWith("/api/email/send")) {
+            return true;
+        }
+
+
         return false;
     }
 

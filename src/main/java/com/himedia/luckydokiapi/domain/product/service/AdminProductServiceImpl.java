@@ -86,6 +86,23 @@ public class AdminProductServiceImpl implements AdminProductService {
         productRepository.save(product);
     }
 
+    @Override
+    @Transactional
+    public void approveProductAll(List<Long> productIds) {
+        List<Product> products = productRepository.findAllById(productIds);
+
+        for (Product product : products) {
+            if (product.getApprovalStatus() == ProductApproval.Y) {
+                log.info("이미 승인된 상품입니다. productId: {}", product.getId());
+                continue;
+            }
+            product.setApprovalStatus(ProductApproval.Y); // 승인 완료 상태로 변경
+        }
+
+        productRepository.saveAll(products);
+    }
+
+
 
 
     //admin 프로덕트 확인용

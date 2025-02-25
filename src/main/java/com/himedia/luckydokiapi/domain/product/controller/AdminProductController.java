@@ -87,6 +87,14 @@ public class AdminProductController {
         return ResponseEntity.ok("변경 완료 productIds: " + modifyProductIdsDTO.getProductIds());
     }
 
+    @PutMapping("/approve/all")
+    public ResponseEntity<String> approveProductAll(@RequestBody ModifyProductIdsDTO modifyProductIdsDTO) {
+        log.info("approveProducts: {}", modifyProductIdsDTO);
+        productService.approveProductAll(modifyProductIdsDTO.getProductIds());
+        return ResponseEntity.ok("상품 승인 완료. productIds: " + modifyProductIdsDTO.getProductIds());
+    }
+
+
 
     // 승인
     @PutMapping("/approve/{id}")
