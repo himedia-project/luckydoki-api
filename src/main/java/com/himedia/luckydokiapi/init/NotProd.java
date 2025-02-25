@@ -35,6 +35,11 @@ public class NotProd {
 
     private final CouponService couponService;
 
+    private static final String USER_DEFAULT_IMAGE = "s_2b3b4d26-7b17-4426-90d7-310976988d2e-luckydoki_favicon.png";
+    private static final String SELLER_DEFAULT_IMAGE = "s_0e2a0946-c412-4ffd-8946-55bb445e6de3-seller.jpg";
+    private static final String ADMIN_DEFAULT_IMAGE = "s_9cf57701-3cf0-4b66-9479-6e32779363ff-티모.jpg";
+
+
 
     @Bean
     public CommandLineRunner init() {
@@ -63,7 +68,7 @@ public class NotProd {
                     Member user = Member.builder()
                             .email("user" + i + "@test.com")
                             .nickName("user" + i)
-                            .profileImage("s_3f0b0873-b2e5-48d0-94e1-f72e5b9c75a5-luckydoki_favicon.png")
+                            .profileImage(USER_DEFAULT_IMAGE)
                             .password(passwordEncoder.encode("1234"))
                             .phone("010-1234-5678")
                             .active(MemberActive.Y)
@@ -78,7 +83,7 @@ public class NotProd {
                     Member seller = Member.builder()
                             .email("seller" + i + "@test.com")
                             .nickName("seller" + i)
-                            .profileImage("s_3f0b0873-b2e5-48d0-94e1-f72e5b9c75a5-luckydoki_favicon.png")
+                            .profileImage(SELLER_DEFAULT_IMAGE)
                             .password(passwordEncoder.encode("1234"))
                             .phone("010-1234-5678")
                             .active(MemberActive.Y)
@@ -92,7 +97,7 @@ public class NotProd {
                 Member admin = Member.builder()
                         .email("admin@test.com")
                         .nickName("admin")
-                        .profileImage("s_3f0b0873-b2e5-48d0-94e1-f72e5b9c75a5-luckydoki_favicon.png")
+                        .profileImage(ADMIN_DEFAULT_IMAGE)
                         .password(passwordEncoder.encode("1234"))
                         .phone("010-1234-5678")
                         .active(MemberActive.Y)
@@ -110,7 +115,7 @@ public class NotProd {
                 for (int i = 1; i <= 10; i++) {
                     Shop shop = Shop.builder()
                             .member(memberRepository.findByEmail("seller" + i + "@test.com").get())
-                            .image("s_3f00c99b-5252-4393-93f0-faf94cd999c7-seller.jpg")
+                            .image(SELLER_DEFAULT_IMAGE)
                             .introduction("seller" +i + "의 세상에 오신 걸 환영합니다!")
                             .build();
                     shops.add(shop);
