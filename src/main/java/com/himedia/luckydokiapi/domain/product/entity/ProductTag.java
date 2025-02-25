@@ -22,6 +22,8 @@ public class ProductTag {
     @JoinColumn(name = "product_id")
     private Product product;
 
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private Tag tag;

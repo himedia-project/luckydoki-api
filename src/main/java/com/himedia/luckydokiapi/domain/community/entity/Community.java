@@ -1,7 +1,9 @@
 package com.himedia.luckydokiapi.domain.community.entity;
 
 import com.himedia.luckydokiapi.domain.member.entity.Member;
+import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
 import com.himedia.luckydokiapi.domain.product.entity.ProductImage;
+import com.himedia.luckydokiapi.domain.product.entity.ProductTag;
 import com.himedia.luckydokiapi.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,6 +46,11 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Comment> commentList = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CommunityTag> communityTagList = new ArrayList<>();
 
     /**
      * 커뮤니티 게시글 이미지, 커뮤니티에 추가
@@ -98,5 +105,11 @@ public class Community extends BaseEntity { // 커뮤니티 게시글
      */
     public int getCommentCount() {
         return commentList.size();
+    }
+
+
+    public List<TagDTO> getTagList() {
+        return this.communityTagList.stream()
+                .map(communityTag -> TagDTO.from(communityTag.getTag())).toList();
     }
 }

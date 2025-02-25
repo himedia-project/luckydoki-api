@@ -6,13 +6,17 @@ import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.community.entity.CommunityImage;
 import com.himedia.luckydokiapi.domain.community.entity.CommunityProduct;
+import com.himedia.luckydokiapi.domain.community.entity.CommunityTag;
 import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
+import com.himedia.luckydokiapi.domain.community.repository.CommunityTagRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
+import com.himedia.luckydokiapi.domain.product.entity.Tag;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
+import com.himedia.luckydokiapi.domain.product.repository.TagRepository;
 import com.himedia.luckydokiapi.domain.shop.dto.ShopCommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
@@ -40,6 +44,8 @@ public class CommunityServiceImpl implements CommunityService {
     private final CustomFileUtil fileUtil;
     private final ShopRepository shopRepository;
     private final MemberService memberService;
+    private final TagRepository tagRepository;
+    private final CommunityTagRepository communityTagRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -109,12 +115,35 @@ public class CommunityServiceImpl implements CommunityService {
             });
             // 가져온 상품 리스트로 CommunityProduct 생성
             requestProducts.forEach(product ->
-                            newCommunity.addProduct(CommunityProduct.from(newCommunity, product)));
+                    newCommunity.addProduct(CommunityProduct.from(newCommunity, product)));
+        }
+
+        Community result = communityRepository.save(newCommunity);
+
+
+        if (request.getTagStrList() != null) {
+            request.getTagStrList().forEach(tagStr -> {
+                String tagName = tagStr.trim();
+                log.info("tagName: {}", tagName);
+                Tag newTag = null;
+                if (tagRepository.existsByName(tagName)) {
+                    log.info("이미 존재하는 태그입니다");
+                    newTag = tagRepository.findByName(tagName);
+                } else {
+                    log.info("새로운 태그 등록 newTag ={}", newTag);
+                    newTag = tagRepository.save(Tag.from(tagStr));
+                }
+                communityTagRepository.save(CommunityTag.from(newTag, result));
+            });
+            //tag 가 null 일 경우
+        } else {
+            log.info("등록돤 태그가 없습니다");
+            return result.getId();
         }
 
         log.info("newCommunity: {}", newCommunity);
 
-        Community result = communityRepository.save(newCommunity);
+
         return result.getId();
     }
 
@@ -203,10 +232,9 @@ public class CommunityServiceImpl implements CommunityService {
                 .map(CommunityImage::getImageName)
                 .collect(Collectors.toList());
         fileUtil.deleteS3Files(deleteImages);
-
+        communityTagRepository.deleteByCommunity(community);
         communityRepository.delete(community);
     }
-
 
 
 }

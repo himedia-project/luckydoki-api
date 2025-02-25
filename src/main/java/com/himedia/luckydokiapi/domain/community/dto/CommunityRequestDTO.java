@@ -33,4 +33,6 @@ public class CommunityRequestDTO {
     @Builder.Default
     private List<MultipartFile> files = new ArrayList<>();
 
+    private List<String> tagStrList;
+
 }
