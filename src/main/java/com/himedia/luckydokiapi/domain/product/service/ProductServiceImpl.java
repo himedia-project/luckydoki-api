@@ -8,6 +8,7 @@ import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.repository.*;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
@@ -22,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.himedia.luckydokiapi.domain.product.entity.QProduct.product;
 
 
 @Slf4j
@@ -46,6 +49,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO.Response getProduct(Long id, String email) {
         Product product = getEntity(id);
+
+        // 승인되지 않은 상품이면 예외 발생
+        if (product.getApprovalStatus() != ProductApproval.Y) {
+            throw new EntityNotFoundException("승인되지 않은 상품입니다. id: " + id);
+        }
+
         boolean likes = (email != null) && productLikeRepository.likes(email, product.getId());
         return this.entityToDTO(product, likes);
     }
@@ -54,14 +63,22 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     @Override
     public Product getEntity(Long id) {
-        return productRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 상품이 존재하지 않습니다. id: " + id));
+
+        // 승인되지 않은 상품이면 예외 발생
+        if (product.getApprovalStatus() != ProductApproval.Y) {
+            throw new EntityNotFoundException("승인되지 않은 상품입니다. id: " + id);
+        }
+
+        return product;
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<ProductDTO.Response> list(ProductSearchDTO requestDTO, String email) {
         List<ProductDTO.Response> productList = productRepository.findByDTO(requestDTO).stream()
+                .filter(product -> product.getApprovalStatus() == ProductApproval.Y) // 승인된 상품만 필터링
                 .map(product -> {
                     boolean likes = (email != null) && productLikeRepository.likes(email, product.getId());
                     return this.entityToDTO(product, likes);
@@ -69,6 +86,7 @@ public class ProductServiceImpl implements ProductService {
 
         return productList;
     }
+
 
     @Transactional(readOnly = true)
     @Override
@@ -84,12 +102,14 @@ public class ProductServiceImpl implements ProductService {
                 }).collect(Collectors.toList());
     }
 
-    //member 의 본인이 올린  상품 리스트 확인
+    //셀러가 올린 상품 리스트 확인
     @Transactional(readOnly = true)
     @Override
     public List<ProductDTO.Response> getListByMember(String email) {
         Member member = getMember(email);
-        List<Product> productList = productRepository.findProductByShopMemberEmail(member.getEmail());
+        List<Product> productList = productRepository.findProductByShopMemberEmail(member.getEmail()).stream()
+                .filter(product -> product.getApprovalStatus() == ProductApproval.Y) // 승인된 상품만 필터링
+                .toList();
 
         return productList.stream()
                 .map(product -> this.entityToDTO(
@@ -123,6 +143,8 @@ public class ProductServiceImpl implements ProductService {
         Category category = this.getCategory(dto.getCategoryId());
         Shop shop = this.getShopMemberEmail(member.getEmail());
         Product newProduct = this.dtoToEntity(dto, category, shop);
+
+        newProduct.setApprovalStatus(ProductApproval.N);
 
         log.info("newProduct: {}", newProduct);
 
@@ -274,18 +296,19 @@ public class ProductServiceImpl implements ProductService {
         productRepository.modifyDeleteFlag(productId);
 //row 가 삭제되는게 아니라 deflag 가 바뀐다
     }
-
     @Transactional(readOnly = true)
     @Override
     public List<ProductDTO.Response> recommendList(ProductDTO.Request request, String email) {
-
-        List<Product> productList = productRepository.findRecommendFirstExtractList(email).stream().toList();
+        List<Product> productList = productRepository.findRecommendFirstExtractList(email).stream()
+                .filter(product -> product.getApprovalStatus() == ProductApproval.Y) // 승인된 상품만 필터링
+                .toList();
 
         return productList.stream()
                 .map(product -> this.entityToDTO(product, productLikeRepository.likes(email, product.getId())))
                 .toList();
-
     }
+
+
 
     @Override
     public void validateProductCount(Long id, Integer count) {

@@ -4,6 +4,7 @@ package com.himedia.luckydokiapi.domain.product.service;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 
 
@@ -24,6 +25,10 @@ public interface AdminProductService {
 
     void remove(Long id);
 
+    void approveProduct(Long id);
+
+
+    List<ProductDTO.Response> getProductsByApprovalStatus(ProductApproval status);
 
     default ProductDTO.Request entityToReqDTO(Product product) {
         ProductDTO.Request request = ProductDTO.Request.builder()

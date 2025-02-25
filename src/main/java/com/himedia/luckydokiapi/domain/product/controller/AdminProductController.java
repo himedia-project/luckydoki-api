@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.product.controller;
 import com.himedia.luckydokiapi.domain.product.dto.ModifyProductIdsDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.service.AdminProductService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
@@ -12,11 +13,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/product")
+    @RequestMapping("/api/admin/product")
 @RequiredArgsConstructor
 public class AdminProductController {
 
@@ -86,5 +88,22 @@ public class AdminProductController {
     }
 
 
-    //TODO : member 권한 변경 (seller)  + 상품 노출 display , approval  변경 -> 찬엽이가 만들기 ㅎㅎ
+    // 승인
+    @PutMapping("/approve/{id}")
+    public ResponseEntity<String> approveProduct(@PathVariable Long id) {
+        log.info("approveProduct: {}", id);
+        productService.approveProduct(id);
+        return ResponseEntity.ok("상품 승인 완료. productId: " + id);
+    }
+
+    // 승인신청 목록 조회
+    @GetMapping("/approve/list")
+    public ResponseEntity<List<ProductDTO.Response>> getProductsByApprovalStatus(
+            @RequestParam(required = false, defaultValue = "N") String status) {
+        log.info("getProductsByApprovalStatus: {}", status);
+        List<ProductDTO.Response> products = productService.getProductsByApprovalStatus(ProductApproval.valueOf(status));
+        return ResponseEntity.ok(products);
+    }
+
+
 }
