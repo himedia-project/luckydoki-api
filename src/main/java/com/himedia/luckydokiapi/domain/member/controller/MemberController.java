@@ -143,6 +143,7 @@ public class MemberController {
     public MemberDetailDTO updateMyInfo(
             @AuthenticationPrincipal MemberDTO member,
             UpdateMemberDTO request) {
+        log.info("updateMyInfo request: {}", request);
         return memberService.updateMyInfo(member.getEmail(), request);
     }
 
