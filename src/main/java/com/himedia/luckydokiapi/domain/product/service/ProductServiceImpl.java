@@ -8,6 +8,7 @@ import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.repository.*;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
@@ -123,6 +124,8 @@ public class ProductServiceImpl implements ProductService {
         Category category = this.getCategory(dto.getCategoryId());
         Shop shop = this.getShopMemberEmail(member.getEmail());
         Product newProduct = this.dtoToEntity(dto, category, shop);
+
+        newProduct.setApprovalStatus(ProductApproval.N);
 
         log.info("newProduct: {}", newProduct);
 

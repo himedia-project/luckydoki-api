@@ -26,6 +26,7 @@ public class MemberDTO extends User {
     private MemberActive active;
 
 
+
     public MemberDTO(String email, String password, String phone,String nickName, List<String> roleNames, MemberActive active) {
         // ROLE_ 접두사를 붙여서 권한을 부여
         super(email, password, roleNames.stream().map(str -> new SimpleGrantedAuthority("ROLE_" + str)).collect(Collectors.toList()));

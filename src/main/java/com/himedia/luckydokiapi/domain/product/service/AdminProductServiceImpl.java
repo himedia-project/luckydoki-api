@@ -4,6 +4,7 @@ import com.himedia.luckydokiapi.domain.order.service.OrderService;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.himedia.luckydokiapi.domain.product.repository.*;
@@ -62,6 +63,31 @@ public class AdminProductServiceImpl implements AdminProductService {
                 .build();
     }
 
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<ProductDTO.Response> getProductsByApprovalStatus(ProductApproval status) {
+        List<Product> products = productRepository.findByApprovalStatus(status);
+        return products.stream()
+                .map(ProductDTO.Response::from)
+                .toList();
+    }
+
+
+    @Override
+    public void approveProduct(Long id) {
+        Product product = getEntity(id);
+
+        if (product.getApprovalStatus() == ProductApproval.Y) {
+            throw new IllegalStateException("이미 승인된 상품입니다.");
+        }
+
+        product.setApprovalStatus(ProductApproval.Y); // 승인 완료 상태로 변경
+        productRepository.save(product);
+    }
+
+
+
     //admin 프로덕트 확인용
     @Transactional(readOnly = true)
     @Override
@@ -90,9 +116,13 @@ public class AdminProductServiceImpl implements AdminProductService {
 
         Category category = this.getCategory(dto.getCategoryId());
         Shop shop = this.getShop(dto.getShopId());
-        // 실제 저장 처리
-        Product result = productRepository.save(productService.dtoToEntity(dto, category, shop));
-        log.info("product result: {}", result);
+
+        // 상품 추가
+        Product newProduct = productService.dtoToEntity(dto, category, shop);
+        newProduct.setApprovalStatus(ProductApproval.N);
+        log.info("product result: {}", newProduct);
+        Product result = productRepository.save(newProduct);
+
 
         // 카테고리 처리
         if (dto.getCategoryId() != null) {

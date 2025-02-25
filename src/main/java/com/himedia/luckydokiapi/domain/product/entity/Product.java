@@ -5,6 +5,7 @@ import com.himedia.luckydokiapi.domain.community.entity.CommunityProduct;
 import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
 import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
 import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
@@ -92,6 +93,11 @@ public class Product extends BaseEntity {
     @ColumnDefault("'N'")
     @Builder.Default
     private ProductEvent event = ProductEvent.N;
+
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'N'")
+    @Builder.Default
+    private ProductApproval approvalStatus = ProductApproval.N;
 
 
     @NotNull

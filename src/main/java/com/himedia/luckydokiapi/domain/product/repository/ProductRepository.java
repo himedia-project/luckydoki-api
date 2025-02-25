@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.product.repository;
 
 
 import com.himedia.luckydokiapi.domain.product.entity.Product;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.repository.querydsl.ProductRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,4 +26,10 @@ public interface ProductRepository extends JpaRepository<Product, Long>
 
     @Query("select p from Product p where p.delFlag = false and p.shop.id = :shopId")
     List<Product> findByShopId(@Param("shopId") Long shopId);
+
+
+    @Query("SELECT p FROM Product p WHERE p.approvalStatus = :status")
+    List<Product> findByApprovalStatus(@Param("status") ProductApproval status);
+
+
 }
