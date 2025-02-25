@@ -8,7 +8,6 @@ import com.himedia.luckydokiapi.domain.product.enums.ProductEvent;
 import com.himedia.luckydokiapi.domain.product.enums.ProductIsNew;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -24,6 +23,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.himedia.luckydokiapi.domain.cart.entity.QCartItem.cartItem;
+import static com.himedia.luckydokiapi.domain.community.entity.QCommunityProduct.communityProduct;
 import static com.himedia.luckydokiapi.domain.likes.entity.QProductLike.productLike;
 import static com.himedia.luckydokiapi.domain.order.entity.QOrderItem.orderItem;
 import static com.himedia.luckydokiapi.domain.product.entity.QCategory.category;
@@ -119,9 +120,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .leftJoin(productTag.tag, tag).fetchJoin()
                 .where(
                         product.delFlag.eq(false),
+
                         eqCategory(requestDTO.getCategoryId()),
+                        // 제외 조건
+                        neProductIdList(requestDTO.getExcludeIdList()),
                         eqTagId(requestDTO.getTagId()),
                         inTagStrList(requestDTO.getTagStrList()),
+                        inTagIdList(requestDTO.getTagIdList()),
                         eqIsNew(requestDTO.getIsNew()),
                         containsSearchKeyword(requestDTO.getSearchKeyword()),
                         eqBest(requestDTO.getBest()),
@@ -136,27 +141,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .fetch();
     }
 
-    /**
-     * 해당태그 리스트에 포함된 상품들만 조회
-     * @param tagStrList 태그 리스트
-     * @return  해당 태그 리스트에 포함된 상품들
-     */
-    private BooleanExpression inTagStrList(List<String> tagStrList) {
-        if (tagStrList == null || tagStrList.isEmpty()) {       // 순서 중요!
-            return null;
-        }
-        // any() : 하나라도 만족하면 true
-        // 태그 리스트가 ["신상", "할인"]일 때
-        // 둘 중 하나라도 "신상" 태그가 있는 상품 또는 "할인" 태그가 있는 상품 모두를 반환
-        return product.productTagList.any().tag.name.in(tagStrList);
-    }
 
-    private BooleanExpression goeDiscountRate(Integer discountRate) {
-        if (discountRate == null) {
-            return null;
-        }
-        return product.discountRate.goe(discountRate);
-    }
 
     @Override
     public List<Product> findProductByShopMemberEmail(String email) {
@@ -194,20 +179,101 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .leftJoin(product.orderItems, orderItem)
                 .leftJoin(product.productReviews, review)
                 .where(
-                    product.delFlag.eq(false)
+                        product.delFlag.eq(false)
                 )
                 .groupBy(product)
                 .orderBy(
-                    review.rating.avg().multiply(2)  // 평점 평균값 (가중치 2배)
-                        .add(review.count())         // 리뷰 수
-                        .add(productLike.count())    // 좋아요 수
-                        .add(orderItem.count())      // 주문 구매 수
-                        .desc(),
-                    product.id.desc()  // 같은 순위일 경우 최신 상품 우선
+                        review.rating.avg().multiply(2)  // 평점 평균값 (가중치 2배)
+                                .add(review.count())         // 리뷰 수
+                                .add(productLike.count())    // 좋아요 수
+                                .add(orderItem.count())      // 주문 구매 수
+                                .desc(),
+                        product.id.desc()  // 같은 순위일 경우 최신 상품 우선
                 )
                 .limit(10)
                 .fetch();
     }
+
+    @Override
+    public List<Product> findRecommendFirstExtractList(String email) {
+        // 갯수 제한
+        long limitSize = 32L;
+
+        List<Product> recommendList = queryFactory
+                .selectFrom(product)
+                .leftJoin(product.imageList, productImage).on(productImage.ord.eq(0))
+                .leftJoin(product.productLikes, productLike)
+                .leftJoin(product.orderItems, orderItem)
+                .leftJoin(product.productReviews, review)
+                .leftJoin(product.shop, shop)
+                .leftJoin(product.cartItems, cartItem)
+                .leftJoin(product.communityProducts, communityProduct)
+                .leftJoin(communityProduct.community.commentList)
+                .where(
+                        product.delFlag.eq(false),
+                        eqEmail(email)
+                )
+                .groupBy(product)
+                .orderBy(
+                        review.rating.avg().multiply(2)  // 평점 평균값 (가중치 2배)
+                                .add(review.count())         // 리뷰 수
+                                .add(orderItem.count())      // 주문 구매 수
+                                .add(productLike.count())    // 좋아요 수
+                                .add(cartItem.count())       // 장바구니 담기 수
+                                .desc(),
+                        product.best.desc(),  // 베스트 상품 우선
+                        product.id.desc()  // 같은 순위일 경우 최신 상품 우선
+                )
+                .limit(limitSize)
+                .fetch();
+
+        // 추천 상품이 30개 미만인 경우, 나머지를 베스트상품과 최신상품으로 채움
+        if (recommendList.size() < limitSize) {
+            // 이미 조회된 상품 ID 리스트
+            List<Long> existingProductIds = recommendList.stream()
+                    .map(Product::getId)
+                    .toList();
+
+            // 남은 개수만큼 베스트상품과 최신상품을 조회
+            List<Product> additionalProducts = queryFactory
+                    .selectFrom(product)
+                    .leftJoin(product.imageList, productImage).on(productImage.ord.eq(0))
+                    .where(
+                            product.delFlag.eq(false),
+                            product.id.notIn(existingProductIds)  // 이미 조회된 상품 제외
+                    )
+                    .orderBy(
+                            product.best.desc(),  // 베스트 상품 우선
+                            product.id.desc()     // 최신 상품 순
+                    )
+                    .limit(limitSize - recommendList.size())  // 남은 개수만큼만 조회
+                    .fetch();
+
+            // 두 리스트를 합침
+            recommendList.addAll(additionalProducts);
+        }
+
+        return recommendList;
+    }
+
+    /**
+     * 이메일로 검색
+     *
+     * @param email 이메일
+     * @return 이메일로 검색 조건
+     */
+    private BooleanExpression eqEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            return null;  // 이메일이 없으면 조건 없이 전체 상품 조회
+        }
+        return shop.member.email.eq(email)
+                .or(orderItem.order.member.email.eq(email))
+                .or(cartItem.cart.member.email.eq(email))
+                .or(communityProduct.community.commentList.any().member.email.eq(email))
+                .or(productLike.member.email.eq(email))
+                .or(review.member.email.eq(email));
+    }
+
 
     private BooleanExpression eqChildCategoryId(Long childCategoryId) {
         if (childCategoryId == null) {
@@ -335,6 +401,58 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
             return null;
         }
         return product.productTagList.any().tag.id.eq(tagId);
+    }
+
+    /**
+     * 제외할 상품 ID
+     *
+     * @param excludeIdList 제외할 상품 ID
+     * @return 제외할 상품 ID 조건
+     */
+    private BooleanExpression neProductIdList(List<Long> excludeIdList) {
+        if (excludeIdList == null || excludeIdList.isEmpty()) {       // 순서 중요!
+            return null;
+        }
+        return product.id.notIn(excludeIdList);
+    }
+
+    /**
+     * 해당태그 리스트에 포함된 상품들만 조회
+     *
+     * @param tagStrList 태그 리스트
+     * @return 해당 태그 리스트에 포함된 상품들
+     */
+    private BooleanExpression inTagStrList(List<String> tagStrList) {
+        if (tagStrList == null || tagStrList.isEmpty()) {       // 순서 중요!
+            return null;
+        }
+        // any() : 하나라도 만족하면 true
+        // 태그 리스트가 ["신상", "할인"]일 때
+        // 둘 중 하나라도 "신상" 태그가 있는 상품 또는 "할인" 태그가 있는 상품 모두를 반환
+        return product.productTagList.any().tag.name.in(tagStrList);
+    }
+
+    /**
+     * 해당태그 리스트에 포함된 상품들만 조회
+     *
+     * @param tagIdList 태그 id 리스트
+     * @return 해당 태그 리스트에 포함된 상품들
+     */
+    private BooleanExpression inTagIdList(List<Long> tagIdList) {
+        if (tagIdList == null || tagIdList.isEmpty()) {       // 순서 중요!
+            return null;
+        }
+        // any() : 하나라도 만족하면 true
+        // 태그 리스트가 ["신상", "할인"]일 때
+        // 둘 중 하나라도 "신상" 태그가 있는 상품 또는 "할인" 태그가 있는 상품 모두를 반환
+        return product.productTagList.any().tag.id.in(tagIdList);
+    }
+
+    private BooleanExpression goeDiscountRate(Integer discountRate) {
+        if (discountRate == null) {
+            return null;
+        }
+        return product.discountRate.goe(discountRate);
     }
 
 }

@@ -21,4 +21,5 @@ public interface ProductRepositoryCustom {
 
     List<Product> findTop10ByOrderByLikeCountAndReviewCountDesc();
 
+    List<Product> findRecommendFirstExtractList(String email);
 }

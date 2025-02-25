@@ -1,7 +1,6 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
 
-import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
@@ -30,7 +29,10 @@ public interface ProductService {
     Long updateProduct(String email, ProductDTO.Request dto, Long productId);
 
     void deleteProductById(Long productId);
-    
+
+
+    List<ProductDTO.Response> recommendList(ProductDTO.Request request, String email);
+
     default Product dtoToEntity(ProductDTO.Request dto, Category category, Shop shop) {
         Product product = Product.builder()
                 .code(generateRandomNumber(10))
@@ -67,8 +69,6 @@ public interface ProductService {
 
 
     default ProductDTO.Response entityToDTO(Product product, Boolean productLike) {
-        List<String> tags = product.getProductTagList().stream().map(ProductTag::getTag)
-                .map(Tag::getName).toList();
         ProductDTO.Response productDTO = ProductDTO.Response.builder()
                 .id(product.getId())
                 .code(product.getCode())
@@ -93,7 +93,7 @@ public interface ProductService {
                 .stockNumber(product.getStockNumber())
                 .createdAt(product.getCreatedAt())
                 .modifiedAt(product.getModifiedAt())
-                .tagStrList(tags)
+                .tagList(product.getTagList())
                 .likes(productLike)
                 .build();
 
@@ -111,6 +111,4 @@ public interface ProductService {
         return productDTO;
 
     }
-
-
 }

@@ -275,6 +275,18 @@ public class ProductServiceImpl implements ProductService {
 //row 가 삭제되는게 아니라 deflag 가 바뀐다
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<ProductDTO.Response> recommendList(ProductDTO.Request request, String email) {
+
+        List<Product> productList = productRepository.findRecommendFirstExtractList(email).stream().toList();
+
+        return productList.stream()
+                .map(product -> this.entityToDTO(product, productLikeRepository.likes(email, product.getId())))
+                .toList();
+
+    }
+
     @Override
     public void validateProductCount(Long id, Integer count) {
         Product product = this.getEntity(id);

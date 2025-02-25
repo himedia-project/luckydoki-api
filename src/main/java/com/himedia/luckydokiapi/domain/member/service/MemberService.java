@@ -69,6 +69,7 @@ public interface MemberService {
                 .email(member.getEmail())
                 .roleName(memberRoleName)
                 .phone(member.getPhone())
+                .profileImage(member.getProfileImage())
                 .shopId(shop != null ? shop.getId() : null)
                 .sellerRequested(member.getSellerRequested())       // 셀러 신청 여부 확인
                 .activeCouponCount(member.getActiveCouponCount())
