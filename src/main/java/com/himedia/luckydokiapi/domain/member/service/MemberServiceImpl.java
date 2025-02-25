@@ -180,7 +180,7 @@ public class MemberServiceImpl implements MemberService {
         if (request.getFile() != null && !request.getFile().isEmpty()) {
             uploadedImageName = fileUtil.uploadToThumbnailS3File(request.getFile());
             // 기존 파일 삭제
-            fileUtil.deleteS3File(oldImageName);
+//            fileUtil.deleteS3File(oldImageName);
         }
 
         member.changeProfileImage(uploadedImageName);
