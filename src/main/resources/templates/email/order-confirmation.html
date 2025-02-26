@@ -4,83 +4,74 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>결제 완료 안내</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 500px;
-      margin: 30px auto;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-    .logo {
-      width: 100px;
-      margin-bottom: 20px;
-    }
-    .header {
-      font-size: 22px;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 20px;
-    }
-    .content {
-      font-size: 16px;
-      color: #555;
-      text-align: left;
-      padding: 10px;
-      border-radius: 8px;
-      background: #f9f9f9;
-    }
-    .order-info {
-      margin: 20px 0;
-      padding: 10px;
-      border-radius: 8px;
-      background: #f0f0f0;
-      text-align: left;
-    }
-    .order-info p {
-      margin: 5px 0;
-      font-size: 16px;
-    }
-    .total {
-      font-size: 20px;
-      font-weight: bold;
-      color: #007bff;
-      margin-top: 20px;
-    }
-    .footer {
-      font-size: 14px;
-      color: #777;
-      margin-top: 20px;
-    }
-  </style>
 </head>
-<body>
+<body style="font-family: 'Arial', sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
 
-<div class="container">
-  <img class="logo" src="923cf01e-591e-4b9a-947b-7882a1ff2375-81843eac-d62d-4aff-a758-fb6a12a5f0f7.jpg" alt="Company Logo">
-  <div class="header">🎉 결제 완료 안내</div>
+<div style="
+  max-width: 500px;
+  margin: 30px auto;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: center;
+">
+  <img
+          style="width: 100px; margin-bottom: 20px;"
+          src="https://postfiles.pstatic.net/MjAyNTAyMjZfMTgx/MDAxNzQwNTQ5NTIzNjYx.6Vr27RTaTxsRhkhTWsqE6NWtD_KGI6ytMoRkR-Fk0Usg.1FqyqEJJA2PaIpQJbY5aM_qjJWYipe5aAc3aVWLF_Psg.JPEG/923cf01e-591e-4b9a-947b-7882a1ff2375-81843eac-d62d-4aff-a758-fb6a12a5f0f7.jpg?type=w580"
+          alt="Company Logo"
+  >
 
-  <div class="content">
+  <div style="
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;"
+  >
+    🎉 결제 완료 안내
+  </div>
+
+  <div style="
+    font-size: 16px;
+    color: #555;
+    text-align: left;
+    padding: 10px;
+    border-radius: 8px;
+    background: #f9f9f9;
+  ">
     안녕하세요, 고객님!<br>
     고객님의 결제가 성공적으로 완료되었습니다.
   </div>
 
-  <div class="order-info">
-    <p><strong>주문번호:</strong> <span th:text="${orderId}"></span></p>
-    <p><strong>결제 금액:</strong> <span th:text="${amount}"></span> 원</p>
+  <div style="
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 8px;
+    background: #f0f0f0;
+    text-align: left;
+  ">
+    <p style="margin: 5px 0; font-size: 16px;">
+      <strong>주문번호:</strong> <span th:text="${orderId}"></span>
+    </p>
+    <p style="margin: 5px 0; font-size: 16px;">
+      <strong>결제 금액:</strong> <span th:text="${amount}"></span> 원
+    </p>
   </div>
 
-  <p class="total">💳 총 결제 금액: <strong th:text="${amount}"></strong> 원</p>
+  <p style="
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+    margin-top: 20px;
+  ">
+    💳 총 결제 금액: <strong th:text="${amount}"></strong> 원
+  </p>
 
-  <div class="footer">
+  <div style="
+    font-size: 14px;
+    color: #777;
+    margin-top: 20px;
+  ">
     감사합니다.<br>
     <strong>LuckyDoki</strong> 드림.<br>
     <small>문의: support@luckydoki.com</small>
