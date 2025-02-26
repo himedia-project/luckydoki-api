@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.community.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "커뮤니티 글쓰기 요청 dto")
 public class CommunityRequestDTO {
 
     @NotBlank

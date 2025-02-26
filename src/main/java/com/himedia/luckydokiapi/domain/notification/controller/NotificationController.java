@@ -2,6 +2,8 @@ package com.himedia.luckydokiapi.domain.notification.controller;
 
 import com.himedia.luckydokiapi.domain.notification.service.NotificationService;
 import com.himedia.luckydokiapi.security.MemberDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,10 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
+    @Operation(summary = "로그인 한 사용자의 이메일로 알림 목록 조회합니다")
     @GetMapping("/list")
-    public ResponseEntity<?> getNotificationList(@AuthenticationPrincipal MemberDTO memberDTO) {
+    public ResponseEntity<?> getNotificationList(@Parameter(description = "인증된 사용자 정보", hidden = true)
+                                                 @AuthenticationPrincipal MemberDTO memberDTO) {
         log.info("getNotificationList memberDTO : {}", memberDTO);
         return ResponseEntity.ok(notificationService.list(memberDTO.getEmail()));
     }

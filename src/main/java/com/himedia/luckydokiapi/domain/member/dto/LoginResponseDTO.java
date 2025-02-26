@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.member.dto;
 
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+
+@Schema(description = "로그인 성공 시 응답하는 회원 정보가 담긴 dto")
 public class LoginResponseDTO {
 
     private String email;

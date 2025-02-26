@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.member.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -10,6 +11,7 @@ import lombok.*;
 @Setter
 @Builder
 @ToString
+@Schema(description = "회원가입 요청 DTO")
 public class JoinRequestDTO {
     @NotBlank(message = "이메일 필수 입력 항목 입니다")
     private String email; //username

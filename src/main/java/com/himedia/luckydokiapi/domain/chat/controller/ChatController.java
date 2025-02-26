@@ -38,6 +38,7 @@ public class ChatController {
 
     //메세지를 전송하는 api
     //양방향 통신이므로 return 값이 따로 없고 messagingTemplate.convertAndSend 를 통해 stomp 형식으로 클라이언트에 전송된다
+    @Operation(summary = "메세지 전송 및 db 에 저장 api", description = "유저가 보낸 메세지를 db 에 insert 한 뒤 websocket 통신으로 클라이언트에 메세지를 전송합니다")
     @MessageMapping("/message")
     public void handleMessage(@Parameter(description = "전송할 채팅 메시지 정보", required = true) ChatMessageDTO chatMessageDTO,
                               @Parameter(description = "STOMP 헤더에서 토큰을 추출하여 인증 처리 후에 양방향 통신이 시작됩니다", hidden = true) StompHeaderAccessor stompHeaderAccessor) {

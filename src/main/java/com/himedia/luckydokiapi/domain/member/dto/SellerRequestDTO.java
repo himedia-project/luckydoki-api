@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.member.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "셀러 승급 신청 dto")
 public class SellerRequestDTO {
 
 

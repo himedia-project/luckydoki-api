@@ -5,6 +5,7 @@ import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.community.entity.CommunityImage;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.List;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "커뮤니티 글 응답용 dto")
 public class CommunityResponseDTO {
     private Long id;
     private Long shopId;

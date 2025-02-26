@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.order.dto;
 
 import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,14 +11,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Schema(description = "주문 아이템 dto ")
 public class OrderItemDTO {
-
-    private Long productId;         // 상품 번호
-    private String productName;     // 상품명
-    private int count;              // 상품 수량
-    private int orderPrice;         // 상품 주문 가격
-    private int discountPrice;      // 상품 할인 가격
-    private String image;           // 상품 이미지 이름
+    @Schema(description = "상품 번호")
+    private Long productId;
+    private String productName;
+    private int count;
+    private int orderPrice;
+    @Schema(description = "상품 할인 가격")
+    private int discountPrice;
+    private String image;
 
     // builder
     public static OrderItemDTO from(OrderItem orderItem, String image) {

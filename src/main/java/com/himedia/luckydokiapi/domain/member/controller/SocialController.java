@@ -7,6 +7,12 @@ import com.himedia.luckydokiapi.domain.member.service.SocialService;
 import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import com.himedia.luckydokiapi.util.CookieUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,15 +33,31 @@ public class SocialController {
     private final JwtProps jwtProps;
 
 
-    // 카카오 access token 받기
+    @Operation(summary = "카카오 액세스 토큰 획득", description = "카카오 인증 코드를 사용하여 카카오 액세스 토큰을 가져옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "토큰 획득 성공",
+                    content = {@Content(mediaType = "text/plain",
+                            schema = @Schema(type = "string"))}),
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 인증 코드"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
     @GetMapping("/api/member/kakao/token")
-    public String getKakaoAccessToken(String code) {
+    public String getKakaoAccessToken(@Parameter(description = "카카오 인증 코드", required = true)
+                                      String code) {
         log.info("getKakaoAccessToken code: {}", code);
 
         return socialService.getKakaoAccessToken(code);
     }
 
-    // 카카오 로그인 -> 유저정보 받기 + JWT 토큰 발급, cookie에 set
+    @Operation(summary = "카카오 사용자 정보 조회", description = "카카오 액세스 토큰을 사용하여 사용자 정보를 가져오고 로그인 처리합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자 정보 조회 및 로그인 성공",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LoginResponseDTO.class)) }),
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 액세스 토큰"),
+            @ApiResponse(responseCode = "404", description = "사용자 정보를 찾을 수 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
     @GetMapping("/api/member/kakao")
     public ResponseEntity<?> getMemberFromKakao(String accessToken, HttpServletResponse response) {
         log.info("getMemberFromKakao accessToken: {}", accessToken);

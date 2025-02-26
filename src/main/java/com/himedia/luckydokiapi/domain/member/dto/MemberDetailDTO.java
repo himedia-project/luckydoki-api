@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.member.dto;
 
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.enums.MemberRole;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Builder
+@Schema(description = "회원 정보 조회와 수정을 위한 dto ")
 public class MemberDetailDTO {
 
     private String email;
@@ -20,11 +22,16 @@ public class MemberDetailDTO {
     private String roleName;
     private Long shopId;
     private String shopImage;
-    private boolean sellerRequested; // seller_application 여부
-    private Long activeCouponCount;  // 사용가능한 쿠폰 수
-    private Long monthlySales;       // 월간 판매액
-    private Long monthlyPurchase;   // 월간 구매액
-    private Long reviewCount;       // 리뷰 등록 수
+    @Schema(description = "seller_application 여부")
+    private boolean sellerRequested;
+    @Schema(description = "사용가능한 쿠폰 수")
+    private Long activeCouponCount;
+    @Schema(description = "월간 판매액")
+    private Long monthlySales;
+    @Schema(description = "월간 구매액")
+    private Long monthlyPurchase;
+    @Schema(description = "리뷰 등록 수")
+    private Long reviewCount;
 
     public static MemberDetailDTO from(Member member) {
         return MemberDetailDTO.builder()
