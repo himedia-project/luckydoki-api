@@ -1,10 +1,7 @@
 package com.himedia.luckydokiapi.domain.payment.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -31,7 +28,11 @@ public class PaymentResponseDTO {
     private CardInfo card;           // 카드 결제 정보 (카드 결제 시)
     private VirtualAccountInfo virtualAccount;  // 가상계좌 정보 (가상계좌 결제 시)
 
-    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @Builder
     public static class CardInfo {
         private String company;      // 카드사
         private String number;       // 카드 번호
@@ -45,7 +46,11 @@ public class PaymentResponseDTO {
         private String receiptUrl;             // 영수증 URL
     }
 
-    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @Builder
     public static class VirtualAccountInfo {
         private String accountNumber;          // 가상계좌 번호
         private String bankCode;               // 은행 코드
@@ -60,7 +65,11 @@ public class PaymentResponseDTO {
     // 취소 관련 정보
     private List<CancelHistory> cancels;       // 취소/환불 이력
 
-    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @Builder
     public static class CancelHistory {
         private String cancelAmount;           // 취소 금액
         private String cancelReason;           // 취소 사유
