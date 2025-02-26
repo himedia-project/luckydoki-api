@@ -15,7 +15,9 @@ import static com.himedia.luckydokiapi.domain.community.entity.QComment.comment;
 import static com.himedia.luckydokiapi.domain.community.entity.QCommunity.community;
 import static com.himedia.luckydokiapi.domain.community.entity.QCommunityImage.communityImage;
 import static com.himedia.luckydokiapi.domain.community.entity.QCommunityProduct.communityProduct;
+import static com.himedia.luckydokiapi.domain.community.entity.QCommunityTag.communityTag;
 import static com.himedia.luckydokiapi.domain.product.entity.QProduct.product;
+import static com.himedia.luckydokiapi.domain.product.entity.QTag.tag;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,14 +33,15 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .selectFrom(community)
                 .leftJoin(community.communityProductList, communityProduct).fetchJoin()
                 .leftJoin(communityProduct.product, product).fetchJoin()
-//                .leftJoin(product.productTagList, productTag).fetchJoin()
-//                .leftJoin(productTag.tag, tag).fetchJoin()
+                .leftJoin(community.communityTagList, communityTag)
+                .leftJoin(communityTag.tag, tag)
                 .where(
                         containsKeyword(requestDTO.getSearchKeyword())
                 )
                 .orderBy(community.id.desc())
                 .fetch();
     }
+
 
     @Override
     public List<Community> findTop10ByOrderByLikeCountAndCommentCountDesc() {
@@ -60,6 +63,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
             return null;
         }
         return community.content.contains(searchKeyword)
-                .or(product.name.contains(searchKeyword));
+                .or(product.name.contains(searchKeyword))
+                .or(tag.name.contains(searchKeyword));
+
     }
 }
