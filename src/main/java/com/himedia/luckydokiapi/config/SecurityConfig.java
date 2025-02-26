@@ -147,12 +147,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
+
+
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 출처 설정 (모든 출처 허용)
 //        configuration.setAllowedOriginPatterns(Arrays.asList("*"));  // localhost:3000 -> 허용
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001",
-                "http://43.200.239.220","http://43.200.239.220:3000", "http://43.200.239.220:3001", // EC2 퍼블릭 IP 3000, 3001 포트 허용
+                "http://15.165.150.61","http://43.200.239.220:3000", "http://43.200.239.220:3001", // EC2 퍼블릭 IP 3000, 3001 포트 허용
                 "https://openapi.map.naver.com",
                 "http://friendzoo.shop","http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
                 "http://www.friendzoo.shop","http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
