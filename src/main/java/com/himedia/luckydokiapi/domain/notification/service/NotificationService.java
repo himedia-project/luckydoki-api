@@ -89,7 +89,7 @@ public class NotificationService {
 
     public void sendChattingMessage(String targetEmail, ChatMessageDTO chatMessageDTO) {
         log.info("sendChattingMessage notification: target targetEmail {}", targetEmail);
-        Member member = memberRepository.findByNickName(targetEmail)
+        Member member = memberRepository.getWithRoles(targetEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 회원이 없습니다. targetEmail: " + targetEmail));
         String title = chatMessageDTO.getEmail() + "님 에게 새 메세지가 도착하였습니다!";
         String body = chatMessageDTO.getMessage();
