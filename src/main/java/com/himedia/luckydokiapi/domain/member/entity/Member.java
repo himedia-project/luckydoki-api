@@ -140,7 +140,7 @@ public class Member extends BaseEntity {
                 .birthday(request.getBirthday())
                 .active(MemberActive.Y)
                 .pushActive(PushActive.Y)
-                .profileImage("5234ba2b-1096-4cfd-9c62-1e571d8e6e33-profile.png")
+                .profileImage("s_2b3b4d26-7b17-4426-90d7-310976988d2e-luckydoki_favicon.png")
                 .phone(request.getPhone())
                 .build();
 
@@ -161,7 +161,7 @@ public class Member extends BaseEntity {
                 .email(email)
                 .password(tempPassword)
                 .nickName("소셜회원")
-                .profileImage("5234ba2b-1096-4cfd-9c62-1e571d8e6e33-profile.png")
+                .profileImage("s_2b3b4d26-7b17-4426-90d7-310976988d2e-luckydoki_favicon.png")
                 .active(MemberActive.Y)
                 .pushActive(PushActive.Y)
                 .build();
