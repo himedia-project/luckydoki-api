@@ -14,7 +14,7 @@ public class ReviewResponseDTO {
     //리뷰 보기
 //    private Long id;
     private double rating;
-    //    private String email;
+//    private String email;
     private String nickname;
     private Long shopId;
     private Long productId;
@@ -22,5 +22,6 @@ public class ReviewResponseDTO {
     private String content;
     private String imageName;
     private String shopImage;
+    private String profileImage;
     private LocalDateTime createdAt;
 }

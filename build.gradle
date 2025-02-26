@@ -92,8 +92,8 @@ dependencies {
     // SMTP
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.thymeleaf:thymeleaf-spring6:3.1.2.RELEASE'
     implementation 'org.eclipse.angus:jakarta.mail:1.0.0'
-
 
     //mongodb
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
