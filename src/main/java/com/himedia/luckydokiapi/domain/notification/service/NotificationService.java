@@ -91,7 +91,7 @@ public class NotificationService {
         log.info("sendChattingMessage notification: target targetEmail {}", targetEmail);
         Member member = memberRepository.getWithRoles(targetEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 회원이 없습니다. targetEmail: " + targetEmail));
-        String title = chatMessageDTO.getEmail() + "님 에게 새 메세지가 도착하였습니다!";
+        String title = member.getNickName() + "님 에게 새 메세지가 도착하였습니다!";
         String body = chatMessageDTO.getMessage();
 
         Notification notification = Notification.of(
@@ -156,6 +156,7 @@ public class NotificationService {
         if (member.getFcmToken() != null) {
             log.info("sendSellerApprovalNotification: FCM 알림 전송됨! member.getFcmToken(): {}", member.getFcmToken());
             fcmService.sendNotification(
+                    member.getEmail(),
                     member.getFcmToken(),
                     title,
                     body,
