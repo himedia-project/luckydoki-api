@@ -236,7 +236,7 @@ public class ChatServiceImpl implements ChatService {
         //mongodb 에 저장된 document
         mongoTemplate.save(chatMessage);
         //저장된 document 를 다시 dto 로 변환하여 전달
-        notificationService.sendChattingMessage(sender, convertToDTO(chatMessage, sender));
+        notificationService.sendChattingMessage(sender, convertToDTO(chatMessage, sender) , member);
 
         return this.convertToDTO(chatMessage, sender);
     }

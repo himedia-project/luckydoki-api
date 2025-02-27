@@ -87,22 +87,22 @@ public class NotificationService {
      * @param targetEmail 알림을 받을 회원 이메일
      */
 
-    public void sendChattingMessage(String targetEmail, ChatMessageDTO chatMessageDTO) {
+    public void sendChattingMessage(String targetEmail, ChatMessageDTO chatMessageDTO , Member member) {
         log.info("sendChattingMessage notification: target targetEmail {}", targetEmail);
-        Member member = memberRepository.getWithRoles(targetEmail)
+        Member target = memberRepository.getWithRoles(targetEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 회원이 없습니다. targetEmail: " + targetEmail));
         String title = member.getNickName() + "님 에게 새 메세지가 도착하였습니다!";
         String body = chatMessageDTO.getMessage();
 
         Notification notification = Notification.of(
                 NotificationType.NEW_MESSAGE,
-                member,
+                target,
                 title,
                 body,
-                member.getFcmToken()
+                target.getFcmToken()
         );
         notificationRepository.save(notification);
-        this.fcmNotificationSender(member, title, body, NotificationType.NEW_MESSAGE);
+        this.fcmNotificationSender(target, title, body, NotificationType.NEW_MESSAGE);
     }
 
 
