@@ -77,10 +77,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return true;
         }
 
-        if (path.startsWith("/api/category")
-        ) {
-            return true;
-        }
 
         // python
         if (path.startsWith("/api/sales/forecast")) {
@@ -141,6 +137,9 @@ public class JWTCheckFilter extends OncePerRequestFilter {
                         || request.getServletPath().startsWith("/api/member/me")
                         // likes 관련 api
                         || request.getServletPath().startsWith("/api/likes/")
+                        // category 관련 api
+                        || request.getServletPath().startsWith("/api/category/")
+                        // /api/category/{{categoryId}}/product/list
 
         )) {
             filterChain.doFilter(request, response);
