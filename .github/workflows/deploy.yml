@@ -19,18 +19,6 @@ jobs:
         run: |
           echo "${{ secrets.ENV_FILE }}" > src/.env
 
-      - name: Docker Hub에 로그인하기
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Docker 이미지 생성
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPOSITORY_NAME }} .
-
-      - name: Docker Hub에 Docker 이미지 Push하기
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPOSITORY_NAME }}:latest
-
       - name: SSH로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -39,8 +27,9 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true # 이전에 실행중인 컨테이너 중지
           script: |
-            docker stop ${{ env.REPOSITORY_NAME }} || true
-            docker rm ${{ env.REPOSITORY_NAME }} || true
-            docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPOSITORY_NAME }}:latest || true
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPOSITORY_NAME }}:latest
-            docker run -d --name ${{ env.REPOSITORY_NAME }} -p 8080:8080 --add-host=host.docker.internal:172.17.0.1 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPOSITORY_NAME }}:latest
+            cd /home/ubuntu/${{ env.REPOSITORY_NAME }} # 여기 경로는 자신의 EC2에 맞는 경로로 재작성하기
+            git pull origin main
+            ./gradlew clean build
+            sudo fuser -k -n tcp 8080 || true # || true를 붙인 이유는 8080에 종료시킬 프로세스가 없더라도 실패로 처리하지 않기 위해서이다. 
+            # jar 파일을 실행시키는 명령어이다. 그리고 발생하는 로그들을 ./output.log 파일에 남기는 명령어이다.
+            nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
