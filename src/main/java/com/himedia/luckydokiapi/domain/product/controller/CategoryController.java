@@ -25,7 +25,7 @@ public class CategoryController {
 
 
     //최상위 카테고리 조회
-    @GetMapping
+    @GetMapping("/main/list")
     public ResponseEntity<List<CategoryDTO>> getParentCategories() {
         return ResponseEntity.ok(categoryService.getParentCategories());
     }
