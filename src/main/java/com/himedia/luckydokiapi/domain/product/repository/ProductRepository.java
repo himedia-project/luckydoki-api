@@ -27,9 +27,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>
     @Query("select p from Product p where p.delFlag = false and p.approvalStatus = 'Y' and p.shop.id = :shopId")
     List<Product> findByShopId(@Param("shopId") Long shopId);
 
-
-
-    @Query("SELECT p FROM Product p WHERE p.approvalStatus = :status")
+    @Query("SELECT p FROM Product p WHERE p.approvalStatus = :status and p.delFlag = false")
     List<Product> findByApprovalStatus(@Param("status") ProductApproval status);
 
 
