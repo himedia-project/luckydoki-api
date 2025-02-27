@@ -34,4 +34,4 @@ jobs:
             ./gradlew clean build
             sudo fuser -k -n tcp 8080 || true # || true를 붙인 이유는 8080에 종료시킬 프로세스가 없더라도 실패로 처리하지 않기 위해서이다. 
             # jar 파일을 실행시키는 명령어이다. 그리고 발생하는 로그들을 ./output.log 파일에 남기는 명령어이다.
-            nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
+            nohup java -jar build/libs/*SNAPSHOT.jar --spring.profiles.active=prod > ./output.log 2>&1 &
