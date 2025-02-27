@@ -16,14 +16,11 @@ import java.time.LocalDateTime;
 @Transactional
 public class FCMService {
 
-    public void sendNotification(String token, String title, String body, NotificationType type) {
+    public void sendNotification(String targetEmail, String token, String title, String body, NotificationType type) {
         log.info("sendNotification token: {}, title: {}, body: {}, type: {}", token, title, body, type);
         Message message = Message.builder()
-                .setNotification(Notification.builder()
-                        .setTitle(title)
-                        .setBody(body)
-                        .build())
                 .putData("type", type.name())
+                .putData("targetEmail", targetEmail) // 데이터에 추가
                 .putData("title", title)  // 데이터에도 추가
                 .putData("body", body)    // 데이터에도 추가
                 .putData("timestamp", LocalDateTime.now().toString()) // 데이터에도 추가

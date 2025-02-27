@@ -20,6 +20,6 @@ public class ChatHistoryDTO {
     private String shopImage;
     private String message;     // 채팅 내용
 
-//    @JsonFormat( pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat( pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime lastMessageTime; //마지막 대화 시간
 }
