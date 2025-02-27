@@ -168,6 +168,9 @@ public class MemberController {
     @GetMapping("/me")
     public MemberDetailDTO getMyInfo(@AuthenticationPrincipal MemberDTO member) {
         log.info("getMyInfo: {}", member);
+        if(member == null) {
+            return MemberDetailDTO.builder().build();
+        }
         return memberService.getMyInfo(member.getEmail());
     }
 
