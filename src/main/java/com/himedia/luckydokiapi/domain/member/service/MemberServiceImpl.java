@@ -259,4 +259,9 @@ public class MemberServiceImpl implements MemberService {
         member.updateFcmToken(fcmToken);
     }
 
+    @Override
+    public Boolean checkEmail(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
 }

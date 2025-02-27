@@ -81,5 +81,6 @@ public interface MemberService {
 
     void updateFCMToken(String targetEmail, String fcmToken);
 
+    Boolean checkEmail(String email);
 }
 

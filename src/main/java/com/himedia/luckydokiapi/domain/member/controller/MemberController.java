@@ -209,4 +209,12 @@ public class MemberController {
         memberService.updateFCMToken(request.getEmail(), request.getFcmToken());
         return ResponseEntity.ok().build();
     }
+
+    // 회원가입시, 아이디(email) 중복확인 -> false, true 반환
+    @GetMapping("/check-email/{email}")
+    public ResponseEntity<Boolean> checkEmail(@PathVariable String email) {
+        log.info("checkEmail email: {}", email);
+        return ResponseEntity.ok(memberService.checkEmail(email));
+    }
+
 }

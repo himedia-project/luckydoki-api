@@ -65,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/member/kakao/token")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/member/kakao")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/member/me")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/member/check-email/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/category/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/product/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/content/**")).permitAll()

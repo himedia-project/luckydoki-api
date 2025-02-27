@@ -20,6 +20,9 @@ public interface MemberRepository extends JpaRepository<Member, String>
     @Query("select m from Member m where m.email = :email")
     Optional<Member> findByEmail(@Param("email") String email);
 
+    @Query("select case when count(m) > 0 then true else false end from Member m where m.email = :email")
+    Boolean existsByEmail(@Param("email") String email);
+
 //    @Query("select m from Member m where m.nickName = :nickName")
 //    Optional<Member> findByNickName(@Param("nickName") String nickName);
 }

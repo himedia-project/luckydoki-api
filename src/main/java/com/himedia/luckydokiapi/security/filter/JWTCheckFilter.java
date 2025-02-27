@@ -41,6 +41,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         }
         // /api/member/로 시작하는 요청은 필터를 타지 않도록 설정
         if (path.startsWith("/api/member/login") || path.startsWith("/api/member/join")
+                || path.startsWith("/api/member/check-email")
                 || path.startsWith("/api/member/refresh") || path.startsWith("/api/member/logout")
                 || path.startsWith("/api/member/kakao") || path.startsWith("/api/member/google")
                 || path.startsWith("/api/member/naver") || path.startsWith("/api/member/github")
