@@ -27,7 +27,8 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true # 이전에 실행중인 컨테이너 중지
           script: |
-            cd /home/ubuntu/${{ env.REPOSITORY_NAME }} # 여기 경로는 자신의 EC2에 맞는 경로로 재작성하기
+            cd /home/ubuntu/${{ env.REPOSITORY_NAME }}
+            sudo chown -R ubuntu:ubuntu .git/  # Git 디렉토리의 소유권을 ubuntu 사용자로 변경
             git pull origin main
             chmod +x ./gradlew
             ./gradlew clean build
