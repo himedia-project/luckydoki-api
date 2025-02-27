@@ -71,6 +71,7 @@ public class ProductDTO {
         private ProductIsNew isNew;
         private ProductBest best;
         private ProductEvent event;
+        private ProductApproval approvalStatus;
         private Long shopId;
         private String shopName;
         private String shopImage;
@@ -112,6 +113,7 @@ public class ProductDTO {
                     .isNew(product.getIsNew())
                     .best(product.getBest())
                     .event(product.getEvent())
+                    .approvalStatus(product.getApprovalStatus())
                     .shopId(product.getShop().getId())
                     .shopName(product.getShop().getMember().getNickName())
                     .shopImage(product.getShop().getMember().getProfileImage())
