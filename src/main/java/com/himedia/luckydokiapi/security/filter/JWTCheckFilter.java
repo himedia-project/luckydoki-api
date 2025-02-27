@@ -139,6 +139,8 @@ public class JWTCheckFilter extends OncePerRequestFilter {
                         || request.getServletPath().startsWith("/api/community/")
                         // mypage 관련 api
                         || request.getServletPath().startsWith("/api/member/me")
+                        // likes 관련 api
+                        || request.getServletPath().startsWith("/api/likes/")
 
         )) {
             filterChain.doFilter(request, response);
