@@ -23,6 +23,7 @@ public class CartItemListDTO {
     private int discountPrice; // 할인 가격
     private int discountRate; // 할인율
     private String imageName; // 이미지 이름
+    @Builder.Default
     private List<TagDTO> tagList = new ArrayList<>(); // 태그 리스트
 
 }
