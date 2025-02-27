@@ -131,7 +131,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
                         //리뷰 관련 api 상품 별 리뷰는 필터 안타게
                         || request.getServletPath().matches("^/api/review/list/\\d+$")
                         // shop 관련 api
-                        || request.getServletPath().matches("/api/shop/\\d+$")
+                        || request.getServletPath().startsWith("/api/shop/")
                         // community 관련 api
                         || request.getServletPath().startsWith("/api/community/")
                         // mypage 관련 api
