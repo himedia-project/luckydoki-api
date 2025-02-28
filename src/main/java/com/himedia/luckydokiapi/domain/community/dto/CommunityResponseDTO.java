@@ -24,12 +24,11 @@ import java.util.List;
 public class CommunityResponseDTO {
     private Long id;
     private Long shopId;
-    private String shopImage;
+    private String authorImage;
     private String nickName;
     private String title;
     private String content;
     private List<String> uploadFileNames;
-    private List<Long> productIds;
     private List<ProductDTO.Response> productDTOs;
     private List<TagDTO> tagList;
 
@@ -41,12 +40,11 @@ public class CommunityResponseDTO {
         return CommunityResponseDTO.builder()
                 .id(community.getId())
                 .shopId(community.getMember().getShop() == null ? null : community.getMember().getShop().getId())
-                .shopImage(community.getSellerShopImage())
                 .nickName(community.getMember().getNickName())
                 .title(community.getTitle())
+                .authorImage(community.getMember().getShop() == null ? community.getMember().getProfileImage() : community.getMember().getShop().getImage())
                 .content(community.getContent())
                 .uploadFileNames(community.getImageList().stream().map(CommunityImage::getImageName).toList())
-                .productIds(community.getCommunityProductList().stream().map(communityProduct -> communityProduct.getProduct().getId()).toList())
                 .productDTOs(community.getCommunityProductList().stream().map(communityProduct -> ProductDTO.Response.from(communityProduct.getProduct())).toList())
                 .createdAt(community.getCreatedAt())
                 .tagList(community.getTagList())

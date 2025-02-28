@@ -162,7 +162,9 @@ spring:
       idle-timeout: 300000 # 유휴 시간 (밀리초)
       connection-timeout: 30000 # 연결 시간 초과 (밀리초)
 
-
+  data:
+    mongodb:
+      uri: mongodb://luckydoki:luckydoki@mongodb:27017/chatdb?authSource=admin
 
 
 app:
