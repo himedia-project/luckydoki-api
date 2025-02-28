@@ -162,6 +162,9 @@ public class SecurityConfig {
                 "http://www.luckydoki.shop:3000", "https://www.luckydoki.shop:3000",
                 "http://luckydoki.shop", "https://luckydoki.shop",
                 "http://www.luckydoki.shop", "https://www.luckydoki.shop","https://www.luckydoki.shop/",
+                // admin.luckydoki.shop
+                "http://admin.luckydoki.shop", "https://admin.luckydoki.shop",
+                "http://www.admin.luckydoki.shop", "https://www.admin.luckydoki.shop",
 //                "http://friendzoo.shop","http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
 //                "http://www.friendzoo.shop","http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
                 "http://friendzoo.store", "http://friendzoo.store:3000", "http://friendzoo.store:3001",
