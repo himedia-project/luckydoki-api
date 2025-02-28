@@ -39,16 +39,16 @@ public class ChatController {
     //양방향 통신이므로 return 값이 따로 없고 messagingTemplate.convertAndSend 를 통해 stomp 형식으로 클라이언트에 전송된다
     @Operation(summary = "메세지 전송 및 db 에 저장 api", description = "유저가 보낸 메세지를 db 에 insert 한 뒤 websocket 통신으로 클라이언트에 메세지를 전송합니다")
     @MessageMapping("/message")
-    public void handleMessage(@Parameter(description = "전송할 채팅 메시지 정보", required = true) ChatMessageRequestDTO chatMessageDTO,
+    public void handleMessage(@Parameter(description = "전송할 채팅 메시지 정보", required = true) ChatMessageRequestDTO chatMessageRequestDTO,
                               @Parameter(description = "STOMP 헤더에서 토큰을 추출하여 인증 처리 후에 양방향 통신이 시작됩니다", hidden = true) StompHeaderAccessor stompHeaderAccessor) {
-        log.info("chatMessageDTO {}", chatMessageDTO);
+        log.info("chat request MessageDTO {}", chatMessageRequestDTO);
         Authentication authentication = (Authentication) stompHeaderAccessor.getUser();
         MemberDTO member = (MemberDTO) authentication.getPrincipal();
         // roomId가 null 인 경우 (첫 메시지) 채팅방 생성 후 메시지 저장
         // 생성된 채팅방 ID 설정
 
-        ChatMessageResponseDTO savedMessage = chatService.saveMessage(chatMessageDTO, member.getEmail());
-        messagingTemplate.convertAndSend("/topic/chat/message/" + chatMessageDTO.getRoomId(), savedMessage);
+        ChatMessageResponseDTO savedMessage = chatService.saveMessage(chatMessageRequestDTO, member.getEmail());
+        messagingTemplate.convertAndSend("/topic/chat/message/" + chatMessageRequestDTO.getRoomId(), savedMessage);
         //구독자에게 메세지 전송
         //클라이언트 구독주소(destination) + 채팅방 번호 + 전송되고 mongodb 애 저장될 메세지(payload)
         //mu sql 테이블에도 insert

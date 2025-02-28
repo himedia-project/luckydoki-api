@@ -23,6 +23,8 @@ public class ChatMessageRequestDTO {
     private String message;
     private boolean isRead;
 
+    // "2025-02-28 11:35:34" 로 받게 하기
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sendTime;
 
 }

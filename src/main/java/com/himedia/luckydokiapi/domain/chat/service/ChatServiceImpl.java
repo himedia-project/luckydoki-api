@@ -39,14 +39,14 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
-    public ChatMessageResponseDTO saveMessage(ChatMessageRequestDTO chatMessageDTO, String email) {
-        log.info("chatMessageDTO: {}", chatMessageDTO);
+    public ChatMessageResponseDTO saveMessage(ChatMessageRequestDTO chatMessageRequestDTO, String email) {
+        log.info("chat request MessageDTO: {}", chatMessageRequestDTO);
         //shop 조회
-        Shop shop = getShop(chatMessageDTO.getShopId());
+        Shop shop = getShop(chatMessageRequestDTO.getShopId());
         //구매자
         Member member = getMember(email);
 
-        return this.saveMongoAndReturnChatDTO(chatMessageDTO, member, shop);
+        return this.saveMongoAndReturnChatDTO(chatMessageRequestDTO, member, shop);
     }
 
 
@@ -220,15 +220,15 @@ public class ChatServiceImpl implements ChatService {
     }
 
 
-    private ChatMessageResponseDTO saveMongoAndReturnChatDTO(ChatMessageRequestDTO chatMessageDTO, Member member, Shop shop) {
+    private ChatMessageResponseDTO saveMongoAndReturnChatDTO(ChatMessageRequestDTO chatMessageRequestDTO, Member member, Shop shop) {
         //채팅룸의 아이디로 엔티티 조회
-        ChatRoom chatRoom = getChatroom(chatMessageDTO.getRoomId());
+        ChatRoom chatRoom = getChatroom(chatMessageRequestDTO.getRoomId());
         String sender = this.getRoomMembers(chatRoom.getId()).stream()
                 .filter(roomMember -> !roomMember.equals(member.getEmail()))
                 .findFirst()
                 .orElse(null);
         // document 변환
-        ChatMessage chatMessage = this.convertToDocument(chatMessageDTO, member, shop, chatRoom.getId());
+        ChatMessage chatMessage = this.convertToDocument(chatMessageRequestDTO, member, shop, chatRoom.getId());
         //mongodb 에 저장된 document
         mongoTemplate.save(chatMessage);
         //저장된 document 를 다시 dto 로 변환하여 전달
