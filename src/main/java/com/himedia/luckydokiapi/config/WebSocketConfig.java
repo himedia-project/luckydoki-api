@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.himedia.luckydokiapi.interceptor.WebSocketAuthChannelInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
@@ -22,8 +23,6 @@ import java.util.List;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
-
     @Autowired
     private final WebSocketAuthChannelInterceptor webSocketAuthChannelInterceptor;
 
@@ -36,8 +35,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-stomp")
-                .setAllowedOrigins("http://localhost:3000")
+                .setAllowedOrigins("http://15.165.150.61:3000", "http://localhost:3000")
                 .withSockJS();  //필수 설정값
+
     }
 
     //인터셉터를 통한 인증처리 ,jwt 토큰으로 인증
