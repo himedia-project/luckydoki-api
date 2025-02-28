@@ -86,6 +86,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/image/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/coupon")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/product/excel/download")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/admin/dashboard/**")).permitAll()
                         // health check
                         .requestMatchers(new AntPathRequestMatcher("/health/**")).permitAll()
                         // api path에 admin 포함되면 ROLE_ADMIN 권한이 있어야 접근 가능,
