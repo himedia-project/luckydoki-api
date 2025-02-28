@@ -37,7 +37,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws-stomp")
                 .setAllowedOrigins("http://15.165.150.61:3000", "http://localhost:3000",
                         "http://luckydoki.shop:3000", "http://www.luckydoki.shop:3000",
-                        "http://luckydoki.shop", "https://www.luckydoki.shop"
+                        "http://luckydoki.shop", "https://www.luckydoki.shop",
+                        "http://www.luckydoki.shop", "https://www.luckydoki.shop"
                 )
                 .withSockJS();  //필수 설정값
 
