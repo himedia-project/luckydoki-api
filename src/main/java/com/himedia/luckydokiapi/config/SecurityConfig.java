@@ -94,7 +94,7 @@ public class SecurityConfig {
                         //review product 별 list 보기 허용
                         .requestMatchers("/api/review/list/*").permitAll()
                         // WebSocket handshake만 허용 ,초기 http 연결이 필요하므로 권한 허용을 해주어야 함( 자세히 보면 엔드포인트가 다릅니다)
-                        .requestMatchers("/ws-stomp/**").permitAll()
+                        .requestMatchers("/wss-stomp/**").permitAll()
                         // 정적 리소스에 대한 접근 허용
                         .requestMatchers(new AntPathRequestMatcher("/favicon.ico")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/v2/api-docs")).permitAll()
