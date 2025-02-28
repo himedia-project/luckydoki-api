@@ -1,7 +1,8 @@
 package com.himedia.luckydokiapi.domain.chat.controller;
 
 import com.himedia.luckydokiapi.domain.chat.dto.ChatHistoryDTO;
-import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageDTO;
+import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageResponseDTO;
+import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageRequestDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatRoomDTO;
 import com.himedia.luckydokiapi.domain.chat.service.ChatService;
 import com.himedia.luckydokiapi.exception.NotAccessChatRoom;
@@ -22,9 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -40,7 +39,7 @@ public class ChatController {
     //양방향 통신이므로 return 값이 따로 없고 messagingTemplate.convertAndSend 를 통해 stomp 형식으로 클라이언트에 전송된다
     @Operation(summary = "메세지 전송 및 db 에 저장 api", description = "유저가 보낸 메세지를 db 에 insert 한 뒤 websocket 통신으로 클라이언트에 메세지를 전송합니다")
     @MessageMapping("/message")
-    public void handleMessage(@Parameter(description = "전송할 채팅 메시지 정보", required = true) ChatMessageDTO chatMessageDTO,
+    public void handleMessage(@Parameter(description = "전송할 채팅 메시지 정보", required = true) ChatMessageRequestDTO chatMessageDTO,
                               @Parameter(description = "STOMP 헤더에서 토큰을 추출하여 인증 처리 후에 양방향 통신이 시작됩니다", hidden = true) StompHeaderAccessor stompHeaderAccessor) {
         log.info("chatMessageDTO {}", chatMessageDTO);
         Authentication authentication = (Authentication) stompHeaderAccessor.getUser();
@@ -48,7 +47,7 @@ public class ChatController {
         // roomId가 null 인 경우 (첫 메시지) 채팅방 생성 후 메시지 저장
         // 생성된 채팅방 ID 설정
 
-        ChatMessageDTO savedMessage = chatService.saveMessage(chatMessageDTO, member.getEmail());
+        ChatMessageResponseDTO savedMessage = chatService.saveMessage(chatMessageDTO, member.getEmail());
         messagingTemplate.convertAndSend("/topic/chat/message/" + chatMessageDTO.getRoomId(), savedMessage);
         //구독자에게 메세지 전송
         //클라이언트 구독주소(destination) + 채팅방 번호 + 전송되고 mongodb 애 저장될 메세지(payload)
@@ -107,7 +106,7 @@ public class ChatController {
 
     @GetMapping("/notifications")
     @Operation(summary = "안읽은 수신 메세지 리스트", description = "isRead 값 false 인 메세지 리스트를 조회 합니다 ")
-    public ResponseEntity<List<ChatMessageDTO>> getMessageNotifications(@Parameter(description = "인증된 사용자 정보", hidden = true)
+    public ResponseEntity<List<ChatMessageResponseDTO>> getMessageNotifications(@Parameter(description = "인증된 사용자 정보", hidden = true)
                                                                         @AuthenticationPrincipal final MemberDTO memberDTO) {
         log.info("memberDTO {}", memberDTO);
         return ResponseEntity.ok(chatService.getUnreadNotifications(memberDTO.getEmail()));

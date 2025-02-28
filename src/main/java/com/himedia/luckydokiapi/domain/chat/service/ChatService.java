@@ -2,7 +2,8 @@ package com.himedia.luckydokiapi.domain.chat.service;
 
 import com.himedia.luckydokiapi.domain.chat.document.ChatMessage;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatHistoryDTO;
-import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageDTO;
+import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageResponseDTO;
+import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageRequestDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatRoomDTO;
 
 import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface ChatService {
-    ChatMessageDTO saveMessage(ChatMessageDTO chatMessageDTO, String email);
+    ChatMessageResponseDTO saveMessage(ChatMessageRequestDTO chatMessageDTO, String email);
 
     List<ChatHistoryDTO> getChattingHistory(String email, Long roomId);
 
@@ -22,7 +23,7 @@ public interface ChatService {
 
     List<ChatRoomDTO> findAllChatRooms(String email);
 
-    default ChatMessage convertToDocument(ChatMessageDTO chatMessageDTO, Member member, Shop shop, Long chatRoomId) {
+    default ChatMessage convertToDocument(ChatMessageRequestDTO chatMessageDTO, Member member, Shop shop, Long chatRoomId) {
         return ChatMessage.builder()
                 .roomId(chatRoomId)
                 .email(member.getEmail())
@@ -34,8 +35,8 @@ public interface ChatService {
     }
 
     //클라이언트에 보낼 채팅 메세지 기록
-    default ChatMessageDTO convertToDTO(ChatMessage chatMessage, String sender) {
-        return ChatMessageDTO.builder()
+    default ChatMessageResponseDTO convertToDTO(ChatMessage chatMessage, String sender) {
+        return ChatMessageResponseDTO.builder()
                 .roomId(chatMessage.getRoomId())
                 .shopId(chatMessage.getShopId())
                 .sender(sender)
@@ -76,7 +77,7 @@ public interface ChatService {
     Set<String> getRoomMembers(Long roomId);
 
 
-    List<ChatMessageDTO> getUnreadNotifications(String email);
+    List<ChatMessageResponseDTO> getUnreadNotifications(String email);
 
 
     void changeRead(String email, Long roomId);

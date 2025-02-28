@@ -2,7 +2,8 @@ package com.himedia.luckydokiapi.domain.chat.service;
 
 import com.himedia.luckydokiapi.domain.chat.document.ChatMessage;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatHistoryDTO;
-import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageDTO;
+import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageResponseDTO;
+import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageRequestDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatRoomDTO;
 import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
 import com.himedia.luckydokiapi.domain.chat.repository.ChatMessageRepository;
@@ -20,13 +21,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.himedia.luckydokiapi.domain.member.enums.MemberRole.SELLER;
-import static com.himedia.luckydokiapi.domain.member.enums.MemberRole.USER;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +39,7 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
-    public ChatMessageDTO saveMessage(ChatMessageDTO chatMessageDTO, String email) {
+    public ChatMessageResponseDTO saveMessage(ChatMessageRequestDTO chatMessageDTO, String email) {
         log.info("chatMessageDTO: {}", chatMessageDTO);
         //shop 조회
         Shop shop = getShop(chatMessageDTO.getShopId());
@@ -177,7 +173,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional(readOnly = true)//안읽은 알림 리스트
-    public List<ChatMessageDTO> getUnreadNotifications(String email) {
+    public List<ChatMessageResponseDTO> getUnreadNotifications(String email) {
         Member member = getMember(email);
         //안읽은 채티방 리스트에 참여한 멤버들을 찾기
         // 해당 사용자의 채팅방들을 가져옴
@@ -224,7 +220,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
 
-    private ChatMessageDTO saveMongoAndReturnChatDTO(ChatMessageDTO chatMessageDTO, Member member, Shop shop) {
+    private ChatMessageResponseDTO saveMongoAndReturnChatDTO(ChatMessageRequestDTO chatMessageDTO, Member member, Shop shop) {
         //채팅룸의 아이디로 엔티티 조회
         ChatRoom chatRoom = getChatroom(chatMessageDTO.getRoomId());
         String sender = this.getRoomMembers(chatRoom.getId()).stream()

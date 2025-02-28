@@ -1,6 +1,6 @@
 package com.himedia.luckydokiapi.domain.notification.service;
 
-import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageDTO;
+import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageResponseDTO;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.notification.dto.NotificationResponseDTO;
@@ -87,12 +87,12 @@ public class NotificationService {
      * @param targetEmail 알림을 받을 회원 이메일
      */
 
-    public void sendChattingMessage(String targetEmail, ChatMessageDTO chatMessageDTO , Member member) {
+    public void sendChattingMessage(String targetEmail, ChatMessageResponseDTO chatMessageResponseDTO, Member member) {
         log.info("sendChattingMessage notification: target targetEmail {}", targetEmail);
         Member target = memberRepository.getWithRoles(targetEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 회원이 없습니다. targetEmail: " + targetEmail));
         String title = member.getNickName() + "님 에게 새 메세지가 도착하였습니다!";
-        String body = chatMessageDTO.getMessage();
+        String body = chatMessageResponseDTO.getMessage();
 
         Notification notification = Notification.of(
                 NotificationType.NEW_MESSAGE,
