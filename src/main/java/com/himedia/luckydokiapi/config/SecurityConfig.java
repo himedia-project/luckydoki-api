@@ -86,6 +86,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/image/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/coupon")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/product/excel/download")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/admin/dashboard/**")).permitAll()
                         // health check
                         .requestMatchers(new AntPathRequestMatcher("/health/**")).permitAll()
                         // api path에 admin 포함되면 ROLE_ADMIN 권한이 있어야 접근 가능,
@@ -158,8 +159,15 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001",
                 "http://15.165.150.61","http://15.165.150.61:3000", "http://15.165.150.61:3001", // EC2 퍼블릭 IP 3000, 3001 포트 허용
                 "https://openapi.map.naver.com",
-                "http://friendzoo.shop","http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
-                "http://www.friendzoo.shop","http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
+                "http://luckydoki.shop:3000", "https://luckydoki.shop:3000",
+                "http://www.luckydoki.shop:3000", "https://www.luckydoki.shop:3000",
+                "http://luckydoki.shop", "https://luckydoki.shop",
+                "http://www.luckydoki.shop", "https://www.luckydoki.shop","https://www.luckydoki.shop/",
+                // admin.luckydoki.shop
+                "http://admin.luckydoki.shop", "https://admin.luckydoki.shop",
+                "http://www.admin.luckydoki.shop", "https://www.admin.luckydoki.shop",
+//                "http://friendzoo.shop","http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
+//                "http://www.friendzoo.shop","http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
                 "http://friendzoo.store", "http://friendzoo.store:3000", "http://friendzoo.store:3001",
                 "http://www.friendzoo.store", "http://www.friendzoo.store:3000", "http://www.friendzoo.store:3001",
                 "http://www.admin.friendzoo.store", "http://admin.friendzoo.store"
