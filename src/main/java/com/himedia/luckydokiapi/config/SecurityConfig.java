@@ -158,8 +158,9 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001",
                 "http://15.165.150.61","http://15.165.150.61:3000", "http://15.165.150.61:3001", // EC2 퍼블릭 IP 3000, 3001 포트 허용
                 "https://openapi.map.naver.com",
-                "http://friendzoo.shop","http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
-                "http://www.friendzoo.shop","http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
+                "http://luckydokiai.shop:3000", "https://luckydokiai.shop:3001",
+//                "http://friendzoo.shop","http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
+//                "http://www.friendzoo.shop","http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
                 "http://friendzoo.store", "http://friendzoo.store:3000", "http://friendzoo.store:3001",
                 "http://www.friendzoo.store", "http://www.friendzoo.store:3000", "http://www.friendzoo.store:3001",
                 "http://www.admin.friendzoo.store", "http://admin.friendzoo.store"
