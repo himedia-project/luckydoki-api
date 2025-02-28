@@ -39,6 +39,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                         containsKeyword(requestDTO.getSearchKeyword())
                 )
                 .orderBy(community.id.desc())
+                .distinct()
                 .fetch();
     }
 

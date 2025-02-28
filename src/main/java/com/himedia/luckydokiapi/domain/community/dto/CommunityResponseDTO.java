@@ -29,7 +29,6 @@ public class CommunityResponseDTO {
     private String title;
     private String content;
     private List<String> uploadFileNames;
-    private List<Long> productIds;
     private List<ProductDTO.Response> productDTOs;
     private List<TagDTO> tagList;
 
@@ -46,7 +45,6 @@ public class CommunityResponseDTO {
                 .title(community.getTitle())
                 .content(community.getContent())
                 .uploadFileNames(community.getImageList().stream().map(CommunityImage::getImageName).toList())
-                .productIds(community.getCommunityProductList().stream().map(communityProduct -> communityProduct.getProduct().getId()).toList())
                 .productDTOs(community.getCommunityProductList().stream().map(communityProduct -> ProductDTO.Response.from(communityProduct.getProduct())).toList())
                 .createdAt(community.getCreatedAt())
                 .tagList(community.getTagList())
