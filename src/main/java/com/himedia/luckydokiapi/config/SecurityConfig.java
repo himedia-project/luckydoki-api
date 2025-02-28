@@ -160,6 +160,7 @@ public class SecurityConfig {
                 "https://openapi.map.naver.com",
                 "http://luckydoki.shop:3000", "https://luckydoki.shop:3000",
                 "http://www.luckydoki.shop:3000", "https://www.luckydoki.shop:3000",
+                "http://luckydoki.shop", "https://luckydoki.shop",
 //                "http://friendzoo.shop","http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
 //                "http://www.friendzoo.shop","http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
                 "http://friendzoo.store", "http://friendzoo.store:3000", "http://friendzoo.store:3001",
