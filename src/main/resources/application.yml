@@ -164,7 +164,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://luckydoki:luckydoki@mongodb:27017/chatdb?authSource=admin
+      uri: mongodb://luckydoki:luckydoki@localhost:27017/chatdb?authSource=admin
 
 
 app:
