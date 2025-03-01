@@ -121,7 +121,7 @@ public class ChatServiceImpl implements ChatService {
         Member member = getMember(email);
 
         //로그인한 회원의 메세지 룸 가져오기
-        List<ChatRoom> chatRoomList = chatRoomRepository.findByMemberOrShopMemberOrderByLastMessageTimeDesc(member.getEmail());
+        List<ChatRoom> chatRoomList = chatRoomRepository.findByMemberOrShopMemberOrderByLastMessageTimeAsc(member.getEmail());
         //메세지룸의 룸 아이디들을 가져오기
         List<Long> roomIds = chatRoomList.stream().map(ChatRoom::getId).toList();
         //룸 아이디들로 마지막 메세지 찾기
