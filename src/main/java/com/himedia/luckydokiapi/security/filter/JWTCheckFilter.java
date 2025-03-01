@@ -142,6 +142,8 @@ public class JWTCheckFilter extends OncePerRequestFilter {
                         || request.getServletPath().startsWith("/api/category/")
                         // admin dashboard 관련 api
                         || request.getServletPath().startsWith("/api/admin/dashboard")
+                        // chat 관련 api
+                        || request.getServletPath().startsWith("/api/chat/")
 
 
         )) {
