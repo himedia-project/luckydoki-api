@@ -42,22 +42,21 @@ spring:
         use_sql_comments: true # JPQL SQL 주석 사용
         default_batch_fetch_size: 100 # 기본 배치 크기 설정
   #
-#  sql:
-#    init:
-#      platform: mysql # SQL 초기화 플랫폼 (mysql, h2, postgresql, oracle, sqlserver)
-#      data-locations: classpath:sql/data.sql # ddl-auto가 create, create-drop, update일 경우에만 해당, validate/none일 경우 무시됨
-#      mode: always # SQL 초기화 모드 (always, never, embedded, embedded-always)
+  #  sql:
+  #    init:
+  #      platform: mysql # SQL 초기화 플랫폼 (mysql, h2, postgresql, oracle, sqlserver)
+  #      data-locations: classpath:sql/data.sql # ddl-auto가 create, create-drop, update일 경우에만 해당, validate/none일 경우 무시됨
+  #      mode: always # SQL 초기화 모드 (always, never, embedded, embedded-always)
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: yhome3@gmail.com
-    password: spha mpem idfp uxpf
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
       mail.smtp.ssl.trust: smtp.gmail.com
-
 
   thymeleaf:
     prefix: classpath:/templates/
@@ -65,9 +64,6 @@ spring:
     mode: HTML
     encoding: UTF-8
     cache: true
-
-
-
 
 app:
   props:
@@ -109,20 +105,13 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3308/luckydoki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: luckydoki
-    password: luckydoki
+    url: ${LOCAL_MYSQL_URL}
+    username: ${LOCAL_MYSQL_USERNAME}
+    password: ${LOCAL_MYSQL_PASSWORD}
 
   data:
     mongodb:
-      uri: mongodb://luckydoki:luckydoki@localhost:27017/chatdb?authSource=admin
-      #      host: mongodb
-      #      port: 27017
-      #      database: chatdb
-      #      authentication-database: admin
-      #      username: luckydoki
-      #      password: luckydoki
-      #사용자 섧정
+      uri: ${LOCAL_MONGODB_URI}
 
 app:
   props:
@@ -150,13 +139,11 @@ spring:
       data-locations: classpath:sql/data.sql # ddl-auto가 create, create-drop, update일 경우에만 해당, validate/none일 경우 무시됨
       mode: never # SQL 초기화 모드 (always, never, embedded, embedded-always)
 
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    #    url: jdbc:mysql://host.docker.internal:3306/aniwhere?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    url: jdbc:mysql://localhost:3308/luckydoki?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: luckydoki
-    password: luckydoki
+    url: ${PROD_MYSQL_URL}
+    username: ${PROD_MYSQL_USERNAME}
+    password: ${PROD_MYSQL_PASSWORD}
     hikari:
       max-lifetime: 600000 # 최대 수명 (밀리초)
       idle-timeout: 300000 # 유휴 시간 (밀리초)
@@ -164,8 +151,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://luckydoki:luckydoki@localhost:27017/chatdb?authSource=admin
-
+      uri: ${PROD_MONGODB_URI}
 
 app:
   props:
@@ -177,19 +163,3 @@ logging:
   level:
     org.hibernate.SQL: error # Hibernate SQL 로그 레벨
 
-
----
-
-#spring:
-#  config:
-#    activate:
-#      on-profile: docker
-#  data:
-#    mongodb:
-#       uri: mongodb://luckydoki:luckydoki@chatdb:27017/chatdb?authSource=admin
-#      host: chatdb # ㄷㅗ커 컨테이너 이름
-#      port: 27017
-#      database: chatdb
-#      username: luckydoki
-#      password: luckydoki
-#      authentication-database: admin
