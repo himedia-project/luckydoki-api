@@ -5,10 +5,7 @@ import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -41,5 +38,10 @@ public class ChatRoom {
     private String shopImage;
 
     private LocalDateTime createdAt;
+
+    @Setter
     private LocalDateTime lastMessageTime;
+
+
+
 }

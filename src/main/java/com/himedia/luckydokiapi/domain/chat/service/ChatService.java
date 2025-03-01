@@ -68,6 +68,7 @@ public interface ChatService {
                 .shopImage(chatRoom.getShopImage())
                 .createdAt(chatRoom.getCreatedAt())
                 .shopName(chatRoom.getShop().getMember().getNickName())
+                .memberImage(chatRoom.getMember().getProfileImage())
                 .lastMessage(message == null ? null : message)
                 .lastMessageTime(chatRoom.getLastMessageTime())
                 .build();

@@ -62,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public List<CommentResponseDTO> getCommentsByCommunity(Long communityId) {
-        List<Comment> comments = commentRepository.findByCommunityId(communityId);
+        List<Comment> comments = commentRepository.findByCommunityIdDesc(communityId);
         return comments.stream()
                 .map(CommentResponseDTO::new)
                 .collect(Collectors.toList());

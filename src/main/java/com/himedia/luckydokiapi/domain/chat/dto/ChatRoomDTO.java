@@ -20,6 +20,7 @@ public class ChatRoomDTO {
     private String sender;
     private Long shopId;
     private String shopImage;
+    private String memberImage;
     private String shopName;
     private String lastMessage;
     private LocalDateTime createdAt;

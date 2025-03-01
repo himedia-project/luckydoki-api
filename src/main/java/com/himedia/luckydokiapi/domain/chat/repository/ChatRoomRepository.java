@@ -19,6 +19,9 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     @Query("SELECT c FROM ChatRoom c WHERE c.member.email = :email OR c.shop.member.email = :email")
     List<ChatRoom> findByMemberOrShopMember(@Param("email") String email);
 
+    @Query("SELECT c FROM ChatRoom c WHERE c.member.email = :email OR c.shop.member.email = :email ORDER BY c.lastMessageTime DESC")
+    List<ChatRoom> findByMemberOrShopMemberOrderByLastMessageTimeDesc(String email);
+
 
     @Query("select e from ChatRoom e where e.member.email=:email or e.shop.member.email =:email and e.id =:roomId")
     Optional<ChatRoom> findChatRoom(@Param("email") String email, @Param("roomId") Long roomId);

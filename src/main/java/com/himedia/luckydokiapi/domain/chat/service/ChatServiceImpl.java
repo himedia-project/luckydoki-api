@@ -121,7 +121,7 @@ public class ChatServiceImpl implements ChatService {
         Member member = getMember(email);
 
         //로그인한 회원의 메세지 룸 가져오기
-        List<ChatRoom> chatRoomList = chatRoomRepository.findByMemberOrShopMember(member.getEmail());
+        List<ChatRoom> chatRoomList = chatRoomRepository.findByMemberOrShopMemberOrderByLastMessageTimeDesc(member.getEmail());
         //메세지룸의 룸 아이디들을 가져오기
         List<Long> roomIds = chatRoomList.stream().map(ChatRoom::getId).toList();
         //룸 아이디들로 마지막 메세지 찾기
@@ -205,8 +205,6 @@ public class ChatServiceImpl implements ChatService {
     }
 
 
-
-
     private Member getMember(String email) {
         return memberRepository.getWithRoles(email).orElseThrow(() -> new EntityNotFoundException("Member with email " + email + " not found"));
     }
@@ -223,6 +221,8 @@ public class ChatServiceImpl implements ChatService {
     private ChatMessageResponseDTO saveMongoAndReturnChatDTO(ChatMessageRequestDTO chatMessageRequestDTO, Member member, Shop shop) {
         //채팅룸의 아이디로 엔티티 조회
         ChatRoom chatRoom = getChatroom(chatMessageRequestDTO.getRoomId());
+        chatRoom.setLastMessageTime(chatMessageRequestDTO.getSendTime());
+
         String sender = this.getRoomMembers(chatRoom.getId()).stream()
                 .filter(roomMember -> !roomMember.equals(member.getEmail()))
                 .findFirst()
@@ -232,7 +232,7 @@ public class ChatServiceImpl implements ChatService {
         //mongodb 에 저장된 document
         mongoTemplate.save(chatMessage);
         //저장된 document 를 다시 dto 로 변환하여 전달
-        notificationService.sendChattingMessage(sender, convertToDTO(chatMessage, sender) , member);
+        notificationService.sendChattingMessage(sender, convertToDTO(chatMessage, sender), member);
 
         return this.convertToDTO(chatMessage, sender);
     }

@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-
-    List<Comment> findByCommunityId(Long communityId);
+@Query("select c from Comment c where c.id =:id order by c.createdAt desc ")
+    List<Comment> findByCommunityIdDesc(Long communityId);
 
     @Modifying
     @Query("DELETE FROM Comment c WHERE c.member.email = :email")
