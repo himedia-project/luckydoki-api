@@ -165,12 +165,7 @@ public class SecurityConfig {
                 "http://www.luckydoki.shop", "https://www.luckydoki.shop","https://www.luckydoki.shop/",
                 // admin.luckydoki.shop
                 "http://admin.luckydoki.shop", "https://admin.luckydoki.shop",
-                "http://www.admin.luckydoki.shop", "https://www.admin.luckydoki.shop",
-//                "http://friendzoo.shop","http://friendzoo.shop:3000", "http://friendzoo.shop:3001",
-//                "http://www.friendzoo.shop","http://www.friendzoo.shop:3000", "http://www.friendzoo.shop:3001",
-                "http://friendzoo.store", "http://friendzoo.store:3000", "http://friendzoo.store:3001",
-                "http://www.friendzoo.store", "http://www.friendzoo.store:3000", "http://www.friendzoo.store:3001",
-                "http://www.admin.friendzoo.store", "http://admin.friendzoo.store"
+                "http://www.admin.luckydoki.shop", "https://www.admin.luckydoki.shop"
         ));
         // 허용할 메서드 설정
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
