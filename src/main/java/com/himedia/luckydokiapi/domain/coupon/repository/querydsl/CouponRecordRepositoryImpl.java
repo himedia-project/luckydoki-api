@@ -67,6 +67,7 @@ public class CouponRecordRepositoryImpl implements CouponRecordRepositoryCustom 
                 .select(couponRecord.coupon)
                 .from(couponRecord)
                 .join(couponRecord.member, member).on(member.email.eq(email))
+                .orderBy(couponRecord.id.desc())
                 .fetch();
     }
 
