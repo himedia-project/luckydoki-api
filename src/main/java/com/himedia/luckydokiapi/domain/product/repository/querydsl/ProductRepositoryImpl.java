@@ -157,6 +157,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .join(product.shop, shop)
                 .join(shop.member)
                 .where(shop.member.email.eq(email))
+                .orderBy(product.id.desc())
                 .fetch();
     }
 
