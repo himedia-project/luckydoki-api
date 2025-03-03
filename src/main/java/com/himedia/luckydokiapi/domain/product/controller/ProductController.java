@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -56,5 +58,20 @@ public class ProductController {
         log.info("validateProductCount id: {}, count: {}", id, count);
         productService.validateProductCount(id, count);
         return ResponseEntity.ok("product validate count id: " + id);
+    }
+
+    @GetMapping("/recent-changes")
+    public ResponseEntity<List<Long>> getRecentlyChangedProducts(@RequestParam String since) {
+        log.info("getRecentlyChangedProducts since: {}", since);
+        LocalDateTime fromTime = LocalDateTime.parse(since, DateTimeFormatter.ISO_DATE_TIME);
+        // ex. since=2021-08-01T00:00:00 -> 2021-08-01 00:00:00
+        return ResponseEntity.ok(productService.getRecentlyChangedProducts(fromTime));
+    }
+
+    @GetMapping("/recent-additions")
+    public ResponseEntity<List<Long>> getRecentlyAddedProducts(@RequestParam String since) {
+        log.info("getRecentlyAddedProducts since: {}", since);
+        LocalDateTime fromTime = LocalDateTime.parse(since, DateTimeFormatter.ISO_DATE_TIME);
+        return ResponseEntity.ok(productService.getRecentlyAddedProducts(fromTime));
     }
 }

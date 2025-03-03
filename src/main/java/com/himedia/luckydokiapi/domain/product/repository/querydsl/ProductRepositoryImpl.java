@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.himedia.luckydokiapi.domain.cart.entity.QCartItem.cartItem;
@@ -258,6 +259,35 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         }
 
         return recommendList;
+    }
+
+    @Override
+    public List<Long> getRecentlyChangedProducts(LocalDateTime fromTime) {
+        return queryFactory
+                .select(product.id)
+                .from(product)
+                .where(
+                        product.delFlag.eq(false),
+                        product.approvalStatus.eq(ProductApproval.Y),
+                        // 최근 수정일이나 생성일이 fromTime 이후인 상품
+                        product.modifiedAt.after(fromTime).or(product.createdAt.after(fromTime))
+                )
+                .fetch();
+    }
+
+    @Override
+    public List<Long> getRecentlyAddedProducts(LocalDateTime fromTime) {
+        return queryFactory
+                .select(product.id)
+                .from(product)
+                .where(
+                        product.delFlag.eq(false),
+                        product.approvalStatus.eq(ProductApproval.Y),
+                        // 생성일이 fromTime 이후인 상품만 조회 (수정일은 고려하지 않음)
+                        product.createdAt.after(fromTime)
+                )
+                .orderBy(product.createdAt.desc())
+                .fetch();
     }
 
     /**

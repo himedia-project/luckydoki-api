@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -317,6 +318,20 @@ public class ProductServiceImpl implements ProductService {
         if (count > product.getStockNumber()) {
             throw new OutOfStockException("해당 상품은 재고수량 삭제할 수 없습니다. 상품 id: " + id);
         }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Long> getRecentlyChangedProducts(LocalDateTime fromTime) {
+        log.info("최근 변경된 상품 조회: {}", fromTime);
+        return productRepository.getRecentlyChangedProducts(fromTime);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Long> getRecentlyAddedProducts(LocalDateTime fromTime) {
+        log.info("최근 추가된 상품 조회: {}", fromTime);
+        return productRepository.getRecentlyAddedProducts(fromTime);
     }
 
 
