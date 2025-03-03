@@ -403,6 +403,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         if (searchKeyword == null) {
             return null;
         }
+        searchKeyword = searchKeyword.trim();
         return product.name.contains(searchKeyword)
                 .or(product.category.name.contains(searchKeyword))
                 .or(tag.name.contains(searchKeyword));

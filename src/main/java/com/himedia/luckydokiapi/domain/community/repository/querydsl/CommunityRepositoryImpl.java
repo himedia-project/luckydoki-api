@@ -63,6 +63,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
         if (searchKeyword == null) {
             return null;
         }
+        searchKeyword = searchKeyword.trim();
         return community.content.contains(searchKeyword)
                 .or(product.name.contains(searchKeyword))
                 .or(tag.name.contains(searchKeyword));
