@@ -8,6 +8,7 @@ import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.order.enums.OrderStatus;
 import com.himedia.luckydokiapi.domain.order.repository.OrderRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
+import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.sales.dto.SalesData;
 import com.himedia.luckydokiapi.domain.sales.service.SalesService;
@@ -59,8 +60,10 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         // 한달 내 신규 셀러수
         Long newSellerCount = memberRepository.countNewSellersInLastMonth(monthAgo);
 
-        // 총 상품 등록 수
-        Long totalProductCount = productRepository.count();
+        // 총 상품(승인 o && 삭제여부=false) 등록 수
+        Long totalProductCount = productRepository.findAll().stream()
+                .filter(product -> product.getApprovalStatus() == ProductApproval.Y && !product.getDelFlag())
+                .count();
         // 총 커뮤니티 게시글 수
         Long totalCommunityCount = communityRepository.count();
 
