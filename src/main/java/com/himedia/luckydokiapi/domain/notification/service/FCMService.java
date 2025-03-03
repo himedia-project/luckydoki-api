@@ -20,7 +20,7 @@ public class FCMService {
         log.info("sendNotification shopId: {}, token: {}, title: {}, body: {}, type: {}", shopId, token, title, body, type);
         Message message = Message.builder()
                 .putData("type", type.name())
-                .putData("shopId", shopId == null ? null : shopId.toString())
+                .putData("shopId", shopId == null ? "" : shopId.toString())
                 .putData("targetEmail", targetEmail) // 데이터에 추가
                 .putData("title", title)  // 데이터에도 추가
                 .putData("body", body)    // 데이터에도 추가
