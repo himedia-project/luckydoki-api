@@ -25,8 +25,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.himedia.luckydokiapi.domain.product.entity.QProduct.product;
-
 
 @Slf4j
 @Transactional
@@ -126,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
 
         try {
             List<MultipartFile> files = dto.getFiles();
-            List<String> uploadS3FilesNames = fileUtil.uploadS3Files(files);
+            List<String> uploadS3FilesNames = fileUtil.uploadToThumbnailS3Files(files);
             log.info("uploadS3FilesNames: {}", uploadS3FilesNames);
             //s3업로드
             dto.setUploadFileNames(uploadS3FilesNames);
