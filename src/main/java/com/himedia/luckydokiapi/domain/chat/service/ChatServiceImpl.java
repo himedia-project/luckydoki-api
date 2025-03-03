@@ -167,7 +167,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Long deleteChatRoom(String email, Long roomId) {
         Member member = getMember(email);
-        chatRoomRepository.deleteByRoomIdAndEmail(member.getEmail(), roomId);
+        chatRoomRepository.deleteById(roomId);
         return roomId;
     }
 
