@@ -42,7 +42,7 @@ public class NotificationService {
                 member.getFcmToken()
         );
         notificationRepository.save(notification);
-        this.fcmNotificationSender(member, title, body, type);
+        this.fcmNotificationSender(null, member, title, body, type);
     };
 
 
@@ -61,8 +61,8 @@ public class NotificationService {
      *
      * @param targetEmail 알림을 받을 회원 이메일
      */
-    public void sendSellerApproval(String targetEmail) {
-        log.info("sendSellerApproval notification: target targetEmail {}", targetEmail);
+    public void sendSellerApproval(Long shopId, String targetEmail) {
+        log.info("sendSellerApproval notification: shopId: {}, target targetEmail {}", shopId, targetEmail);
         Member member = memberRepository.getWithRoles(targetEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 회원이 없습니다. targetEmail: " + targetEmail));
         String title = "셀러 승인";
@@ -77,7 +77,7 @@ public class NotificationService {
                 member.getFcmToken()
         );
         notificationRepository.save(notification);
-        this.fcmNotificationSender(member, title, body, NotificationType.SELLER_APPROVAL);
+        this.fcmNotificationSender(shopId, member, title, body, NotificationType.SELLER_APPROVAL);
     }
 
 
@@ -102,7 +102,7 @@ public class NotificationService {
                 target.getFcmToken()
         );
         notificationRepository.save(notification);
-        this.fcmNotificationSender(target, title, body, NotificationType.NEW_MESSAGE);
+        this.fcmNotificationSender(null, target, title, body, NotificationType.NEW_MESSAGE);
     }
 
 
@@ -125,7 +125,7 @@ public class NotificationService {
                     member.getFcmToken()
             );
             notificationRepository.save(notification);
-            this.fcmNotificationSender(member, title, body, NotificationType.PRODUCT_APPROVAL);
+            this.fcmNotificationSender(null, member, title, body, NotificationType.PRODUCT_APPROVAL);
         }
     }
 
@@ -151,11 +151,12 @@ public class NotificationService {
      * @param title  제목
      * @param body   내용
      */
-    private void fcmNotificationSender(Member member, String title, String body, NotificationType type) {
+        private void fcmNotificationSender(Long shopId, Member member, String title, String body, NotificationType type) {
         // FCM 알림 전송
         if (member.getFcmToken() != null) {
             log.info("sendSellerApprovalNotification: FCM 알림 전송됨! member.getFcmToken(): {}", member.getFcmToken());
             fcmService.sendNotification(
+                    shopId,
                     member.getEmail(),
                     member.getFcmToken(),
                     title,

@@ -16,10 +16,11 @@ import java.time.LocalDateTime;
 @Transactional
 public class FCMService {
 
-    public void sendNotification(String targetEmail, String token, String title, String body, NotificationType type) {
-        log.info("sendNotification token: {}, title: {}, body: {}, type: {}", token, title, body, type);
+    public void sendNotification(Long shopId, String targetEmail, String token, String title, String body, NotificationType type) {
+        log.info("sendNotification shopId: {}, token: {}, title: {}, body: {}, type: {}", shopId, token, title, body, type);
         Message message = Message.builder()
                 .putData("type", type.name())
+                .putData("shopId", shopId.toString())
                 .putData("targetEmail", targetEmail) // 데이터에 추가
                 .putData("title", title)  // 데이터에도 추가
                 .putData("body", body)    // 데이터에도 추가

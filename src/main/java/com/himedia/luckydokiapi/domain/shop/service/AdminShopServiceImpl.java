@@ -77,10 +77,10 @@ public class AdminShopServiceImpl implements AdminShopService {
         memberRepository.save(member);
 
         // 샵이 없으므로 샵 save
-        shopRepository.save(Shop.from(application, member));
+        Shop savedShop = shopRepository.save(Shop.from(application, member));
 
-        // ✅ 승인처리 알림
-        notificationService.sendSellerApproval(member.getEmail());
+        // ✅ 셀러 승인처리 알림
+        notificationService.sendSellerApproval(savedShop.getId(), member.getEmail());
 
         return application.getId();
     }
