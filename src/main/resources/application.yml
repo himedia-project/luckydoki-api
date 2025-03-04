@@ -27,7 +27,7 @@ spring:
   #    throw-exception-if-no-handler-found: true # 요청 처리 핸들러 없을 때 예외 처리
   servlet:
     multipart:
-      max-request-size: 30MB # 최대 요청 크기
+      max-request-size: 30MB # 최대 요청 크기, ⭐nginx client_max_body_size와 동일하게 설정
       max-file-size: 10MB # 최대 파일 크기
   jpa:
     open-in-view: false # open in view 설정
