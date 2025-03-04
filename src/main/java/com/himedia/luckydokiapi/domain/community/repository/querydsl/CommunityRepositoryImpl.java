@@ -57,6 +57,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .leftJoin(community.imageList, communityImage).on(communityImage.ord.eq(0))
                 .leftJoin(community.communityTagList, communityTag)
                 .leftJoin(communityTag.tag, tag)
+                .leftJoin(community.communityProductList, communityProduct)
+                .leftJoin(communityProduct.product, product)
                 .where(
                         containsSearchKeyword(requestDTO.getSearchKeyword())
                 )
@@ -76,6 +78,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .leftJoin(community.imageList, communityImage).on(communityImage.ord.eq(0))
                 .leftJoin(community.communityTagList, communityTag)
                 .leftJoin(communityTag.tag, tag)
+                .leftJoin(community.communityProductList, communityProduct)
+                .leftJoin(communityProduct.product, product)
                 .where(
                         containsSearchKeyword(requestDTO.getSearchKeyword())
                 )
@@ -129,7 +133,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
         return sort.stream()
                 .map(order -> new OrderSpecifier(
                         order.isAscending() ? Order.ASC : Order.DESC,
-                        new PathBuilder<>(Product.class, "product").get(order.getProperty())
+                        new PathBuilder<>(Product.class, "community").get(order.getProperty())
                 ))
                 .toArray(OrderSpecifier[]::new);
     }
