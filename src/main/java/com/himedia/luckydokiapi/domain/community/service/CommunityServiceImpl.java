@@ -55,10 +55,18 @@ public class CommunityServiceImpl implements CommunityService {
         return CommunityResponseDTO.from(community);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<CommunityResponseDTO> list(CommunitySearchDTO request, String email) {
+        return communityRepository.findByDTO(request).stream()
+                .map(CommunityResponseDTO::from)
+                .collect(Collectors.toList());
+    }
+
 
     @Transactional(readOnly = true)
     @Override
-    public PageResponseDTO<CommunityResponseDTO> list(CommunitySearchDTO requestDTO, String email) {
+    public PageResponseDTO<CommunityResponseDTO> listPage(CommunitySearchDTO requestDTO, String email) {
         Page<Community> result = communityRepository.findListBy(requestDTO);
         return PageResponseDTO.<CommunityResponseDTO>withAll()
                 .dtoList(result.stream().map(CommunityResponseDTO::from).collect(Collectors.toList()))

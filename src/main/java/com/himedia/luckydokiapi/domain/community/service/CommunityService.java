@@ -12,7 +12,9 @@ import java.util.List;
 public interface CommunityService {
     CommunityResponseDTO getCommunityById(Long communityId);
 
-    PageResponseDTO<CommunityResponseDTO> list(CommunitySearchDTO request, String email);
+    List<CommunityResponseDTO> list(CommunitySearchDTO request, String email);
+
+    PageResponseDTO<CommunityResponseDTO> listPage(CommunitySearchDTO request, String email);
 
     List<CommunityResponseDTO> getCommunitiesByMemberEmail(String email);
 

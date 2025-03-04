@@ -6,7 +6,6 @@ import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.service.CommunityService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.security.MemberDTO;
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,13 +33,24 @@ public class CommunityController {
         return ResponseEntity.ok(communityService.getCommunityById(id));
     }
 
+
     @GetMapping("/list")
     @Operation(summary = "커뮤니티 글 검색", description = "dto 속 키워드에 해당하는 커뮤니티 게사글을 보여줍니다 ")
-    public ResponseEntity<PageResponseDTO<CommunityResponseDTO>> searchCommunities(CommunitySearchDTO requestDTO, @Parameter(description = "인증된 사용자 정보", hidden = true)
+    public ResponseEntity<List<CommunityResponseDTO>> searchCommunities(CommunitySearchDTO requestDTO, @Parameter(description = "인증된 사용자 정보", hidden = true)
     @AuthenticationPrincipal MemberDTO memberDTO) {
         String email = (memberDTO != null) ? memberDTO.getEmail() : null;
         log.info("searchCommunities requestDTO: {}, email: {}", requestDTO, email);
-        return ResponseEntity.ok(communityService.list(requestDTO, email));
+        List<CommunityResponseDTO> result = communityService.list(requestDTO, email);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/list/page")
+    @Operation(summary = "커뮤니티 글 검색", description = "dto 속 키워드에 해당하는 커뮤니티 게사글을 보여줍니다 ")
+    public ResponseEntity<PageResponseDTO<CommunityResponseDTO>> searchCommunitiePages(CommunitySearchDTO requestDTO, @Parameter(description = "인증된 사용자 정보", hidden = true)
+    @AuthenticationPrincipal MemberDTO memberDTO) {
+        String email = (memberDTO != null) ? memberDTO.getEmail() : null;
+        log.info("search page Communities requestDTO: {}, email: {}", requestDTO, email);
+        return ResponseEntity.ok(communityService.listPage(requestDTO, email));
     }
 
     @PostMapping
