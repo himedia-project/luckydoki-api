@@ -5,14 +5,14 @@ import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
-import com.himedia.luckydokiapi.domain.shop.dto.ShopCommunityResponseDTO;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
 
 import java.util.List;
 
 public interface CommunityService {
     CommunityResponseDTO getCommunityById(Long communityId);
 
-    List<CommunityResponseDTO> list(CommunitySearchDTO request, String email);
+    PageResponseDTO<CommunityResponseDTO> list(CommunitySearchDTO request, String email);
 
     List<CommunityResponseDTO> getCommunitiesByMemberEmail(String email);
 

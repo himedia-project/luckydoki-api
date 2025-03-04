@@ -4,6 +4,7 @@ import com.himedia.luckydokiapi.domain.community.dto.CommunityRequestDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.service.CommunityService;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +36,7 @@ public class CommunityController {
 
     @GetMapping("/list")
     @Operation(summary = "커뮤니티 글 검색", description = "dto 속 키워드에 해당하는 커뮤니티 게사글을 보여줍니다 ")
-    public ResponseEntity<List<CommunityResponseDTO>> searchCommunities(CommunitySearchDTO requestDTO, @Parameter(description = "인증된 사용자 정보", hidden = true)
+    public ResponseEntity<PageResponseDTO<CommunityResponseDTO>> searchCommunities(CommunitySearchDTO requestDTO, @Parameter(description = "인증된 사용자 정보", hidden = true)
     @AuthenticationPrincipal MemberDTO memberDTO) {
         String email = (memberDTO != null) ? memberDTO.getEmail() : null;
         log.info("searchCommunities requestDTO: {}, email: {}", requestDTO, email);

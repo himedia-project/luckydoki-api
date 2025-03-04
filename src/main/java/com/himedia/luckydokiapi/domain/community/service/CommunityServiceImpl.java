@@ -17,13 +17,13 @@ import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.entity.Tag;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.product.repository.TagRepository;
-import com.himedia.luckydokiapi.domain.shop.dto.ShopCommunityResponseDTO;
-import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
+import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,10 +58,13 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CommunityResponseDTO> list(CommunitySearchDTO request, String email) {
-        return communityRepository.findByDTO(request).stream()
-                .map(CommunityResponseDTO::from)
-                .collect(Collectors.toList());
+    public PageResponseDTO<CommunityResponseDTO> list(CommunitySearchDTO requestDTO, String email) {
+        Page<Community> result = communityRepository.findListBy(requestDTO);
+        return PageResponseDTO.<CommunityResponseDTO>withAll()
+                .dtoList(result.stream().map(CommunityResponseDTO::from).collect(Collectors.toList()))
+                .totalCount(result.getTotalElements())
+                .pageRequestDTO(requestDTO)
+                .build();
     }
 
     @Transactional(readOnly = true)
