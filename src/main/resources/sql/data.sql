@@ -2,17 +2,12 @@
 SET FOREIGN_KEY_CHECKS = 0;  -- 외래키 체크 비활성화
 
 -- 기존 데이터 삭제
-DELETE FROM `coupon`;
 DELETE FROM `category`;
 
 -- Auto Increment 초기화
-ALTER TABLE `coupon` AUTO_INCREMENT = 1;
 ALTER TABLE `category` AUTO_INCREMENT = 1;
 
 SET FOREIGN_KEY_CHECKS = 1;  -- 외래키 체크 다시 활성화
-
-# 쿠폰 데이터 추가
-INSERT INTO `coupon` (`end_date`, `start_date`, `id`,`code`, `content`, `name`, `status`, `discount_price`, `minimum_usage_amount`) VALUES ('2026-02-12', '2025-02-12', 1, '3285037658', '😊첫회원가입축하쿠폰! 3000원 할인이 됩니다!', '🎉회원가입축하쿠폰', 'ACTIVE', 3000, 30000);
 
 # 카테고리 데이터 추가
 INSERT INTO `category` (`id`, `last_type`, `logo`, `name`, `parent_id`) VALUES (1, 'N', NULL, '패션/주얼리', NULL);

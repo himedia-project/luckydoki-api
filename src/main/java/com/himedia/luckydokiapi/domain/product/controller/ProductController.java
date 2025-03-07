@@ -36,6 +36,7 @@ public class ProductController {
     public ResponseEntity<List<ProductDTO.Response>> searchProducts(ProductSearchDTO requestDTO, @AuthenticationPrincipal MemberDTO memberDTO) {
         String email = (memberDTO != null) ? memberDTO.getEmail() : null;
         log.info("searchProducts: {},email :{}", requestDTO, email);
+
         return ResponseEntity.ok(productService.list(requestDTO, email));
     }
 

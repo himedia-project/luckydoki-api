@@ -17,6 +17,7 @@ import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.entity.Tag;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.product.repository.TagRepository;
+import com.himedia.luckydokiapi.domain.search.service.SearchKeywordService;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
@@ -38,6 +39,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommunityServiceImpl implements CommunityService {
 
+    private final SearchKeywordService searchKeywordService;
+
     private final CommunityRepository communityRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
@@ -58,9 +61,14 @@ public class CommunityServiceImpl implements CommunityService {
     @Transactional(readOnly = true)
     @Override
     public List<CommunityResponseDTO> list(CommunitySearchDTO request, String email) {
-        return communityRepository.findByDTO(request).stream()
+
+        List<CommunityResponseDTO> dtoList = communityRepository.findByDTO(request).stream()
                 .map(CommunityResponseDTO::from)
-                .collect(Collectors.toList());
+                .toList();
+
+        searchKeywordService.incrementSearchCount(request.getSearchKeyword());
+
+        return dtoList;
     }
 
 

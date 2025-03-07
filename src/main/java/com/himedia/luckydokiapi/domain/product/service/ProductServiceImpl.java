@@ -10,6 +10,7 @@ import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
 import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.repository.*;
+import com.himedia.luckydokiapi.domain.search.service.SearchKeywordService;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.exception.OutOfStockException;
@@ -31,6 +32,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
+
+    private final SearchKeywordService searchKeywordService;
+
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
 
@@ -82,6 +86,10 @@ public class ProductServiceImpl implements ProductService {
                     boolean likes = (email != null) && productLikeRepository.likes(email, product.getId());
                     return this.entityToDTO(product, likes);
                 }).toList();
+        // 검색어 저장
+        if(requestDTO.getSearchKeyword() != null && !requestDTO.getSearchKeyword().isBlank()) {
+            searchKeywordService.incrementSearchCount(requestDTO.getSearchKeyword());
+        }
 
         return productList;
     }
