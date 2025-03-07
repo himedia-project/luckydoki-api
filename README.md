@@ -1,6 +1,7 @@
 # LuckyDoki API
 
 ## 프로젝트 소개
+![Luckydoki-MZ](https://github.com/user-attachments/assets/98c5b391-0a04-474b-8249-f87335ef8027)
 
 LuckyDoki API는 Spring Boot 기반의 RESTful API 서버입니다. 채팅, 소셜 로그인, 파일 업로드 등 다양한 기능을 제공하는 종합적인 백엔드 서비스입니다.
 ## 기술 스택
