@@ -103,6 +103,11 @@ spring:
     activate:
       on-profile: local
 
+  elasticsearch:
+    uris: http://localhost:9200
+    username: ${ELASTICSEARCH_USERNAME}
+    password: ${ELASTICSEARCH_PASSWORD}
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${LOCAL_MYSQL_URL}
@@ -157,6 +162,10 @@ spring:
   data:
     mongodb:
       uri: ${PROD_MONGODB_URI}
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD}
 
 app:
   props:

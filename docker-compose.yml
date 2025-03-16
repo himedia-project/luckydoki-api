@@ -53,6 +53,37 @@ services:
     networks:
       - app-network
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false    # 개발 환경에서는 보안 비활성화
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+#    volumes:
+#      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - app-network
+    # nori 플러그인 설치를 위한 command 추가
+    command: >
+      bash -c '
+        if [ ! -f /usr/share/elasticsearch/config/nori_installed ]; then
+          bin/elasticsearch-plugin install -b analysis-nori &&
+          touch /usr/share/elasticsearch/config/nori_installed;
+        fi;
+        exec /usr/local/bin/docker-entrypoint.sh elasticsearch
+      '
+
 networks:
   app-network:
     driver: bridge
