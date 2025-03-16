@@ -19,18 +19,23 @@ public class RedisConfig {
         template.setConnectionFactory(connectionFactory);
         
         // JSON 직렬화 설정
-        Jackson2JsonRedisSerializer<?> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), 
+            ObjectMapper.DefaultTyping.NON_FINAL);
         jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
         
-        // key는 String으로, value는 JSON으로 직렬화
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(jackson2JsonRedisSerializer);
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(jackson2JsonRedisSerializer);
+        // String 직렬화 설정
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
         
+        // 직렬화 설정 적용
+        template.setKeySerializer(stringRedisSerializer);
+        template.setValueSerializer(stringRedisSerializer);  // JSON 대신 String 사용
+        template.setHashKeySerializer(stringRedisSerializer);
+        template.setHashValueSerializer(stringRedisSerializer);  // JSON 대신 String 사용
+        
+        template.afterPropertiesSet();
         return template;
     }
 }

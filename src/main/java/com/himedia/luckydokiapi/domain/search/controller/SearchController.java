@@ -1,4 +1,4 @@
-package com.himedia.luckydokiapi.domain.search.service.controller;
+package com.himedia.luckydokiapi.domain.search.controller;
 
 
 import com.himedia.luckydokiapi.domain.search.service.SearchKeywordService;
