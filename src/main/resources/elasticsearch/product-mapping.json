@@ -1,0 +1,19 @@
+{
+  "properties": {
+    "name": {
+      "type": "text",
+      "analyzer": "korean",
+      "search_analyzer": "korean"
+    },
+    "categoryName": {
+      "type": "text",
+      "analyzer": "korean",
+      "search_analyzer": "korean"
+    },
+    "tags": {
+      "type": "text",
+      "analyzer": "korean",
+      "search_analyzer": "korean"
+    }
+  }
+}
