@@ -76,6 +76,11 @@ app:
         user-info-uri: https://kapi.kakao.com/v2/user/me
         user-info-name-attribute-key: id
         client-name: Kakao
+      google:
+        client-id: ${GOOGLE_CLIENT_ID}
+        client-secret: ${GOOGLE_CLIENT_SECRET}
+        token-uri: https://oauth2.googleapis.com/token
+        user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
     jwt:
       secret-key: ${JWT_SECRET_KEY}
       access-token-expiration-period: 150 # ???, 15?, ???? ?? 150?
@@ -127,7 +132,9 @@ app:
   props:
     social:
       kakao:
-        redirect-uri: ${KAKAO_REDIRECT_URI}
+        redirect-uri: ${KAKAO_LOCAL_REDIRECT_URI}
+      google:
+        redirect-uri: ${GOOGLE_LOCAL_REDIRECT_URI}
 
 logging:
   level:
@@ -171,7 +178,9 @@ app:
   props:
     social:
       kakao:
-        redirect-uri: ${KAKAO_REDIRECT_URI}
+        redirect-uri: ${KAKAO_PROD_REDIRECT_URI}
+      google:
+        redirect-uri: ${GOOGLE_PROD_REDIRECT_URI}
 
 logging:
   level:
