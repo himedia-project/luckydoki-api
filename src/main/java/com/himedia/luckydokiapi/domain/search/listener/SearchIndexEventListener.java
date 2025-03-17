@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.search.listener;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
 import co.elastic.clients.elasticsearch.core.IndexRequest;
+import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
@@ -78,7 +79,10 @@ public class SearchIndexEventListener {
                 case "CREATE", "UPDATE" -> {
                     Community community = communityRepository.findById(event.getId())
                             .orElseThrow(() -> new IllegalArgumentException("Community not found"));
-                    CommunityDocument document = new CommunityDocument(community);
+
+                    CommunityResponseDTO communityDTO = CommunityResponseDTO.from(community);
+
+                    CommunityDocument document = new CommunityDocument(communityDTO);
                     IndexRequest<CommunityDocument> request = IndexRequest.of(r -> r
                             .index("communities")
                             .id(event.getId().toString())

@@ -5,7 +5,7 @@
       "analyzer": "korean",
       "search_analyzer": "korean"
     },
-    "productNames": {
+    "nickName": {
       "type": "text",
       "analyzer": "korean",
       "search_analyzer": "korean"

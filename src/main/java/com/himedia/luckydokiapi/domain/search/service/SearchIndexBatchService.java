@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.domain.search.service;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import co.elastic.clients.elasticsearch.indices.PutMappingRequest;
+import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
 import com.himedia.luckydokiapi.domain.community.entity.Community;
 import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
@@ -144,7 +145,10 @@ public class SearchIndexBatchService {
         List<Community> communities = communityRepository.findByDTO(CommunitySearchDTO.builder().build());
         for (Community community : communities) {
             try {
-                CommunityDocument document = new CommunityDocument(community);
+
+                CommunityResponseDTO communityDTO = CommunityResponseDTO.from(community);
+
+                CommunityDocument document = new CommunityDocument(communityDTO);
                 elasticsearchClient.index(i -> i
                         .index("communities")
                         .id(community.getId().toString())
@@ -162,9 +166,9 @@ public class SearchIndexBatchService {
     }
 
     // 매일 새벽 2시에 전체 인덱스 재생성
-    @Scheduled(cron = "0 0 2 * * ?")
+//    @Scheduled(cron = "0 0 2 * * ?")
     // TEST 3분 마다 실행
-//     @Scheduled(fixedRate = 180000)
+     @Scheduled(fixedRate = 180000)
     public void scheduledReindexing() {
         try {
             log.info("Starting scheduled reindexing");
