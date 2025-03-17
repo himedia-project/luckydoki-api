@@ -10,6 +10,7 @@ import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
 import com.himedia.luckydokiapi.domain.product.entity.*;
 import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.repository.*;
+import com.himedia.luckydokiapi.domain.search.service.IndexingService;
 import com.himedia.luckydokiapi.domain.search.service.SearchKeywordService;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
@@ -46,6 +47,8 @@ public class ProductServiceImpl implements ProductService {
     private final TagRepository tagRepository;
     private final CustomFileUtil fileUtil;
     private final ProductLikeRepository productLikeRepository;
+
+    private final IndexingService indexingService;
 
 
     @Transactional(readOnly = true)
@@ -180,6 +183,10 @@ public class ProductServiceImpl implements ProductService {
                 productTagRepository.save(ProductTag.from(savedTag, result));
             });
         }
+
+        // elasticsearch에 상품 저장
+        indexingService.indexProduct(result.getId(), "CREATE");
+
         return result.getId();
     }
 
@@ -282,6 +289,9 @@ public class ProductServiceImpl implements ProductService {
             });
         }
 
+        // elasticsearch에 상품 저장
+        indexingService.indexProduct(product.getId(), "UPDATE");
+
         return product.getId();
     }
 
@@ -301,8 +311,12 @@ public class ProductServiceImpl implements ProductService {
         productTagRepository.deleteByProduct(product);
         // 상품 delFlag true 로 변경
         productRepository.modifyDeleteFlag(productId);
-//row 가 삭제되는게 아니라 deflag 가 바뀐다
+        //row 가 삭제되는게 아니라 deflag 가 바뀐다
+        // elasticsearch에 상품 삭제
+        indexingService.indexProduct(productId, "DELETE");
     }
+
+
     @Transactional(readOnly = true)
     @Override
     public List<ProductDTO.Response> recommendList(ProductDTO.Request request, String email) {

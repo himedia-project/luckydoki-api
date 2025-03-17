@@ -17,6 +17,7 @@ import com.himedia.luckydokiapi.domain.product.entity.Product;
 import com.himedia.luckydokiapi.domain.product.entity.Tag;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.product.repository.TagRepository;
+import com.himedia.luckydokiapi.domain.search.service.IndexingService;
 import com.himedia.luckydokiapi.domain.search.service.SearchKeywordService;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
@@ -45,10 +46,11 @@ public class CommunityServiceImpl implements CommunityService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final CustomFileUtil fileUtil;
-    private final ShopRepository shopRepository;
     private final MemberService memberService;
     private final TagRepository tagRepository;
     private final CommunityTagRepository communityTagRepository;
+
+    private final IndexingService indexingService;
 
     @Transactional(readOnly = true)
     @Override
@@ -162,6 +164,8 @@ public class CommunityServiceImpl implements CommunityService {
 
         log.info("newCommunity: {}", newCommunity);
 
+        // elasticsearch indexing
+        indexingService.indexCommunity(result.getId(), "CREATE");
 
         return result.getId();
     }
@@ -253,6 +257,9 @@ public class CommunityServiceImpl implements CommunityService {
         fileUtil.deleteS3Files(deleteImages);
         communityTagRepository.deleteByCommunity(community);
         communityRepository.delete(community);
+
+        // elasticsearch indexing
+        indexingService.indexCommunity(communityId, "DELETE");
     }
 
 

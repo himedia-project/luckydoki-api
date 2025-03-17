@@ -65,6 +65,13 @@ spring:
     encoding: UTF-8
     cache: true
 
+  # 스케쥴러 설정
+  task:
+    scheduling:
+      pool:
+        size: 5
+      thread-name-prefix: search-scheduler-
+
 app:
   props:
     social:

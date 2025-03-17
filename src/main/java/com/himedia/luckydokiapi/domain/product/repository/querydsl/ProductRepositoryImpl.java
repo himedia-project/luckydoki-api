@@ -121,8 +121,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .selectFrom(product)
                 .leftJoin(product.imageList, productImage).on(productImage.ord.eq(0))
                 .leftJoin(product.productReviews, review)
-                .leftJoin(product.productTagList, productTag).fetchJoin()
-                .leftJoin(productTag.tag, tag).fetchJoin()
+                .leftJoin(product.productTagList, productTag)
+                .leftJoin(productTag.tag, tag)
+                .leftJoin(product.shop, shop).fetchJoin()
+                .leftJoin(product.category, category).fetchJoin()
                 .where(
                         product.delFlag.eq(false),
 
@@ -405,7 +407,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         }
         searchKeyword = searchKeyword.trim();
         return product.name.contains(searchKeyword)
-                .or(product.category.name.contains(searchKeyword))
+                .or(category.name.contains(searchKeyword))
                 .or(tag.name.contains(searchKeyword));
 
     }
