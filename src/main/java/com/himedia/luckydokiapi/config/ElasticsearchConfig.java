@@ -15,7 +15,6 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration
 public class ElasticsearchConfig {
@@ -44,13 +43,5 @@ public class ElasticsearchConfig {
                 restClient, new JacksonJsonpMapper());
 
         return new ElasticsearchClient(transport);
-    }
-
-    @Bean
-    public ObjectMapper elasticsearchObjectMapper() {
-        return Jackson2ObjectMapperBuilder.json()
-                .modules(new JavaTimeModule())
-                .featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .build();
     }
 }
