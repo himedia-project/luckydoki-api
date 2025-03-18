@@ -5,7 +5,6 @@ import com.himedia.luckydokiapi.domain.community.repository.CommunityRepository;
 import com.himedia.luckydokiapi.domain.dashboard.dto.DashboardDTO;
 import com.himedia.luckydokiapi.domain.member.dto.MemberDetailDTO;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
-import com.himedia.luckydokiapi.domain.order.enums.OrderStatus;
 import com.himedia.luckydokiapi.domain.order.repository.OrderRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
@@ -69,11 +68,11 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
         // 인기 상품 Top 10 (기준: 리뷰평점(평균 평점 × 2) + 리뷰 수 + 좋아요 수 + 주문 수)
         List<ProductDTO.Response> top10Products = productRepository.findTop10ByOrderByLikeCountAndReviewCountDesc().stream()
-                .map(ProductDTO.Response::from).toList();
+                .map(ProductDTO.Response::toDto).toList();
 
         // 인기 커뮤니티 게시글 Top 10 (답글 수)
         List<CommunityResponseDTO> top10Communities = communityRepository.findTop10ByOrderByLikeCountAndCommentCountDesc().stream()
-                .map(CommunityResponseDTO::from).toList();
+                .map(CommunityResponseDTO::toDto).toList();
 
         // top 5 sellers(좋아요 수 + 판매량)
         List<MemberDetailDTO> top5Sellers = memberRepository.findTop5Sellers().stream()

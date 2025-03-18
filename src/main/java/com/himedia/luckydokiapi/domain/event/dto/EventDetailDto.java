@@ -37,7 +37,7 @@ public class EventDetailDto {
                 .endAt(event.getEndAt())
                 .productList(event.getEventBridgeList().stream()
                         .map(EventBridge::getProduct)
-                        .map(ProductDTO.Response::from)
+                        .map(ProductDTO.Response::toDto)
                         .collect(Collectors.toList()))
                 .build();
     }

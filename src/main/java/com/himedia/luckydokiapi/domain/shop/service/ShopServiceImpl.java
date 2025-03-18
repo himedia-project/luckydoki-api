@@ -1,7 +1,6 @@
 package com.himedia.luckydokiapi.domain.shop.service;
 
 import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
-import com.himedia.luckydokiapi.domain.likes.repository.ProductLikeRepository;
 import com.himedia.luckydokiapi.domain.likes.repository.ShopLikeRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
@@ -22,7 +21,6 @@ import java.util.List;
 public class ShopServiceImpl implements ShopService {
 
     private final ShopRepository shopRepository;
-    private final ProductLikeRepository productLikeRepository;
     private final ShopLikeRepository shopLikeRepository;
     private final ProductRepository productRepository;
 
@@ -54,12 +52,7 @@ public class ShopServiceImpl implements ShopService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 샵이 존재하지 않습니다: " + shopId));
 
         List<ProductDTO.Response> productDTOList = productRepository.findByShopId(shopId).stream()
-                .map(product -> {
-                    boolean likes = (email != null) && productLikeRepository.likes(email, product.getId());
-                    ProductDTO.Response response = ProductDTO.Response.from(product);
-                    response.setLikes(likes);
-                    return response;
-                }).toList();
+                .map(product -> ProductDTO.Response.toDto(product, email)).toList();
 
         return ShopProductResponseDTO.builder()
                 .shopId(shop.getId())
@@ -75,7 +68,7 @@ public class ShopServiceImpl implements ShopService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID를 가진 샵이 존재하지 않습니다: " + shopId));
 //        shop.getCommunityList() -> DTO mapping
         List<CommunityResponseDTO> communityDTOList = shop.getMember().getCommunityList().stream()
-                .map(CommunityResponseDTO::from).toList();
+                .map(CommunityResponseDTO::toDto).toList();
 
         return ShopCommunityResponseDTO.builder()
                 .shopId(shop.getId())

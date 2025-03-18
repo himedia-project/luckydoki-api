@@ -58,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
         if (product.getApprovalStatus() != ProductApproval.Y) {
             throw new EntityNotFoundException("승인되지 않은 상품입니다. id: " + id);
         }
-        return ProductDTO.Response.from(product, email);
+        return ProductDTO.Response.toDto(product, email);
     }
 
 
@@ -81,7 +81,7 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDTO.Response> list(ProductSearchDTO requestDTO, String email) {
         List<ProductDTO.Response> productList = productRepository.findByDTO(requestDTO).stream()
                 .filter(product -> product.getApprovalStatus() == ProductApproval.Y) // 승인된 상품만 필터링
-                .map(product -> ProductDTO.Response.from(product, email)).toList();
+                .map(product -> ProductDTO.Response.toDto(product, email)).toList();
         // 검색어 저장
         if (requestDTO.getSearchKeyword() != null && !requestDTO.getSearchKeyword().isBlank()) {
             searchKeywordService.incrementSearchCount(requestDTO.getSearchKeyword());
@@ -115,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
 
         return productList.stream()
-                .map(product -> ProductDTO.Response.from(product, email))
+                .map(product -> ProductDTO.Response.toDto(product, email))
                 .toList();
     }
 
@@ -186,7 +186,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = this.getEntity(productId);
 
         //기존의 product 를 dto 로  변환
-        ProductDTO.Response oldDTO = ProductDTO.Response.from(product, email);
+        ProductDTO.Response oldDTO = ProductDTO.Response.toDto(product, email);
 
         // 파일 업로드 처리
         //기존 db에 저징된 이미지들
@@ -315,7 +315,7 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
 
         return productList.stream()
-                .map(product -> ProductDTO.Response.from(product, email))
+                .map(product -> ProductDTO.Response.toDto(product, email))
                 .toList();
     }
 

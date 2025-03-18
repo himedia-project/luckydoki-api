@@ -92,7 +92,7 @@ public class ProductDTO {
 
         private Boolean likes;
 
-        public static Response from(Product product) {
+        public static Response toDto(Product product) {
             ProductDTO.Response productDTO = Response.builder()
                     .id(product.getId())
                     .code(product.getCode())
@@ -137,7 +137,7 @@ public class ProductDTO {
             return productDTO;
         }
 
-        public static Response from(Product product, String email) {
+        public static Response toDto(Product product, String email) {
             boolean isLiked = product.isLikedByUser(email);
             ProductDTO.Response productDTO = ProductDTO.Response.builder()
                     .id(product.getId())

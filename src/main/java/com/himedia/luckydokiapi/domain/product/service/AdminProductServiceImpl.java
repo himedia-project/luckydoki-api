@@ -45,7 +45,6 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final ProductTagRepository productTagRepository;
     private final ShopRepository shopRepository;
 
-    private final ProductService productService;
     private final ReviewService reviewService;
     private final OrderService orderService;
 
@@ -60,7 +59,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         Page<Product> result = productRepository.findListBy(requestDTO);
 
         return PageResponseDTO.<ProductDTO.Response>withAll()
-                .dtoList(result.stream().map(ProductDTO.Response::from).collect(Collectors.toList()))
+                .dtoList(result.stream().map(ProductDTO.Response::toDto).toList())
                 .totalCount(result.getTotalElements())
                 .pageRequestDTO(requestDTO)
                 .build();
@@ -72,7 +71,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     public List<ProductDTO.Response> getProductsByApprovalStatus(ProductApproval status) {
         List<Product> products = productRepository.findByApprovalStatus(status);
         return products.stream()
-                .map(ProductDTO.Response::from)
+                .map(ProductDTO.Response::toDto)
                 .toList();
     }
 
@@ -101,7 +100,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     @Override
     public ProductDTO.Response getOne(Long id) {
         Product product = this.getEntity(id);
-        return ProductDTO.Response.from(product);
+        return ProductDTO.Response.toDto(product);
     }
 
     @Override

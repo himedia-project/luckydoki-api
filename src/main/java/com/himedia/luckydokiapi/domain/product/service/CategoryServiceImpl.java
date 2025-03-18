@@ -78,7 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .toList();
 
         return productList.stream()
-                .map(product -> ProductDTO.Response.from(product, email))
+                .map(product -> ProductDTO.Response.toDto(product, email))
                 .toList();
     }
     // 람다식을 사용하여 각각의 요소들을 전달하여 하나씩 dto 로 변환 후 list 로 수집

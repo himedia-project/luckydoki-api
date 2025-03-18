@@ -22,7 +22,7 @@ public class ShopCommunityResponseDTO {
                 .shopId(shop.getId())
                 .shopName(shop.getMember().getNickName())
                 .communityList(shop.getMember().getCommunityList().stream()
-                        .map(CommunityResponseDTO::from).toList())
+                        .map(CommunityResponseDTO::toDto).toList())
                 .build();
     }
 }

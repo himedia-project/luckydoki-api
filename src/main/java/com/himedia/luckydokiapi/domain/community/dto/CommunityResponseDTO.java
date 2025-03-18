@@ -36,7 +36,7 @@ public class CommunityResponseDTO {
     private LocalDateTime createdAt;
 
 
-    public static CommunityResponseDTO from(Community community) {
+    public static CommunityResponseDTO toDto(Community community) {
         return CommunityResponseDTO.builder()
                 .id(community.getId())
                 .shopId(community.getMember().getShop() == null ? null : community.getMember().getShop().getId())
@@ -45,7 +45,7 @@ public class CommunityResponseDTO {
                 .authorImage(community.getMember().getShop() == null ? community.getMember().getProfileImage() : community.getMember().getShop().getImage())
                 .content(community.getContent())
                 .uploadFileNames(community.getImageList().stream().map(CommunityImage::getImageName).toList())
-                .productDTOs(community.getCommunityProductList().stream().map(communityProduct -> ProductDTO.Response.from(communityProduct.getProduct())).toList())
+                .productDTOs(community.getCommunityProductList().stream().map(communityProduct -> ProductDTO.Response.toDto(communityProduct.getProduct())).toList())
                 .createdAt(community.getCreatedAt())
                 .tagList(community.getTagList())
                 .build();

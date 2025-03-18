@@ -19,7 +19,6 @@ import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.product.repository.TagRepository;
 import com.himedia.luckydokiapi.domain.search.service.IndexingService;
 import com.himedia.luckydokiapi.domain.search.service.SearchKeywordService;
-import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
@@ -57,7 +56,7 @@ public class CommunityServiceImpl implements CommunityService {
     public CommunityResponseDTO getCommunityById(Long communityId) {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
-        return CommunityResponseDTO.from(community);
+        return CommunityResponseDTO.toDto(community);
     }
 
     @Transactional(readOnly = true)
@@ -65,7 +64,7 @@ public class CommunityServiceImpl implements CommunityService {
     public List<CommunityResponseDTO> list(CommunitySearchDTO request, String email) {
 
         List<CommunityResponseDTO> dtoList = communityRepository.findByDTO(request).stream()
-                .map(CommunityResponseDTO::from)
+                .map(CommunityResponseDTO::toDto)
                 .toList();
 
         searchKeywordService.incrementSearchCount(request.getSearchKeyword());
@@ -79,7 +78,7 @@ public class CommunityServiceImpl implements CommunityService {
     public PageResponseDTO<CommunityResponseDTO> listPage(CommunitySearchDTO requestDTO, String email) {
         Page<Community> result = communityRepository.findListBy(requestDTO);
         return PageResponseDTO.<CommunityResponseDTO>withAll()
-                .dtoList(result.stream().map(CommunityResponseDTO::from).collect(Collectors.toList()))
+                .dtoList(result.stream().map(CommunityResponseDTO::toDto).collect(Collectors.toList()))
                 .totalCount(result.getTotalElements())
                 .pageRequestDTO(requestDTO)
                 .build();
@@ -89,7 +88,7 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public List<CommunityResponseDTO> getCommunitiesByMemberEmail(String email) {
         return communityRepository.findByMemberEmail(email).stream()
-                .map(CommunityResponseDTO::from)
+                .map(CommunityResponseDTO::toDto)
                 .collect(Collectors.toList());
     }
 

@@ -124,7 +124,7 @@ public class SearchIndexBatchService {
         for (Product product : products) {
             try {
                 // Product 객체를 DTO로 변환
-                ProductDTO.Response productDTO = ProductDTO.Response.from(product);
+                ProductDTO.Response productDTO = ProductDTO.Response.toDto(product);
                 
                 // DTO를 사용하여 ProductDocument 생성
                 ProductDocument document = new ProductDocument(productDTO);
@@ -146,7 +146,7 @@ public class SearchIndexBatchService {
         for (Community community : communities) {
             try {
 
-                CommunityResponseDTO communityDTO = CommunityResponseDTO.from(community);
+                CommunityResponseDTO communityDTO = CommunityResponseDTO.toDto(community);
 
                 CommunityDocument document = new CommunityDocument(communityDTO);
                 elasticsearchClient.index(i -> i
