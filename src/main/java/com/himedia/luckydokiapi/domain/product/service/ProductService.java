@@ -81,7 +81,8 @@ public interface ProductService {
      */
     List<Long> getRecentlyAddedProducts(LocalDateTime fromTime);
 
-    default ProductDTO.Response entityToDTO(Product product, Boolean productLike) {
+    default ProductDTO.Response entityToDTO(Product product, String email) {
+        boolean isLiked = product.isLikedByUser(email);
         ProductDTO.Response productDTO = ProductDTO.Response.builder()
                 .id(product.getId())
                 .code(product.getCode())
@@ -107,7 +108,7 @@ public interface ProductService {
                 .createdAt(product.getCreatedAt())
                 .modifiedAt(product.getModifiedAt())
                 .tagList(product.getTagList())
-                .likes(productLike)
+                .likes(isLiked)
                 .build();
 
         List<ProductImage> imageList = product.getImageList();

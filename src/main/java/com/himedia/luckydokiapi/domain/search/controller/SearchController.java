@@ -5,13 +5,17 @@ import com.himedia.luckydokiapi.domain.search.document.CommunityDocument;
 import com.himedia.luckydokiapi.domain.search.document.ProductDocument;
 import com.himedia.luckydokiapi.domain.search.service.SearchKeywordService;
 import com.himedia.luckydokiapi.domain.search.service.SearchService;
+import com.himedia.luckydokiapi.security.MemberDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/search")
@@ -23,6 +27,7 @@ public class SearchController {
 
     /**
      * elasticsearch를 이용한 상품 검색
+     *
      * @param keyword 검색 키워드
      * @return 검색 결과
      * @throws IOException 검색 결과를 가져오는 도중 발생한 예외
@@ -30,8 +35,9 @@ public class SearchController {
 
     // 상품 검색 API
     @GetMapping("/products")
-    public ResponseEntity<List<ProductDocument>> searchProducts(@RequestParam String keyword) throws IOException, IOException {
-        return ResponseEntity.ok(searchService.searchProducts(keyword));
+    public ResponseEntity<List<ProductDocument>> searchProducts(@RequestParam String keyword, @AuthenticationPrincipal MemberDTO memberDTO) throws IOException, IOException {
+        log.info("Search products by keyword: {}, memberDTO: {}", keyword, memberDTO);
+        return ResponseEntity.ok(searchService.searchProducts(keyword, memberDTO.getEmail()));
     }
 
     // 커뮤니티 검색 API

@@ -347,4 +347,18 @@ public class Product extends BaseEntity {
     public void changeApprovalStatus(ProductApproval productApproval) {
         this.approvalStatus = productApproval;
     }
+
+
+    /**
+     * 특정 사용자가 이 상품에 좋아요를 눌렀는지 확인
+     * @param email 사용자 이메일
+     * @return 좋아요 여부
+     */
+    public boolean isLikedByUser(String email) {
+        if (email == null) {
+            return false;
+        }
+        return this.productLikes.stream()
+                .anyMatch(like -> like.getMember().getEmail().equals(email));
+    }
 }

@@ -5,20 +5,23 @@ import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.himedia.luckydokiapi.domain.search.document.CommunityDocument;
 import com.himedia.luckydokiapi.domain.search.document.ProductDocument;
+import com.himedia.luckydokiapi.domain.likes.repository.ProductLikeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SearchService {
     private final ElasticsearchClient elasticsearchClient;
+    private final ProductLikeRepository productLikeRepository;
 
-    public List<ProductDocument> searchProducts(String keyword) throws IOException {
+    public List<ProductDocument> searchProducts(String keyword, String email) throws IOException {
         SearchRequest request = SearchRequest.of(r -> r
                 .index("products")
                 .query(q -> q
@@ -31,9 +34,20 @@ public class SearchService {
         );
 
         SearchResponse<ProductDocument> response = elasticsearchClient.search(request, ProductDocument.class);
-        return response.hits().hits().stream()
+        List<ProductDocument> results = response.hits().hits().stream()
                 .map(hit -> hit.source())
-                .toList();
+                .collect(Collectors.toList());
+        
+        // 사용자가 로그인한 경우 좋아요 정보 설정
+        if (email != null && !email.isBlank()) {
+            results.forEach(product -> {
+                Long productId = Long.parseLong(product.getId());
+                boolean likes = productLikeRepository.likes(email, productId);
+                product.changeLikes(likes);
+            });
+        }
+        
+        return results;
     }
 
     public List<CommunityDocument> searchCommunities(String keyword) throws IOException {

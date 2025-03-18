@@ -1,7 +1,6 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
 
-import com.himedia.luckydokiapi.domain.likes.repository.ProductLikeRepository;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
@@ -46,7 +45,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductTagRepository productTagRepository;
     private final TagRepository tagRepository;
     private final CustomFileUtil fileUtil;
-    private final ProductLikeRepository productLikeRepository;
 
     private final IndexingService indexingService;
 
@@ -60,9 +58,7 @@ public class ProductServiceImpl implements ProductService {
         if (product.getApprovalStatus() != ProductApproval.Y) {
             throw new EntityNotFoundException("승인되지 않은 상품입니다. id: " + id);
         }
-
-        boolean likes = (email != null) && productLikeRepository.likes(email, product.getId());
-        return this.entityToDTO(product, likes);
+        return this.entityToDTO(product, email);
     }
 
 
@@ -85,12 +81,9 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDTO.Response> list(ProductSearchDTO requestDTO, String email) {
         List<ProductDTO.Response> productList = productRepository.findByDTO(requestDTO).stream()
                 .filter(product -> product.getApprovalStatus() == ProductApproval.Y) // 승인된 상품만 필터링
-                .map(product -> {
-                    boolean likes = (email != null) && productLikeRepository.likes(email, product.getId());
-                    return this.entityToDTO(product, likes);
-                }).toList();
+                .map(product -> this.entityToDTO(product, email)).toList();
         // 검색어 저장
-        if(requestDTO.getSearchKeyword() != null && !requestDTO.getSearchKeyword().isBlank()) {
+        if (requestDTO.getSearchKeyword() != null && !requestDTO.getSearchKeyword().isBlank()) {
             searchKeywordService.incrementSearchCount(requestDTO.getSearchKeyword());
         }
 
@@ -124,7 +117,7 @@ public class ProductServiceImpl implements ProductService {
         return productList.stream()
                 .map(product -> this.entityToDTO(
                         product,
-                        productLikeRepository.likes(member.getEmail(), product.getId())
+                        email
                 ))
                 .toList();
     }
@@ -196,7 +189,8 @@ public class ProductServiceImpl implements ProductService {
         Product product = this.getEntity(productId);
 
         //기존의 product 를 dto 로  변환
-        ProductDTO.Response oldDTO = this.entityToDTO(product,productLikeRepository.likes(member.getEmail(), product.getId()));
+//        productLikeRepository.likes(member.getEmail(), product.getId())
+        ProductDTO.Response oldDTO = this.entityToDTO(product, email);
 
         // 파일 업로드 처리
         //기존 db에 저징된 이미지들
@@ -325,10 +319,9 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
 
         return productList.stream()
-                .map(product -> this.entityToDTO(product, productLikeRepository.likes(email, product.getId())))
+                .map(product -> this.entityToDTO(product, email))
                 .toList();
     }
-
 
 
     @Override

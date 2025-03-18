@@ -166,9 +166,9 @@ public class SearchIndexBatchService {
     }
 
     // 매일 새벽 2시에 전체 인덱스 재생성
-//    @Scheduled(cron = "0 0 2 * * ?")
+    @Scheduled(cron = "0 0 2 * * ?")
     // TEST 3분 마다 실행
-     @Scheduled(fixedRate = 180000)
+//     @Scheduled(fixedRate = 180000)
     public void scheduledReindexing() {
         try {
             log.info("Starting scheduled reindexing");

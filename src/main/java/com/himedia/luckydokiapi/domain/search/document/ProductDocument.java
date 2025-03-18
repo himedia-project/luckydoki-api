@@ -139,4 +139,9 @@ public class ProductDocument {
             this.modifiedAt = productDTO.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         }
     }
+
+    // likes 필드에 대한 setter 추가
+    public void changeLikes(Boolean likes) {
+        this.likes = likes;
+    }
 } 
