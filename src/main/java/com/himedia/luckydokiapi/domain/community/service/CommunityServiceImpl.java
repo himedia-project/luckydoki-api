@@ -1,5 +1,6 @@
 package com.himedia.luckydokiapi.domain.community.service;
 
+import com.himedia.luckydokiapi.config.RedisConfig;
 import com.himedia.luckydokiapi.domain.community.dto.CommunityRequestDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunityResponseDTO;
 import com.himedia.luckydokiapi.domain.community.dto.CommunitySearchDTO;
@@ -18,12 +19,13 @@ import com.himedia.luckydokiapi.domain.product.entity.Tag;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.product.repository.TagRepository;
 import com.himedia.luckydokiapi.domain.search.service.IndexingService;
-import com.himedia.luckydokiapi.domain.search.service.SearchKeywordService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,8 +41,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommunityServiceImpl implements CommunityService {
 
-    private final SearchKeywordService searchKeywordService;
-
     private final CommunityRepository communityRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
@@ -51,6 +51,8 @@ public class CommunityServiceImpl implements CommunityService {
 
     private final IndexingService indexingService;
 
+    
+    @Cacheable(key = "#communityId", value = RedisConfig.COMMUNITY_DETAIL, cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     @Override
     public CommunityResponseDTO getCommunityById(Long communityId) {
@@ -59,20 +61,23 @@ public class CommunityServiceImpl implements CommunityService {
         return CommunityResponseDTO.toDto(community);
     }
 
+    @Cacheable(key = "#request.toString() + '_' + #email", value = RedisConfig.COMMUNITY_LIST, cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     @Override
     public List<CommunityResponseDTO> list(CommunitySearchDTO request, String email) {
-
         List<CommunityResponseDTO> dtoList = communityRepository.findByDTO(request).stream()
                 .map(CommunityResponseDTO::toDto)
                 .toList();
 
-        searchKeywordService.incrementSearchCount(request.getSearchKeyword());
-
         return dtoList;
     }
 
-
+    // TODO: 오류문제💥class java.util.LinkedHashMap cannot be cast to class com.himedia.luckydokiapi.dto.PageResponseDTO (java.util.LinkedHashMap is in module java.base of loader 'bootstrap'; com.himedia.luckydokiapi.dto.PageResponseDTO is in unnamed module of loader 'app')
+//    @Cacheable(
+//            key = "'page_' + #requestDTO.getPage() + '_size_' + #requestDTO.getSize() + '_email_' + #email",
+//            value = RedisConfig.COMMUNITY_PAGE,
+//            cacheManager = "redisCacheManager"
+//    )
     @Transactional(readOnly = true)
     @Override
     public PageResponseDTO<CommunityResponseDTO> listPage(CommunitySearchDTO requestDTO, String email) {
@@ -165,78 +170,86 @@ public class CommunityServiceImpl implements CommunityService {
 
         // elasticsearch indexing
         indexingService.indexCommunity(result.getId(), "CREATE");
+        
+        // 목록 캐시 삭제
+        clearCommunityListCache();
 
         return result.getId();
     }
 
+/*    @CacheEvict(key = "#communityId", value = RedisConfig.COMMUNITY_DETAIL, cacheManager = "redisCacheManager")
+    @Override
+    public CommunityResponseDTO updateCommunity(Long communityId, String email, CommunityRequestDTO request) {
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
 
-//    @Override
-//    public CommunityResponseDTO updateCommunity(Long communityId, String email, CommunityRequestDTO request) {
-//        Community community = communityRepository.findById(communityId)
-//                .orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
-//
-//        Member member = memberRepository.findByEmail(email)
-//                .orElseThrow(() -> new RuntimeException("사용자 없음"));
-//
-//        if (!community.getMember().getEmail().equals(member.getEmail())) {
-//            throw new IllegalArgumentException("본인의 게시글만 수정할 수 있습니다.");
-//        }
-//
-//        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
-//            throw new IllegalArgumentException("제목은 필수 입력 항목입니다.");
-//        }
-//        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
-//            throw new IllegalArgumentException("내용은 필수 입력 항목입니다.");
-//        }
-//
-//        // 기존 이미지 리스트 가져오기
-//        List<String> oldFileNames = community.getImageList().stream()
-//                .map(CommunityImage::getImageName)
-//                .toList();
-//
-//        // 새로 업로드할 파일 S3 저장
-//        List<String> newUploadFileNames = new ArrayList<>();
-//        if (request.getFiles() != null && !request.getFiles().isEmpty()) {
-//            newUploadFileNames = fileUtil.uploadS3Files(request.getFiles());
-//        }
-//
-//        // 유지되는 파일 가져오기
-//        List<String> uploadedFileNames = request.getUploadFileNames();
-//
-//        // 기존 파일 삭제 처리
-//        if (oldFileNames != null && !oldFileNames.isEmpty()) {
-//            List<String> removeFiles = oldFileNames.stream()
-//                    .filter(fileName -> !uploadedFileNames.contains(fileName))
-//                    .toList();
-//
-//            fileUtil.deleteS3Files(removeFiles);
-//        }
-//
-//        //  유지된 파일 + 새로 업로드된 파일 최종 적용
-//        if (!newUploadFileNames.isEmpty()) {
-//            uploadedFileNames.addAll(newUploadFileNames);
-//        }
-//
-//        // 기존 이미지 리스트 삭제 후 새 리스트 적용
-//        community.getImageList().clear();
-//        if (!uploadedFileNames.isEmpty()) {
-//            int order = 1;
-//            for (String fileName : uploadedFileNames) {
-//                CommunityImage communityImage = CommunityImage.builder()
-//                        .community(community)
-//                        .imageName(fileName)
-//                        .ord(order++)
-//                        .build();
-//                community.getImageList().add(communityImage);
-//            }
-//        }
-//
-//        community.setTitle(request.getTitle());
-//        community.setContent(request.getContent());
-//        communityRepository.save(community);
-//        return toDTO(community);
-//    }
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
+        if (!community.getMember().getEmail().equals(member.getEmail())) {
+            throw new IllegalArgumentException("본인의 게시글만 수정할 수 있습니다.");
+        }
+
+        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("제목은 필수 입력 항목입니다.");
+        }
+        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
+            throw new IllegalArgumentException("내용은 필수 입력 항목입니다.");
+        }
+
+        // 기존 이미지 리스트 가져오기
+        List<String> oldFileNames = community.getImageList().stream()
+                .map(CommunityImage::getImageName)
+                .toList();
+
+        // 새로 업로드할 파일 S3 저장
+        List<String> newUploadFileNames = new ArrayList<>();
+        if (request.getFiles() != null && !request.getFiles().isEmpty()) {
+            newUploadFileNames = fileUtil.uploadS3Files(request.getFiles());
+        }
+
+        // 유지되는 파일 가져오기
+        List<String> uploadedFileNames = request.getUploadFileNames();
+
+        // 기존 파일 삭제 처리
+        if (oldFileNames != null && !oldFileNames.isEmpty()) {
+            List<String> removeFiles = oldFileNames.stream()
+                    .filter(fileName -> !uploadedFileNames.contains(fileName))
+                    .toList();
+
+            fileUtil.deleteS3Files(removeFiles);
+        }
+
+        //  유지된 파일 + 새로 업로드된 파일 최종 적용
+        if (!newUploadFileNames.isEmpty()) {
+            uploadedFileNames.addAll(newUploadFileNames);
+        }
+
+        // 기존 이미지 리스트 삭제 후 새 리스트 적용
+        community.getImageList().clear();
+        if (!uploadedFileNames.isEmpty()) {
+            int order = 1;
+            for (String fileName : uploadedFileNames) {
+                CommunityImage communityImage = CommunityImage.builder()
+                        .community(community)
+                        .imageName(fileName)
+                        .ord(order++)
+                        .build();
+                community.getImageList().add(communityImage);
+            }
+        }
+
+        community.setTitle(request.getTitle());
+        community.setContent(request.getContent());
+        Community result = communityRepository.save(community);
+
+        // 수정이 완료된 후 목록 캐시도 삭제
+        clearCommunityListCache();
+        
+        return CommunityResponseDTO.toDto(result);
+    }*/
+
+    @CacheEvict(key = "#communityId", value = RedisConfig.COMMUNITY_DETAIL, cacheManager = "redisCacheManager")
     @Override
     public void deleteCommunity(Long communityId, String email) {
         Community community = communityRepository.findById(communityId)
@@ -259,8 +272,16 @@ public class CommunityServiceImpl implements CommunityService {
 
         // elasticsearch indexing
         indexingService.indexCommunity(communityId, "DELETE");
+        
+        // 목록 캐시도 삭제
+        clearCommunityListCache();
     }
 
+    // 커뮤니티 목록 캐시 전체 삭제
+    @CacheEvict(value = {RedisConfig.COMMUNITY_LIST, RedisConfig.COMMUNITY_PAGE}, allEntries = true, cacheManager = "redisCacheManager")
+    public void clearCommunityListCache() {
+        log.info("커뮤니티 목록 캐시 전체 삭제");
+    }
 
 }
 

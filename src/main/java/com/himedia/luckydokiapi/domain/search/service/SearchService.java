@@ -21,6 +21,8 @@ public class SearchService {
     private final ElasticsearchClient elasticsearchClient;
     private final ProductLikeRepository productLikeRepository;
 
+    private final SearchKeywordService searchKeywordService;
+
     public List<ProductDocument> searchProducts(String keyword, String email) throws IOException {
         SearchRequest request = SearchRequest.of(r -> r
                 .index("products")
@@ -46,7 +48,12 @@ public class SearchService {
                 product.changeLikes(likes);
             });
         }
-        
+
+        // redis 검색어 저장
+        if (keyword != null && !keyword.isBlank()) {
+            searchKeywordService.incrementSearchCount(keyword);
+        }
+
         return results;
     }
 
@@ -65,6 +72,12 @@ public class SearchService {
             );
 
             SearchResponse<CommunityDocument> response = elasticsearchClient.search(request, CommunityDocument.class);
+
+            // redis 검색어 저장
+            if (keyword != null && !keyword.isBlank()) {
+                searchKeywordService.incrementSearchCount(keyword);
+            }
+
             return response.hits().hits().stream()
                     .map(hit -> hit.source())
                     .toList();

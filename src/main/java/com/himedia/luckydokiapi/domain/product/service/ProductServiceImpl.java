@@ -1,6 +1,7 @@
 package com.himedia.luckydokiapi.domain.product.service;
 
 
+import com.himedia.luckydokiapi.config.RedisConfig;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
@@ -10,7 +11,6 @@ import com.himedia.luckydokiapi.domain.product.entity.*;
 import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.repository.*;
 import com.himedia.luckydokiapi.domain.search.service.IndexingService;
-import com.himedia.luckydokiapi.domain.search.service.SearchKeywordService;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.exception.OutOfStockException;
@@ -18,6 +18,8 @@ import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,8 +35,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    private final SearchKeywordService searchKeywordService;
-
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
 
@@ -49,6 +49,7 @@ public class ProductServiceImpl implements ProductService {
     private final IndexingService indexingService;
 
 
+    @Cacheable(key = "#id + '_' + #email", value = RedisConfig.PRODUCT_DETAIL, cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     @Override
     public ProductDTO.Response getProduct(Long id, String email) {
@@ -76,16 +77,14 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
+
+    @Cacheable(key = "#requestDTO.toString() + '_' + #email", value = RedisConfig.PRODUCT_LIST, cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     @Override
     public List<ProductDTO.Response> list(ProductSearchDTO requestDTO, String email) {
         List<ProductDTO.Response> productList = productRepository.findByDTO(requestDTO).stream()
                 .filter(product -> product.getApprovalStatus() == ProductApproval.Y) // 승인된 상품만 필터링
                 .map(product -> ProductDTO.Response.toDto(product, email)).toList();
-        // 검색어 저장
-        if (requestDTO.getSearchKeyword() != null && !requestDTO.getSearchKeyword().isBlank()) {
-            searchKeywordService.incrementSearchCount(requestDTO.getSearchKeyword());
-        }
 
         return productList;
     }
@@ -177,9 +176,14 @@ public class ProductServiceImpl implements ProductService {
         // elasticsearch에 상품 저장
         indexingService.indexProduct(result.getId(), "CREATE");
 
+        // 신규 상품 등록 시 목록 캐시 삭제
+        clearProductListCache();
+
         return result.getId();
     }
 
+    // 상품이 수정되면 해당 상품의 캐시를 삭제
+//    @CacheEvict(key = "#id + '_*'", value = RedisConfig.PRODUCT_DETAIL, cacheManager = "redisCacheManager", allEntries = false)
     @Override
     public Long updateProduct(String email, ProductDTO.Request dto, Long productId) {
         Member member = getMember(email);
@@ -282,10 +286,14 @@ public class ProductServiceImpl implements ProductService {
         // elasticsearch에 상품 저장
         indexingService.indexProduct(product.getId(), "UPDATE");
 
+        // 목록 캐시 삭제
+        clearProductListCache();
+
         return product.getId();
     }
 
-
+    // 상품이 수정되면 해당 상품의 캐시를 삭제
+    @CacheEvict(key = "#id + '_*'", value = RedisConfig.PRODUCT_DETAIL, cacheManager = "redisCacheManager", allEntries = false)
     @Override
     public void deleteProductById(Long productId) {
         Product product = this.getEntity(productId);
@@ -304,6 +312,9 @@ public class ProductServiceImpl implements ProductService {
         //row 가 삭제되는게 아니라 deflag 가 바뀐다
         // elasticsearch에 상품 삭제
         indexingService.indexProduct(productId, "DELETE");
+
+        // 목록 캐시 삭제
+        clearProductListCache();
     }
 
 
@@ -355,6 +366,25 @@ public class ProductServiceImpl implements ProductService {
 
     private Category getCategory(Long categoryId) {
         return categoryRepository.findById(categoryId).orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 카테고리가 없습니다" + categoryId));
+    }
+
+
+    // 상품 목록 캐시 전체 삭제 메서드
+    @CacheEvict(value = RedisConfig.PRODUCT_LIST, allEntries = true, cacheManager = "redisCacheManager")
+    public void clearProductListCache() {
+        log.info("상품 목록 캐시 전체 삭제");
+    }
+
+    // 특정 상품의 상세 캐시 삭제 메서드
+    @CacheEvict(key = "#id + '_*'", value = RedisConfig.PRODUCT_DETAIL, cacheManager = "redisCacheManager")
+    public void clearProductDetailCache(Long id) {
+        log.info("상품 상세 캐시 삭제: 상품 ID = {}", id);
+    }
+
+    // 모든 상품 캐시 삭제 메서드 (관리자용)
+    @CacheEvict(value = {RedisConfig.PRODUCT_DETAIL, RedisConfig.PRODUCT_LIST}, allEntries = true, cacheManager = "redisCacheManager")
+    public void clearAllProductCache() {
+        log.info("모든 상품 관련 캐시 삭제");
     }
 
 }
