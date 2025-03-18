@@ -4,6 +4,7 @@ import com.himedia.luckydokiapi.domain.cart.entity.CartItem;
 import com.himedia.luckydokiapi.domain.community.entity.CommunityProduct;
 import com.himedia.luckydokiapi.domain.likes.entity.ProductLike;
 import com.himedia.luckydokiapi.domain.order.entity.OrderItem;
+import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
 import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.enums.ProductBest;
@@ -22,6 +23,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.himedia.luckydokiapi.util.NumberGenerator.generateRandomNumber;
 
 //트랜젝셔널에 걸린 피드만 수정하게 해주는 어노테인션
 @DynamicUpdate
@@ -238,14 +241,6 @@ public class Product extends BaseEntity {
         updateDiscountRate();
     }
 
-    public void changeTagList(List<ProductTag> tagList) {
-        this.productTagList = tagList;
-    }
-
-
-    public void clearTagList() {
-        this.productTagList.clear();
-    }
 
     /**
      * 상품 리뷰 평균 구하기
@@ -360,5 +355,39 @@ public class Product extends BaseEntity {
         }
         return this.productLikes.stream()
                 .anyMatch(like -> like.getMember().getEmail().equals(email));
+    }
+
+    /**
+     * 상품 엔티티 구현
+     * @param dto 상품 Request DTO
+     * @param category 카테고리
+     * @param shop 샵
+     * @return 상품
+     */
+    public static Product of(ProductDTO.Request dto, Category category, Shop shop) {
+        Product product = Product.builder()
+                .code(generateRandomNumber(10))
+                .category(category)
+                .name(dto.getName())
+                .price(dto.getPrice())
+                .discountPrice(dto.getDiscountPrice())
+                .discountRate((int) ((1 - (double) dto.getDiscountPrice() / dto.getPrice()) * 100))
+                .description(dto.getDescription())
+                .stockNumber(dto.getStockNumber() == null ? 99 : dto.getStockNumber())
+                .shop(shop)
+                .delFlag(false)
+                .build();
+
+        //업로드 처리가 끝난 파일들의 이름 리스트
+        List<String> uploadFileNames = dto.getUploadFileNames();
+
+        if (uploadFileNames == null) {
+            return product;
+        }
+
+        // 이미지 파일 업로드 처리
+        uploadFileNames.forEach(product::addImageString);
+
+        return product;
     }
 }

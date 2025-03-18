@@ -126,7 +126,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         Shop shop = this.getShop(dto.getShopId());
 
         // 상품 추가
-        Product newProduct = productService.dtoToEntity(dto, category, shop);
+        Product newProduct = Product.of(dto, category, shop);
         newProduct.setApprovalStatus(ProductApproval.N);
         log.info("product result: {}", newProduct);
         Product result = productRepository.save(newProduct);
