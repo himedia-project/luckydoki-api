@@ -90,8 +90,8 @@ app:
         user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
     jwt:
       secret-key: ${JWT_SECRET_KEY}
-      access-token-expiration-period: 150 # ???, 15?, ???? ?? 150?
-      refresh-token-expiration-period: 1440 # 24?? 60 * 24 = 1440?
+      access-token-expiration-period: 15 # 액세스 토큰의 유효기간, 분단위 15분, or 150분 = 2시간 30분
+      refresh-token-expiration-period: 20 # 1440 # 리프레시 토큰의 유효기간, 1440분 = 60 * 24 = 24시간
 
     aws:
       key:

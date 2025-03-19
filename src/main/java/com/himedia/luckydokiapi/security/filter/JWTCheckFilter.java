@@ -3,6 +3,7 @@ package com.himedia.luckydokiapi.security.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.himedia.luckydokiapi.security.CustomUserDetailService;
 import com.himedia.luckydokiapi.security.MemberDTO;
+import com.himedia.luckydokiapi.security.service.TokenService;
 import com.himedia.luckydokiapi.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,6 +29,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final CustomUserDetailService userDetailService;
+    private final TokenService tokenService;
 
     // 해당 필터로직(doFilterInternal)을 수행할지 여부를 결정하는 메서드
     @Override
@@ -157,6 +159,11 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             String accessToken = autHeaderStr.substring(7);// Bearer 제거
             // 쿠키로 가져와
             log.info("JWTCheckFilter accessToken: {}", accessToken);
+
+            // 블랙리스트(로그아웃된) 토큰 확인
+            if (tokenService.isTokenBlacklisted(accessToken)) {
+                throw new RuntimeException("블랙리스트(로그아웃)에 등록된 토큰입니다.");
+            }
 
             Map<String, Object> claims = jwtUtil.validateToken(accessToken);
 

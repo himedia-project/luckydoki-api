@@ -10,6 +10,7 @@ import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.notification.dto.FcmTokenRequestDTO;
 import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.security.MemberDTO;
+import com.himedia.luckydokiapi.security.service.TokenService;
 import com.himedia.luckydokiapi.util.CookieUtil;
 import com.himedia.luckydokiapi.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,7 @@ public class MemberController {
     private final JWTUtil jwtUtil;
     private final JwtProps jwtProps;
     private final CouponService couponService;
+    private final TokenService tokenService;
 
 
 
@@ -56,16 +59,27 @@ public class MemberController {
 
     @Operation(summary = "로그인 , 인증처리 api")
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody
-                                                  LoginRequestDTO loginRequestDTO,
-                                                  HttpServletResponse response) {
-        log.info("Login request: {}", loginRequestDTO);
-        Map<String, Object> loginClaims = memberService.login(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+    public ResponseEntity<LoginResponseDTO> login(
+            @Valid @RequestBody LoginRequestDTO loginRequestDTO,
+            @RequestParam(required = false, defaultValue = "web") String clientType,
+            HttpServletResponse response
+    ) {
+        log.info("Login request: {}, clientType: {}", loginRequestDTO, clientType);
+        // 인증 및 토큰 발급
+        // 인증 및 토큰 발급
+        LoginResponseDTO loginResponse = memberService.loginToDto(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
 
-        String refreshToken = loginClaims.get("refreshToken").toString();
-        String accessToken = loginClaims.get("accessToken").toString();
+        // 클라이언트 타입에 따라 다른 처리
+        if ("web".equals(clientType)) {
+            // 웹 클라이언트인 경우 쿠키에 리프레시 토큰 저장
+            CookieUtil.setTokenCookie(response, "refreshToken", loginResponse.getRefreshToken(),
+                    jwtProps.getRefreshTokenExpirationPeriod());
+            // 응답에서는 리프레시 토큰 제거 (보안상 이유)
+            loginResponse.setRefreshToken(null);
+        }
+        // 모바일 클라이언트는 응답 본문에 리프레시 토큰 포함 (이미 포함되어 있음)
 
-        CookieUtil.setTokenCookie(response, "refreshToken", refreshToken, jwtProps.getRefreshTokenExpirationPeriod());
+        return ResponseEntity.ok(loginResponse);
 
 /*        // 웹 클라이언트인 경우 쿠키 설정
         if ("web".equals(clientType)) {
@@ -75,30 +89,35 @@ public class MemberController {
         else if ("mobile".equals(clientType)) {
             response.setHeader("Refresh-Token", refreshToken);
         }*/
-
-        LoginResponseDTO loginResponseDTO = LoginResponseDTO.builder()
-                .email(loginClaims.get("email").toString())
-                .nickName(loginClaims.get("nickName").toString())
-                .roles((List<String>) loginClaims.get("roleNames"))
-                .accessToken(accessToken)
-                .active(MemberActive.valueOf(loginClaims.get("active").toString()))
-                .build();
-
-        log.info("loginResponseDTO: {}", loginResponseDTO);
-        // 로그인 성공시, accessToken, email, name, roles 반환
-        return ResponseEntity.ok(loginResponseDTO);
     }
 
 
+    @Operation(summary = "로그아웃 처리")
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletResponse response) {
-        log.info("logout");
-        // accessToken은 react 내 redux 상태 지워서 없앰
-        // 쿠키 삭제
-        CookieUtil.removeTokenCookie(response, "refreshToken");
+    public ResponseEntity<String> logout(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(required = false, defaultValue = "web") String clientType,
+            @AuthenticationPrincipal MemberDTO memberDTO) {
 
-        return ResponseEntity.ok("logout success!");
+        log.info("Logout request: {}, clientType: {}", memberDTO, clientType);
+
+        // 액세스 토큰 추출
+        String accessToken = extractAccessToken(request);
+
+        if (accessToken != null && memberDTO != null) {
+            // Redis에서 토큰 정보 삭제 및 블랙리스트 추가
+            tokenService.logout(memberDTO.getEmail(), accessToken);
+        }
+
+        // 웹 클라이언트인 경우 쿠키 삭제
+        if ("web".equals(clientType)) {
+            CookieUtil.removeTokenCookie(response, "refreshToken");
+        }
+
+        return ResponseEntity.ok("Logout successful");
     }
+
 
     @Operation(summary = "토큰 갱신", description = "refreshToken으로 새로운 accessToken을 발급합니다.")
     @ApiResponses(value = {
@@ -110,38 +129,33 @@ public class MemberController {
     })
     @GetMapping("/refresh")
     public ResponseEntity<LoginResponseDTO> refresh(
+            @RequestParam(required = false, defaultValue = "web") String clientType,
             @Parameter(description = "refreshToken 쿠키", required = true)
-            @CookieValue(value = "refreshToken") String refreshToken,
+            @CookieValue(value = "refreshToken", required = false) String cookieRefreshToken,
+            @RequestHeader(value = "Refresh-Token", required = false) String headerRefreshToken,
             HttpServletResponse response) {
-        log.info("refresh refreshToken: {}", refreshToken);
 
-        // ✳️ RefreshToken 검증해서 맴버정보 다시 가져옴!
-        Map<String, Object> loginClaims = jwtUtil.validateToken(refreshToken);
-        log.info("RefreshToken loginClaims: {}", loginClaims);
+        log.info("refresh refreshToken: {} , headerRefreshToken: {}, clientType: {} ", cookieRefreshToken, headerRefreshToken, clientType);
 
-        String newAccessToken = jwtUtil.generateToken(loginClaims, jwtProps.getAccessTokenExpirationPeriod());
-        String newRefreshToken = jwtUtil.generateToken(loginClaims, jwtProps.getRefreshTokenExpirationPeriod());
+        // 클라이언트 타입에 따라 리프레시 토큰 가져오기
+        String refreshToken = "web".equals(clientType) ? cookieRefreshToken : headerRefreshToken;
 
-        // refreshToken 만료시간이 1시간 이하로 남았다면, 새로 발급
-        if (checkTime((Integer) loginClaims.get("exp"))) {
-            // 새로 발급
-            CookieUtil.setTokenCookie(response, "refreshToken", newRefreshToken, jwtProps.getRefreshTokenExpirationPeriod()); // 1day
-        } else {
-            // 만료시간이 1시간 이상이면, 기존 refreshToken 그대로
-            CookieUtil.setNewRefreshTokenCookie(response, "refreshToken", refreshToken);
+        if (refreshToken == null) {
+            return ResponseEntity.badRequest().build();
         }
 
-        LoginResponseDTO loginResponseDTO = LoginResponseDTO.builder()
-                .email(loginClaims.get("email").toString())
-                .nickName(loginClaims.get("nickName").toString())
-                .roles((List<String>) loginClaims.get("roleNames"))
-                .accessToken(newAccessToken)
-                .active(MemberActive.valueOf(loginClaims.get("active").toString()))
-                .build();
+        // 토큰 갱신 처리
+        LoginResponseDTO refreshedTokens = tokenService.refreshTokens(refreshToken);
 
-        log.info("refresh loginResponseDTO: {}", loginResponseDTO);
-        // refresh 성공시, accessToken, email, name, roles 반환
-        return ResponseEntity.ok(loginResponseDTO);
+        // 웹 클라이언트인 경우 새 리프레시 토큰을 쿠키에 저장
+        if ("web".equals(clientType)) {
+            CookieUtil.setTokenCookie(response, "refreshToken", refreshedTokens.getRefreshToken(),
+                    jwtProps.getRefreshTokenExpirationPeriod());
+            // 응답에서는 리프레시 토큰 제거
+            refreshedTokens.setRefreshToken(null);
+        }
+
+        return ResponseEntity.ok(refreshedTokens);
     }
 
     @Operation(
@@ -218,6 +232,17 @@ public class MemberController {
     public ResponseEntity<Boolean> checkEmail(@PathVariable String email) {
         log.info("checkEmail email: {}", email);
         return ResponseEntity.ok(memberService.checkEmail(email));
+    }
+
+    /**
+     * 요청 헤더에서 액세스 토큰 추출
+     */
+    private String extractAccessToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
     }
 
 }

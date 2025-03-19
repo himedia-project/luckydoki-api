@@ -20,6 +20,7 @@ public class LoginResponseDTO {
     private String nickName;
     private List<String> roles;
     private String accessToken;
+    private String refreshToken;        // 앱 전용 refresh token
     private MemberActive active;
 
 }

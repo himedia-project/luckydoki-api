@@ -1,14 +1,10 @@
 package com.himedia.luckydokiapi.domain.member.service;
 
-import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.MemberDetailDTO;
-import com.himedia.luckydokiapi.domain.member.dto.SellerRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.UpdateMemberDTO;
+import com.himedia.luckydokiapi.domain.member.dto.*;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 
 import java.util.Map;
 
@@ -21,7 +17,9 @@ public interface MemberService {
 
     Member getEntity(String email);
 
-    Map<String, Object> login(@NotBlank(message = "이메일을 입력해주세요") String email, @NotBlank(message = "패스워드를  입력해주세요") String password);
+    Map<String, Object> login(String email, String password);
+
+    LoginResponseDTO loginToDto(String email, String password);
 
     void join(@Valid JoinRequestDTO joinRequestDTO);
 

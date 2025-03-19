@@ -2,10 +2,7 @@ package com.himedia.luckydokiapi.domain.member.service;
 
 
 import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
-import com.himedia.luckydokiapi.domain.member.dto.JoinRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.MemberDetailDTO;
-import com.himedia.luckydokiapi.domain.member.dto.SellerRequestDTO;
-import com.himedia.luckydokiapi.domain.member.dto.UpdateMemberDTO;
+import com.himedia.luckydokiapi.domain.member.dto.*;
 import com.himedia.luckydokiapi.domain.member.entity.Member;
 import com.himedia.luckydokiapi.domain.member.entity.SellerApplication;
 import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
@@ -17,6 +14,7 @@ import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.props.JwtProps;
 import com.himedia.luckydokiapi.security.CustomUserDetailService;
 import com.himedia.luckydokiapi.security.MemberDTO;
+import com.himedia.luckydokiapi.security.service.TokenService;
 import com.himedia.luckydokiapi.util.JWTUtil;
 import com.himedia.luckydokiapi.util.file.CustomFileUtil;
 import jakarta.persistence.EntityNotFoundException;
@@ -45,6 +43,7 @@ public class MemberServiceImpl implements MemberService {
     private final ShopRepository shopRepository;
     private final PhoneVerificationService phoneVerificationService;
     private final CouponService couponService;
+    private final TokenService tokenService;
 
 
     @Transactional(readOnly = true)
@@ -72,6 +71,27 @@ public class MemberServiceImpl implements MemberService {
         memberClaims.put("active", memberAuthDTO.getActive().name());
 
         return memberClaims;
+    }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public LoginResponseDTO loginToDto(String email, String password) {
+        MemberDTO memberAuthDTO = (MemberDTO) userDetailService.loadUserByUsername(email);
+        log.info("email :{} , password :{} ", email, password);
+
+        if(memberAuthDTO.getActive() == MemberActive.N){
+            throw new RuntimeException("탈퇴한 회원은 로그인할 수 없습니다.");
+        }
+
+        if (!passwordEncoder.matches(password, memberAuthDTO.getPassword())) {
+            throw new RuntimeException("비밀번호가 틀렸습니다.");
+
+        }
+        // 회원 조회
+        Member member = this.getEntity(email);
+        return tokenService.issueTokens(member);
+
     }
 
     @Override
