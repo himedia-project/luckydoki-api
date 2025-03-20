@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import javax.security.auth.RefreshFailedException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -201,6 +202,15 @@ public class CustomControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrorMessage(msg));
     }
 
+    // refreshToken 문제 발생시 exception
+    @ExceptionHandler(RefreshFailedException.class)
+    public ResponseEntity<?> handleRefreshTokenExpiredException(RefreshFailedException e) {
+        String msg = e.getMessage();
+        log.error("RefreshFailedException: {}", msg);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(getErrorMessage(msg));
+    }
+
     /**
      * 나머지 exception 서버오류 500 에러로 통일
      *
@@ -216,7 +226,7 @@ public class CustomControllerAdvice {
     }
 
     private static Map<String, String> getErrorMessage(String msg) {
-        return Map.of("errMsg", msg);
+        return Map.of("error", msg);
     }
 
 }

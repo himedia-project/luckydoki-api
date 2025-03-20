@@ -1,11 +1,9 @@
 package com.himedia.luckydokiapi.domain.member.controller;
 
 
-import com.himedia.luckydokiapi.domain.chat.dto.ChatRoomDTO;
 import com.himedia.luckydokiapi.domain.coupon.dto.CouponResponseDTO;
 import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import com.himedia.luckydokiapi.domain.member.dto.*;
-import com.himedia.luckydokiapi.domain.member.enums.MemberActive;
 import com.himedia.luckydokiapi.domain.member.service.MemberService;
 import com.himedia.luckydokiapi.domain.notification.dto.FcmTokenRequestDTO;
 import com.himedia.luckydokiapi.props.JwtProps;
@@ -29,10 +27,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.RefreshFailedException;
 import java.util.List;
-import java.util.Map;
-
-import static com.himedia.luckydokiapi.util.TimeUtil.checkTime;
 
 @Slf4j
 @RestController
@@ -133,7 +129,7 @@ public class MemberController {
             @Parameter(description = "refreshToken 쿠키", required = true)
             @CookieValue(value = "refreshToken", required = false) String cookieRefreshToken,
             @RequestHeader(value = "Refresh-Token", required = false) String headerRefreshToken,
-            HttpServletResponse response) {
+            HttpServletResponse response) throws RefreshFailedException {
 
         log.info("refresh refreshToken: {} , headerRefreshToken: {}, clientType: {} ", cookieRefreshToken, headerRefreshToken, clientType);
 
@@ -141,7 +137,7 @@ public class MemberController {
         String refreshToken = "web".equals(clientType) ? cookieRefreshToken : headerRefreshToken;
 
         if (refreshToken == null) {
-            return ResponseEntity.badRequest().build();
+            throw new RefreshFailedException("REFRESH_TOKEN_NOT_FOUND");
         }
 
         // 토큰 갱신 처리
