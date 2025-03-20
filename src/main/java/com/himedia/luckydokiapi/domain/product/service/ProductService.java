@@ -4,13 +4,10 @@ package com.himedia.luckydokiapi.domain.product.service;
 import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.dto.TagDTO;
-import com.himedia.luckydokiapi.domain.product.entity.*;
-import com.himedia.luckydokiapi.domain.shop.entity.Shop;
+import com.himedia.luckydokiapi.domain.product.entity.Product;
 
-import java.util.List;
 import java.time.LocalDateTime;
-
-import static com.himedia.luckydokiapi.util.NumberGenerator.generateRandomNumber;
+import java.util.List;
 
 public interface ProductService {
 
@@ -55,6 +52,5 @@ public interface ProductService {
     List<Long> getRecentlyAddedProducts(LocalDateTime fromTime);
 
 
-
-
+    List<ProductDTO.Response> getProductsByIds(List<Long> recentlyViewedProductIds, String email);
 }

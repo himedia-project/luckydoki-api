@@ -354,6 +354,16 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.getRecentlyAddedProducts(fromTime);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<ProductDTO.Response> getProductsByIds(List<Long> productIds, String email) {
+        // 각 상품 ID에 대해 ProductDTO.Response 객체를 생성하여 반환
+        return productIds.stream()
+                .map(id -> this.getProduct(id, email)) // null 대신 사용자 이메일을 전달할 수 있음
+                .collect(Collectors.toList());
+
+    }
+
 
     private Member getMember(String email) {
         return memberRepository.getWithRoles(email).orElseThrow(() -> new EntityNotFoundException("회원 권한이 없습니다" + email));
