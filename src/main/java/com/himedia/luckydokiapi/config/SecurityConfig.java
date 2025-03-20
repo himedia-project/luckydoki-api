@@ -79,13 +79,14 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/sales/**")).permitAll()
                         // /api/search/popular-keywords
                         .requestMatchers(new AntPathRequestMatcher("/api/search/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/image/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/audio/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/static/**")).permitAll()
                         // /api/admin/join, /api/admin/login,logout 모두 접근 가능
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/join")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/login")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/logout")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/member/refresh")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/image/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/coupon")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/product/excel/download")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/admin/dashboard/**")).permitAll()

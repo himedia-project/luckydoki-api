@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 @Slf4j
 @Component
@@ -68,6 +67,10 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             return true;
         }
 
+        if (path.startsWith("/api/audio/")
+        ) {
+            return true;
+        }
 
         if (path.startsWith("/api/event")) {
             return true;
