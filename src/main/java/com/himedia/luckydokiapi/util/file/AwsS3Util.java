@@ -222,5 +222,27 @@ public class AwsS3Util {
         return s3Client.getUrl(bucketName, fileName).toString();
     }
 
+    /**
+     * S3에서 파일 리소스 가져오기
+     * @param fileName 파일 이름
+     * @return 파일 리소스
+     * @throws IOException 파일을 가져오는 중 오류 발생 시
+     */
+    public Resource getResource(String fileName) throws IOException {
+        // S3 URL 가져오기
+        String urlStr = s3Client.getUrl(bucketName, fileName).toString();
+        
+        try {
+            URL url = new URL(urlStr);
+            URLConnection urlConnection = url.openConnection();
+            InputStream inputStream = urlConnection.getInputStream();
+            
+            // InputStreamResource 생성 및 반환
+            return new InputStreamResource(inputStream);
+        } catch (IOException e) {
+            log.error("Failed to get resource from S3: {}", e.getMessage());
+            throw new IOException("Failed to get resource from S3: " + fileName, e);
+        }
+    }
 
 }

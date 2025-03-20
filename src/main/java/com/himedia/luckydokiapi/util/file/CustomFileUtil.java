@@ -268,4 +268,19 @@ public class CustomFileUtil {
 
         return String.join(",", resultList);
     }
+
+    /**
+     * S3에서 파일 리소스 가져오기
+     * @param fileName 파일명
+     * @return 파일 리소스
+     */
+    public Resource getFileResource(String fileName) {
+        try {
+            return s3Util.getResource(fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("getFileResource error: {}", e.getMessage());
+            throw new RuntimeException("Failed to get file resource: " + fileName);
+        }
+    }
 }
