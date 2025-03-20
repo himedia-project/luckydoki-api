@@ -23,8 +23,8 @@ public class TokenRepository {
      */
     public void saveRefreshToken(String email, String refreshToken, long expirationTime) {
         String key = REFRESH_TOKEN_PREFIX + email;
-        redisTemplate.opsForValue().set(key, refreshToken, expirationTime, TimeUnit.MILLISECONDS);
-        log.info("리프레시 토큰 저장: {}", email);
+        redisTemplate.opsForValue().set(key, refreshToken, expirationTime, TimeUnit.MINUTES);
+        log.info("리프레시 토큰 저장 email {}, refreshToken: {}", email, refreshToken);
     }
     
     /**
