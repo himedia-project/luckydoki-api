@@ -120,6 +120,8 @@ dependencies {
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // redisson
+    implementation 'org.redisson:redisson-spring-boot-starter:3.24.3'
 
     // Elasticsearch
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'

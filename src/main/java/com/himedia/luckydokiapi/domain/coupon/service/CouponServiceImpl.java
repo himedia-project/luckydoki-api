@@ -16,10 +16,13 @@ import com.himedia.luckydokiapi.domain.member.repository.MemberRepository;
 import com.himedia.luckydokiapi.domain.notification.enums.NotificationType;
 import com.himedia.luckydokiapi.domain.notification.service.NotificationService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
+import com.himedia.luckydokiapi.exception.CouponLockException;
 import com.himedia.luckydokiapi.util.NumberGenerator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -46,6 +49,10 @@ public class CouponServiceImpl implements CouponService {
 
     private final CouponProducer couponProducer;
     private final RedisTemplate<String, Object> redisTemplate;
+
+    private final RedissonClient redissonClient;
+
+    private static final String COUPON_LOCK_KEY = "coupon:lock:";
 
     private static final String COUPON_ISSUE_PROCESSING_KEY = "coupon:issue:processing:";
     private static final String COUPON_ISSUE_COMPLETED_KEY = "coupon:issue:completed:";
@@ -342,20 +349,52 @@ public class CouponServiceImpl implements CouponService {
     }
 
     /**
-     * 사용자에게 쿠폰 발급
+     * 사용자가 쿠폰 등록
      *
      * @param code 쿠폰 코드
      * @return 쿠폰 발급 결과
      */
     @Override
-    public Long issueCouponToUser(String code, String email) {
+    public String registerCoupon(String code, String email) {
+
+        if (code == null || code.trim().isEmpty()) {
+            throw new IllegalArgumentException("쿠폰 코드는 필수입니다");
+        }
+
         if(email == null) {
             throw new IllegalArgumentException("Email is required");
         }
-        Coupon coupon = couponRepository.findByCode(code)
-                .orElseThrow(() -> new EntityNotFoundException("Coupon not found with code: " + code));
-        this.issueCouponToUser(coupon.getId(), email);
-        return coupon.getId();
+
+        // 쿠폰 락 키 생성
+        // Redisson 분산락 적용: 동일 쿠폰 코드에 대한 동시 요청 처리 시 정합성 보장
+        String lockKey = COUPON_LOCK_KEY + code;
+        RLock lock = redissonClient.getLock(lockKey);
+
+        try {
+            // 락 획득 시도 (5초 대기, 10초 유지)
+            // 락 타임아웃 설정: 5초 대기, 10초 유지하는 일시적인 락으로 시스템 안정성 확보
+            boolean isLocked = lock.tryLock(5, 10, TimeUnit.SECONDS);
+
+            if (!isLocked) {
+                log.error("쿠폰 발급 중 락 획득 실패: {}", code);
+                throw new CouponLockException("쿠폰 발급 처리 중입니다. 잠시 후 다시 시도해주세요.");
+            }
+
+            Coupon coupon = couponRepository.findByCode(code)
+                    .orElseThrow(() -> new EntityNotFoundException("Coupon not found with code: " + code));
+            this.issueCouponToUser(coupon.getId(), email);
+            return coupon.getCode();
+        } catch (InterruptedException e) {
+            log.error("Failed to acquire lock: {}", lockKey);
+            throw new IllegalStateException("Failed to acquire lock: " + lockKey);
+        } finally {
+            // 락 해제 보장: finally 블록에서 락 보유 여부 확인 후 안전하게 해제
+            // 락을 보유하고 있는 경우에만 해제
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+                log.debug("쿠폰 락 해제: {}", code);
+            }
+        }
     }
 
 

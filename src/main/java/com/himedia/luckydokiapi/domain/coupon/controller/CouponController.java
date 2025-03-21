@@ -29,13 +29,13 @@ public class CouponController {
 	}
 
 	// 해당 유저가 쿠폰 코드 입력후 쿠폰발급
-	@PostMapping("/issue")
-	public ResponseEntity<?> issueCouponToUser(@RequestBody CouponIssueRequestDTO requestDTO,
-											   @AuthenticationPrincipal MemberDTO memberDTO
+	@PostMapping("/register")
+	public ResponseEntity<?> registerCoupon(@RequestBody CouponIssueRequestDTO requestDTO,
+											@AuthenticationPrincipal MemberDTO memberDTO
 	) {
 		String email = memberDTO == null ? null : memberDTO.getEmail();
-		log.info("issueCouponToUser code: {}, email: {}", requestDTO.getCode(), email);
-		Long couponId = couponService.issueCouponToUser(requestDTO.getCode(), email);
-		return ResponseEntity.ok(couponId);
+		log.info("registerCoupon code: {}, email: {}", requestDTO.getCode(), email);
+		String code = couponService.registerCoupon(requestDTO.getCode(), email);
+		return ResponseEntity.ok(code);
 	}
 }

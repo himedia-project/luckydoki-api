@@ -22,7 +22,7 @@ public interface CouponService {
 
 	void issueCoupon(Long couponId, List<String> memberEmails);
 
-	Long issueCouponToUser(String code, String email);
+	String registerCoupon(String code, String email);
 
 	Coupon getCoupon(Long couponId);
 

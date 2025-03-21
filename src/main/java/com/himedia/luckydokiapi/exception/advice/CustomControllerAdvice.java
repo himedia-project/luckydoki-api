@@ -211,6 +211,15 @@ public class CustomControllerAdvice {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(getErrorMessage(msg));
     }
 
+    // coupon Lock exception
+    @ExceptionHandler(CouponLockException.class)
+    public ResponseEntity<?> handleCouponLockException(CouponLockException e) {
+        String msg = e.getMessage();
+        log.error("CouponLockException: {}", msg);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(getErrorMessage(msg));
+    }
+
     /**
      * 나머지 exception 서버오류 500 에러로 통일
      *
