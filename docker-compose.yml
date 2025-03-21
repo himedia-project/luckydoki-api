@@ -67,14 +67,13 @@ services:
       memlock:
         soft: -1
         hard: -1
-    #    volumes:
-    #      - elasticsearch_data:/usr/share/elasticsearch/data
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
       - "9300:9300"
     networks:
       - app-network
-    # nori 플러그인 설치를 위한 command 추가
     command: >
       bash -c '
         if [ ! -f /usr/share/elasticsearch/config/nori_installed ]; then
@@ -128,6 +127,37 @@ services:
     networks:
       - app-network
 
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.1
+    container_name: logstash
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+    ports:
+      - "5044:5044" # Beats
+      - "5000:5000" # TCP
+      - "9600:9600" # API
+      - "5000:5000/udp" # UDP
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - app-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.1
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
@@ -135,3 +165,4 @@ networks:
 volumes:
   mongodb_data:
   redis_data:
+  elasticsearch_data:

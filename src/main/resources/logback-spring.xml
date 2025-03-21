@@ -16,6 +16,25 @@
         <withJansi>true</withJansi>
     </appender>
 
+    <!-- Logstash 애펜더 추가 -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>localhost:5000</destination>
+        <!-- 인코더 - JSON 형식으로 로그 포맷 지정 -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+            <customFields>{"application":"luckydoki-api"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- 쿠폰 서비스용 Logstash 애펜더 -->
+    <appender name="COUPON_LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>localhost:5000</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+            <customFields>{"application":"luckydoki-api","type":"coupon"}</customFields>
+        </encoder>
+    </appender>
+
     <!-- 애플리케이션 로그 파일 -->
     <appender name="APP_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
@@ -65,6 +84,7 @@
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="APP_LOG"/>
             <appender-ref ref="ERROR_LOG"/>
+            <appender-ref ref="LOGSTASH"/>
         </root>
         
         <!-- 개발 시 디버그 레벨로 설정할 패키지 -->
@@ -72,6 +92,7 @@
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="APP_LOG"/>
             <appender-ref ref="ERROR_LOG"/>
+            <appender-ref ref="LOGSTASH"/>
         </logger>
         
         <!-- 쿠폰 서비스 로거 -->
@@ -79,6 +100,7 @@
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="COUPON_LOG"/>
             <appender-ref ref="APP_LOG"/>
+            <appender-ref ref="COUPON_LOGSTASH"/>
         </logger>
         
         <!-- Hibernate SQL 로깅 -->
@@ -101,12 +123,14 @@
         <root level="WARN">
             <appender-ref ref="APP_LOG"/>
             <appender-ref ref="ERROR_LOG"/>
+            <appender-ref ref="LOGSTASH"/>
         </root>
         
         <!-- 애플리케이션 로깅 -->
         <logger name="com.himedia.luckydokiapi" level="INFO" additivity="false">
             <appender-ref ref="APP_LOG"/>
             <appender-ref ref="ERROR_LOG"/>
+            <appender-ref ref="LOGSTASH"/>
         </logger>
         
         <!-- 쿠폰 서비스 로거 -->
@@ -114,6 +138,7 @@
             <appender-ref ref="COUPON_LOG"/>
             <appender-ref ref="APP_LOG"/>
             <appender-ref ref="ERROR_LOG"/>
+            <appender-ref ref="COUPON_LOGSTASH"/>
         </logger>
         
         <!-- 성능 모니터링을 위한 컨트롤러 로깅 -->

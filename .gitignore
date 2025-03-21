@@ -53,3 +53,4 @@ db_dev.trace.db
 ## resources 내 파일
 # Firebase service account file
 src/main/resources/firebase-service-account.json
+/logs/
