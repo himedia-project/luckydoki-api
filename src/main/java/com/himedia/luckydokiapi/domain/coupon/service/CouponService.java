@@ -31,4 +31,11 @@ public interface CouponService {
 	void createWelcomeCoupon();
 
     void useCoupon(String email, Coupon coupon);
+
+    String requestMassIssue(Long couponId, List<String> emails);
+
+	String getIssueStatus(String requestId);
+
+	void processMassIssue(Long couponId, List<String> emails, String requestId);
+
 }

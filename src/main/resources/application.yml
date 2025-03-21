@@ -72,6 +72,28 @@ spring:
         size: 5
       thread-name-prefix: search-scheduler-
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      retries: 3
+      properties:
+        enable.idempotence: true
+    consumer:
+      group-id: coupon-issue-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.himedia.luckydokiapi.domain.coupon.dto
+
+# 쿠폰 발급 관련 Kafka 토픽 설정
+coupon:
+  kafka:
+    topics:
+      issue: coupon-issue-topic
+
 app:
   props:
     social:
@@ -133,7 +155,6 @@ spring:
       host: localhost
       port: 6379
       password: ${REDIS_PASSWORD}
-
 
 app:
   props:
