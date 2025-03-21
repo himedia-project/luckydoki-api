@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 프로퍼티 정의 -->
+    <property name="LOG_PATH" value="./logs"/>
+    <property name="LOG_FILE_NAME" value="luckydoki"/>
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+    <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %magenta([%thread]) %cyan(%logger{36}) - %msg%n"/>
+    <property name="MAX_HISTORY" value="30"/>
+
+    <!-- 콘솔 애펜더 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <withJansi>true</withJansi>
+    </appender>
+
+    <!-- 애플리케이션 로그 파일 -->
+    <appender name="APP_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 에러 로그 파일 -->
+    <appender name="ERROR_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILE_NAME}-error.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}-error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 쿠폰 관련 로그 -->
+    <appender name="COUPON_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/coupon.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/coupon.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 환경별 설정 -->
+    <springProfile name="local">
+        <!-- 로컬 환경 설정 -->
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="APP_LOG"/>
+            <appender-ref ref="ERROR_LOG"/>
+        </root>
+        
+        <!-- 개발 시 디버그 레벨로 설정할 패키지 -->
+        <logger name="com.himedia.luckydokiapi" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="APP_LOG"/>
+            <appender-ref ref="ERROR_LOG"/>
+        </logger>
+        
+        <!-- 쿠폰 서비스 로거 -->
+        <logger name="com.himedia.luckydokiapi.domain.coupon" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="COUPON_LOG"/>
+            <appender-ref ref="APP_LOG"/>
+        </logger>
+        
+        <!-- Hibernate SQL 로깅 -->
+        <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+        
+        <logger name="org.hibernate.orm.jdbc.bind" level="TRACE" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+        
+        <!-- Spring 트랜잭션 로깅 -->
+        <logger name="org.springframework.transaction" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="prod">
+        <!-- 운영 환경 설정 -->
+        <root level="WARN">
+            <appender-ref ref="APP_LOG"/>
+            <appender-ref ref="ERROR_LOG"/>
+        </root>
+        
+        <!-- 애플리케이션 로깅 -->
+        <logger name="com.himedia.luckydokiapi" level="INFO" additivity="false">
+            <appender-ref ref="APP_LOG"/>
+            <appender-ref ref="ERROR_LOG"/>
+        </logger>
+        
+        <!-- 쿠폰 서비스 로거 -->
+        <logger name="com.himedia.luckydokiapi.domain.coupon" level="INFO" additivity="false">
+            <appender-ref ref="COUPON_LOG"/>
+            <appender-ref ref="APP_LOG"/>
+            <appender-ref ref="ERROR_LOG"/>
+        </logger>
+        
+        <!-- 성능 모니터링을 위한 컨트롤러 로깅 -->
+        <logger name="com.himedia.luckydokiapi.domain.coupon.controller" level="INFO" additivity="false">
+            <appender-ref ref="APP_LOG"/>
+        </logger>
+    </springProfile>
+    
+    <!-- Redis 관련 로깅 설정 -->
+    <logger name="org.springframework.data.redis" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="APP_LOG"/>
+    </logger>
+    
+    <!-- 에러 로그 캡처를 위한 전역 설정 -->
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver" level="ERROR" additivity="false">
+        <appender-ref ref="ERROR_LOG"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+</configuration> 
