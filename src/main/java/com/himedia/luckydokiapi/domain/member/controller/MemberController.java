@@ -136,10 +136,6 @@ public class MemberController {
         // 클라이언트 타입에 따라 리프레시 토큰 가져오기
         String refreshToken = "web".equals(clientType) ? cookieRefreshToken : headerRefreshToken;
 
-        if (refreshToken == null) {
-            throw new RefreshFailedException("REFRESH_TOKEN_NOT_FOUND");
-        }
-
         // 토큰 갱신 처리
         LoginResponseDTO refreshedTokens = tokenService.refreshTokens(refreshToken);
 

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.RefreshFailedException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -67,8 +68,12 @@ public class TokenService {
     /**
      * 토큰 갱신
      */
-    public LoginResponseDTO refreshTokens(String refreshToken) {
+    public LoginResponseDTO refreshTokens(String refreshToken) throws RefreshFailedException {
         // 토큰 검증
+        if (refreshToken == null) {
+            throw new RefreshFailedException("REFRESH_TOKEN_NOT_FOUND");
+        }
+
         Map<String, Object> claims = jwtUtil.validateToken(refreshToken);
         String email = claims.get("email").toString();
         
@@ -76,7 +81,7 @@ public class TokenService {
         String storedRefreshToken = tokenRepository.getRefreshToken(email);
         
         if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
-            throw new RuntimeException("유효하지 않은 리프레시 토큰입니다.");
+            throw new RefreshFailedException("REFRESH_TOKEN_NOT_FOUND");
         }
         
         // 토큰 만료 시간 체크
