@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public interface CouponRepositoryCustom {
 	List<Coupon> findActiveCoupons();
-	Coupon findByCode(String code);
 	Optional<Coupon> findCouponById(Long id); // 🔥 메서드 이름 변경
 	void updateCoupon(Long id, CouponRequestDto couponRequestDto);
     Page<Coupon> findListBy(CouponRequestDto requestDto);

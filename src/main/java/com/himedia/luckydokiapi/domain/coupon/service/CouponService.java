@@ -22,6 +22,8 @@ public interface CouponService {
 
 	void issueCoupon(Long couponId, List<String> memberEmails);
 
+	Long issueCouponToUser(String code, String email);
+
 	Coupon getCoupon(Long couponId);
 
 	List<CouponResponseDTO> getCouponList(String email);

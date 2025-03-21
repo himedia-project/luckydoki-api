@@ -86,14 +86,7 @@ public class CouponRepositoryImpl implements CouponRepositoryCustom {
 		
 		return Optional.ofNullable(result);
 	}
-	
-	@Override
-	public Coupon findByCode(String code) {
-		QCoupon coupon = QCoupon.coupon;
-		return queryFactory.selectFrom(coupon)
-				.where(coupon.code.eq(code))
-				.fetchFirst();
-	}
+
 	
 	@Override
 	@Transactional

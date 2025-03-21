@@ -14,4 +14,6 @@ public class CouponIssueRequestDTO {
 
     private List<String> emails;
 
+    private String code;        // 해당 유저가 등록하는 코드
+
 }

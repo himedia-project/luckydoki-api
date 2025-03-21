@@ -81,10 +81,8 @@ public class CouponServiceImpl implements CouponService {
     @Transactional(readOnly = true)
     @Override
     public CouponResponseDTO getCouponByCode(String code) {
-        Coupon coupon = couponRepository.findByCode(code);
-        if (coupon == null) {
-            throw new EntityNotFoundException("Coupon not found with code: " + code);
-        }
+        Coupon coupon = couponRepository.findByCode(code)
+                .orElseThrow(() -> new EntityNotFoundException("Coupon not found with code: " + code));
         return CouponResponseDTO.from(coupon);
     }
 
@@ -343,6 +341,22 @@ public class CouponServiceImpl implements CouponService {
                 requestId, emails.size(), successCount);
     }
 
+    /**
+     * 사용자에게 쿠폰 발급
+     *
+     * @param code 쿠폰 코드
+     * @return 쿠폰 발급 결과
+     */
+    @Override
+    public Long issueCouponToUser(String code, String email) {
+        if(email == null) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        Coupon coupon = couponRepository.findByCode(code)
+                .orElseThrow(() -> new EntityNotFoundException("Coupon not found with code: " + code));
+        this.issueCouponToUser(coupon.getId(), email);
+        return coupon.getId();
+    }
 
 
 }
