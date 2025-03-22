@@ -243,9 +243,9 @@ public class CustomFileUtil {
     }
 
     /**
-     * 이미지 URL을 MultipartFile로 변환 후 s3에 저장후 url 반환
-     * @param fileName 이미지 URL
-     * @return 저장된 파일명 url
+     * CloudFront/S3에서 이미지 URL 가져오기
+     * @param fileName 이미지 파일 이름
+     * @return CloudFront URL
      */
     public String getS3Url(String fileName) {
         return s3Util.getUrl(fileName);
@@ -253,24 +253,29 @@ public class CustomFileUtil {
 
 
     /**
-     * S3에 저장된 이미지 경로를 가져온다.
+     * S3에 저장된 이미지 경로를 CloudFront URL로 변환하여 가져온다.
      * @param stringList 이미지 파일 이름 리스트
-     * @return merged한 이미지 경로 리스트 문자열
+     * @return merged한 CloudFront 이미지 경로 리스트 문자열
      */
     public String getMergedS3ImagePathList(List<String> stringList) {
+        if (stringList == null || stringList.isEmpty()) {
+            return "";
+        }
 
         List<String> resultList = new ArrayList<>();
 
-        // fileUtil을 사용하여 S3에 저장된 이미지 경로를 가져온다.
+        // CloudFront URL 사용
         for (String fileName : stringList) {
-            resultList.add(this.getS3Url(fileName));
+            if (fileName != null && !fileName.isEmpty()) {
+                resultList.add(this.getS3Url(fileName));
+            }
         }
 
         return String.join(",", resultList);
     }
 
     /**
-     * S3에서 파일 리소스 가져오기
+     * CloudFront에서 파일 리소스 가져오기
      * @param fileName 파일명
      * @return 파일 리소스
      */
@@ -278,9 +283,8 @@ public class CustomFileUtil {
         try {
             return s3Util.getResource(fileName);
         } catch (IOException e) {
-            e.printStackTrace();
-            log.error("getFileResource error: {}", e.getMessage());
-            throw new RuntimeException("Failed to get file resource: " + fileName);
+            log.error("getFileResource 오류: {}", e.getMessage());
+            throw new RuntimeException("CloudFront에서 파일 리소스를 가져오는데 실패했습니다: " + fileName);
         }
     }
 }

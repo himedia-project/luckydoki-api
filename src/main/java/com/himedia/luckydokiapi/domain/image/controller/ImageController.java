@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,20 +29,51 @@ public class ImageController {
 
     private final CustomFileUtil fileUtil;
 
+    @Operation(
+            summary = "이미지 조회 (레거시)",
+            description = "CloudFront를 통해 이미지를 조회합니다. 레거시 API입니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "이미지 조회 성공"),
+                    @ApiResponse(responseCode = "404", description = "이미지를 찾을 수 없음"),
+                    @ApiResponse(responseCode = "500", description = "서버 오류")
+            }
+    )
     @GetMapping("/view/{fileName}")
     public ResponseEntity<Resource> viewFileGET(@Parameter(description = "화면에 보여잘 파일명") @PathVariable String fileName) {
         return fileUtil.getFile(fileName);
     }
 
 
+    @Operation(
+            summary = "이미지 조회",
+            description = "CloudFront를 통해 이미지를 조회합니다. 최적의 캐싱 설정이 적용됩니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "이미지 조회 성공"),
+                    @ApiResponse(responseCode = "404", description = "이미지를 찾을 수 없음"),
+                    @ApiResponse(responseCode = "500", description = "서버 오류")
+            }
+    )
     @GetMapping("/view2/{fileName}")
-    public ResponseEntity<Resource> view2FileGET(@PathVariable String fileName) {
-        Resource resource = fileUtil.getFileResource(fileName);
-        return ResponseEntity.ok()
-                // 캐시 설정 (30일)
-                .cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
+    public ResponseEntity<Resource> view2FileGET(
+            @Parameter(description = "조회할 이미지 파일명")
+            @PathVariable String fileName) {
+        try {
+            // CloudFront에서 리소스 가져오기
+            Resource resource = fileUtil.getFileResource(fileName);
+
+            // 파일 확장자에 따른 미디어 타입 결정
+            String mediaType = determineMediaType(fileName);
+
+            return ResponseEntity.ok()
+                    // CloudFront의 캐싱 전략과 일치하도록 1년 캐시 설정
+                    .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic())
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                    .contentType(MediaType.parseMediaType(mediaType))
+                    .body(resource);
+        } catch (Exception e) {
+            log.error("이미지 조회 중 오류 발생: {}", e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
@@ -70,5 +102,23 @@ public class ImageController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFilePOST(@RequestPart("file") MultipartFile file) {
         return ResponseEntity.ok(fileUtil.uploadS3File(file));
+    }
+
+    /**
+     * 파일 이름에서 미디어 타입 결정
+     *
+     * @param fileName 파일 이름
+     * @return 미디어 타입
+     */
+    private String determineMediaType(String fileName) {
+        String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+        return switch (extension) {
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "png" -> "image/png";
+            case "gif" -> "image/gif";
+            case "webp" -> "image/webp";
+            case "svg" -> "image/svg+xml";
+            default -> "application/octet-stream";
+        };
     }
 }

@@ -37,6 +37,12 @@ public class AwsS3Util {
     @Value("${app.props.aws.s3.region}")
     private String region;
 
+    @Value("${app.props.aws.cloudfront.domain}")
+    private String cloudfrontDomain;
+
+    @Value("${app.props.aws.cloudfront.enabled:true}")
+    private boolean cloudfrontEnabled;
+
     private final AmazonS3 s3Client;
 
     /**
@@ -161,22 +167,55 @@ public class AwsS3Util {
 
 
     /**
-     * S3에 있는 파일 가져오기
-     *
+     * CloudFront URL로 파일 경로 가져오기
+     * @param fileName 파일 이름
+     * @return CloudFront URL
+     */
+    public String getCloudfrontUrl(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return "";
+        }
+        return "https://" + cloudfrontDomain + "/" + fileName;
+    }
+
+    /**
+     * S3에 있는 파일 URL 가져오기 (기존 메서드 대체)
+     * @param fileName 파일 이름
+     * @return CloudFront 또는 S3 URL
+     */
+    public String getUrl(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return "";
+        }
+        
+        // CloudFront 활성화되어 있으면 CloudFront URL 반환
+        if (cloudfrontEnabled) {
+            return getCloudfrontUrl(fileName);
+        }
+        
+        // 그렇지 않으면 S3 URL 반환
+        return s3Client.getUrl(bucketName, fileName).toString();
+    }
+
+    /**
+     * S3에 있는 파일 가져오기 (기존 메서드 수정)
      * @param fileName 파일 이름
      * @return 파일 리소스
      * @throws IOException 파일이 없을 경우 예외 발생
      */
     public ResponseEntity<Resource> getFile(String fileName) throws IOException {
-        // fileName = dbac534f-f3b6-4b33-9b83-e308e3c2c29d_e52319408af1ee349da788ec09ca6d92ff7bd70a3b99fa287c599037efee.jpg
-        // https://mall-s3.s3.ap-northeast-2.amazonaws.com/dbac534f-f3b6-4b33-9b83-e308e3c2c29d_e52319408af1ee349da788ec09ca6d92ff7bd70a3b99fa287c599037efee.jpg
-        // 로 전환!
-        String urlStr = s3Client.getUrl(bucketName, fileName).toString();
+        // CloudFront URL로 변경
+        String urlStr = getUrl(fileName);
+
+//        String urlStr = s3Client.getUrl(bucketName, fileName).toString();
+        
         Resource resource;
         HttpHeaders headers = new HttpHeaders();
         try {
             URL url = new URL(urlStr);
             URLConnection urlConnection = url.openConnection();
+            // 캐싱 최적화를 위한 헤더 추가
+            urlConnection.setRequestProperty("Cache-Control", "max-age=31536000");
             InputStream inputStream = urlConnection.getInputStream();
             resource = new InputStreamResource(inputStream);
 
@@ -187,11 +226,13 @@ public class AwsS3Util {
                 mimeType = Files.probeContentType(path);
             }
             headers.add("Content-Type", mimeType);
+            // 캐시 관련 헤더 추가
+            headers.add("Cache-Control", "max-age=31536000, public");
         } catch (IOException e) {
+            log.error("CloudFront 파일 가져오기 오류: {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
         return ResponseEntity.ok().headers(headers).body(resource);
-
     }
 
 
@@ -218,30 +259,39 @@ public class AwsS3Util {
      * @param fileName 파일 이름
      * @return 파일 URL
      */
+    /*
     public String getUrl(String fileName) {
         return s3Client.getUrl(bucketName, fileName).toString();
-    }
+    }*/
+
 
     /**
-     * S3에서 파일 리소스 가져오기
+     * CloudFront에서 파일 리소스 가져오기 (기존 메서드 수정)
      * @param fileName 파일 이름
      * @return 파일 리소스
      * @throws IOException 파일을 가져오는 중 오류 발생 시
      */
     public Resource getResource(String fileName) throws IOException {
+        // CloudFront URL로 변경
+        String urlStr = getUrl(fileName);
+        /*
         // S3 URL 가져오기
         String urlStr = s3Client.getUrl(bucketName, fileName).toString();
+        */
         
         try {
             URL url = new URL(urlStr);
             URLConnection urlConnection = url.openConnection();
+            // 캐싱 최적화
+            // max-age=31536000: 1년 동안 캐싱
+            urlConnection.setRequestProperty("Cache-Control", "max-age=31536000");
             InputStream inputStream = urlConnection.getInputStream();
             
             // InputStreamResource 생성 및 반환
             return new InputStreamResource(inputStream);
         } catch (IOException e) {
-            log.error("Failed to get resource from S3: {}", e.getMessage());
-            throw new IOException("Failed to get resource from S3: " + fileName, e);
+            log.error("CloudFront 리소스 가져오기 오류: {}", e.getMessage());
+            throw new IOException("CloudFront에서 리소스를 가져오는 중 오류 발생: " + fileName, e);
         }
     }
 
