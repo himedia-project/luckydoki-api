@@ -25,6 +25,8 @@ public interface AdminProductService {
 
     void remove(Long id);
 
+    void removeAll(List<Long> productIds);
+
     void approveProduct(List<Long> productIdList);
 
     void approveProductAll(List<Long> productIds);
@@ -58,5 +60,4 @@ public interface AdminProductService {
     void modifyProductBest(List<Long> modifyProductIdList);
 
     void modifyProductIsNew(List<Long> modifyProductIdList);
-
 }

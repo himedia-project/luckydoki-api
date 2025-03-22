@@ -65,6 +65,14 @@ public class AdminProductController {
         return ResponseEntity.ok("delete success productId: " + id);
     }
 
+    // 전체 삭제
+    @DeleteMapping("/all")
+    public ResponseEntity<String> removeAll(@RequestBody ModifyProductIdsDTO modifyProductIdsDTO) {
+        log.info("removeAll: {}", modifyProductIdsDTO);
+        productService.removeAll(modifyProductIdsDTO.getProductIds());
+        return ResponseEntity.ok("delete success productIds: " + modifyProductIdsDTO.getProductIds());
+    }
+
 
     // 이미지 불러오기
     @GetMapping("/view/{fileName}")

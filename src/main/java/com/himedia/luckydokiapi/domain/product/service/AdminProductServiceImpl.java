@@ -260,6 +260,15 @@ public class AdminProductServiceImpl implements AdminProductService {
         productRepository.modifyDeleteFlag(product.getId());
     }
 
+    @Override
+    public void removeAll(List<Long> productIds) {
+        List<Product> products = productRepository.findAllById(productIds);
+
+        for (Product product : products) {
+            this.remove(product.getId());
+        }
+    }
+
 
     @Override
     public void modifyProductBest(List<Long> modifyProductIdList) {
