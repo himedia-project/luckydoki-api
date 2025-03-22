@@ -81,12 +81,21 @@ public class CommunityServiceImpl implements CommunityService {
     @Transactional(readOnly = true)
     @Override
     public PageResponseDTO<CommunityResponseDTO> listPage(CommunitySearchDTO requestDTO, String email) {
-        Page<Community> result = communityRepository.findListBy(requestDTO);
-        return PageResponseDTO.<CommunityResponseDTO>withAll()
-                .dtoList(result.stream().map(CommunityResponseDTO::toDto).collect(Collectors.toList()))
+        try {
+            Page<Community> result = communityRepository.findListBy(requestDTO);
+            List<CommunityResponseDTO> dtoList = result.getContent().stream()
+                .map(CommunityResponseDTO::toDto)
+                .collect(Collectors.toList());
+            
+            return PageResponseDTO.<CommunityResponseDTO>withAll()
+                .dtoList(dtoList)
                 .totalCount(result.getTotalElements())
                 .pageRequestDTO(requestDTO)
                 .build();
+        } catch (Exception e) {
+            log.error("커뮤니티 페이지 조회 중 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("커뮤니티 페이지 조회에 실패했습니다: " + e.getMessage(), e);
+        }
     }
 
     @Transactional(readOnly = true)

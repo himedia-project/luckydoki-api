@@ -63,6 +63,14 @@ public class RedisConfig {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+        // 중요: 타입 정보를 포함하도록 설정
+        objectMapper.activateDefaultTyping(
+        // 타입 정보가 안전한지 검증하는 역할, 악의적인 타입 정보로부터 시스템을 보호
+        objectMapper.getPolymorphicTypeValidator(),
+        // 타입 정보를 포함할 범위를 지정 -> final이 아닌 모든 클래스에 대해 타입 정보를 포함
+        ObjectMapper.DefaultTyping.NON_FINAL
+    );
         
         Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
         serializer.setObjectMapper(objectMapper);

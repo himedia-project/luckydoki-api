@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,9 @@ public class CommunityDocument {
 
     @Field(type = FieldType.Text, analyzer = "korean")
     private String tags;
+
+    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
+    private String createdAt;
     
     @Builder
     public CommunityDocument(CommunityResponseDTO dto) {
@@ -60,6 +64,11 @@ public class CommunityDocument {
                     .collect(Collectors.joining(" "));
         } else {
             this.tags = "";
+        }
+
+        // LocalDateTime을 String으로 변환하여 저장
+        if (dto.getCreatedAt() != null) {
+            this.createdAt = dto.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         }
     }
 } 
