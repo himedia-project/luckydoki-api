@@ -49,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
     private final IndexingService indexingService;
 
 
-    @Cacheable(key = "#id + '_' + #email", value = RedisConfig.PRODUCT_DETAIL, cacheManager = "redisCacheManager")
+//    @Cacheable(key = "#id + '_' + #email", value = RedisConfig.PRODUCT_DETAIL, cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     @Override
     public ProductDTO.Response getProduct(Long id, String email) {
@@ -78,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    @Cacheable(key = "#requestDTO.toString() + '_' + #email", value = RedisConfig.PRODUCT_LIST, cacheManager = "redisCacheManager")
+//    @Cacheable(key = "#requestDTO.toString() + '_' + #email", value = RedisConfig.PRODUCT_LIST, cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     @Override
     public List<ProductDTO.Response> list(ProductSearchDTO requestDTO, String email) {
@@ -293,7 +293,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // 상품이 수정되면 해당 상품의 캐시를 삭제
-    @CacheEvict(key = "#id + '_*'", value = RedisConfig.PRODUCT_DETAIL, cacheManager = "redisCacheManager", allEntries = false)
+//    @CacheEvict(key = "#id + '_*'", value = RedisConfig.PRODUCT_DETAIL, cacheManager = "redisCacheManager", allEntries = false)
     @Override
     public void deleteProductById(Long productId) {
         Product product = this.getEntity(productId);
