@@ -131,6 +131,9 @@ dependencies {
 
     // logstash logback encoder 의존성 추가
     implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
+
+    // Google Cloud Translation API
+    implementation 'com.google.cloud:google-cloud-translate:2.3.0'
 }
 
 tasks.named('test') {
