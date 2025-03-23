@@ -37,14 +37,13 @@ public class RedisConfig {
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer(StandardCharsets.UTF_8);
 
         // JSON 직렬화 설정
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        jackson2JsonRedisSerializer.setObjectMapper(objectMapper());
+        GenericJackson2JsonRedisSerializer jsonRedisSerializer = new GenericJackson2JsonRedisSerializer(objectMapper());
 
         // 직렬화 설정 적용
         template.setKeySerializer(stringRedisSerializer);
-        template.setValueSerializer(jackson2JsonRedisSerializer);  // String 대신 JSON 사용
+        template.setValueSerializer(jsonRedisSerializer);  // String 대신 JSON 사용
         template.setHashKeySerializer(stringRedisSerializer);
-        template.setHashValueSerializer(jackson2JsonRedisSerializer);  // String 대신 JSON 사용
+        template.setHashValueSerializer(jsonRedisSerializer);  // String 대신 JSON 사용
 
         template.afterPropertiesSet();
         return template;
@@ -56,7 +55,7 @@ public class RedisConfig {
     public static final String COMMUNITY_DETAIL = "community_detail";
     public static final String COMMUNITY_LIST = "community_list";
     public static final String COMMUNITY_PAGE = "community_page";
-    
+
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -66,15 +65,15 @@ public class RedisConfig {
 
         // 중요: 타입 정보를 포함하도록 설정
         objectMapper.activateDefaultTyping(
-        // 타입 정보가 안전한지 검증하는 역할, 악의적인 타입 정보로부터 시스템을 보호
-        objectMapper.getPolymorphicTypeValidator(),
-        // 타입 정보를 포함할 범위를 지정 -> final이 아닌 모든 클래스에 대해 타입 정보를 포함
-        ObjectMapper.DefaultTyping.NON_FINAL
-    );
-        
-        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        serializer.setObjectMapper(objectMapper);
-        
+                // 타입 정보가 안전한지 검증하는 역할, 악의적인 타입 정보로부터 시스템을 보호
+                objectMapper.getPolymorphicTypeValidator(),
+                // 타입 정보를 포함할 범위를 지정 -> final이 아닌 모든 클래스에 대해 타입 정보를 포함
+                ObjectMapper.DefaultTyping.NON_FINAL
+        );
+
+        // GenericJackson2JsonRedisSerializer 사용
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext
                         .SerializationPair
@@ -84,13 +83,13 @@ public class RedisConfig {
                         .fromSerializer(serializer));
 
         Map<String, RedisCacheConfiguration> cacheConfigurationMap = new HashMap<>();
-        
+
         // 상품 상세 조회는 10분 캐시
-        cacheConfigurationMap.put(PRODUCT_DETAIL, 
+        cacheConfigurationMap.put(PRODUCT_DETAIL,
                 redisCacheConfiguration.entryTtl(Duration.ofMinutes(10L)));
-        
+
         // 상품 목록 조회는 5분 캐시
-        cacheConfigurationMap.put(PRODUCT_LIST, 
+        cacheConfigurationMap.put(PRODUCT_LIST,
                 redisCacheConfiguration.entryTtl(Duration.ofMinutes(5L)));
 
         // 커뮤니티 상세 조회는 10분 캐시
@@ -117,7 +116,7 @@ public class RedisConfig {
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        
+
         // Java 8 날짜/시간 모듈 등록
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

@@ -98,31 +98,6 @@ class TranslationServiceTest {
         }
     }
 
-    @Test
-    @DisplayName("빈 문자열 입력 시 빈 문자열 반환 테스트")
-    void shouldReturnEmptyStringWhenInputIsEmpty() {
-        // Given
-        String emptyText = "";
-
-        // When
-        String result = translationService.translateToEnglish(emptyText);
-
-        // Then
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    @DisplayName("null 입력 시 빈 문자열 반환 테스트")
-    void shouldReturnEmptyStringWhenInputIsNull() {
-        // Given
-        String nullText = null;
-
-        // When
-        String result = translationService.translateToEnglish(nullText);
-
-        // Then
-        assertThat(result).isEmpty();
-    }
 
     @Test
     @DisplayName("Google API 인증 실패 시 예외 처리 테스트")

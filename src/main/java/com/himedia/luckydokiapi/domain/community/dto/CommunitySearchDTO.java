@@ -3,11 +3,11 @@ package com.himedia.luckydokiapi.domain.community.dto;
 import com.himedia.luckydokiapi.dto.PageRequestDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
