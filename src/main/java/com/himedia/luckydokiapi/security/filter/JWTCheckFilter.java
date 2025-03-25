@@ -1,18 +1,15 @@
 package com.himedia.luckydokiapi.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.himedia.luckydokiapi.security.CustomUserDetailService;
-import com.himedia.luckydokiapi.security.MemberDTO;
-import com.himedia.luckydokiapi.security.service.TokenService;
-import com.himedia.luckydokiapi.util.JWTUtil;
+import com.himedia.luckydokiapi.security.service.TokenValidationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,9 +23,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class JWTCheckFilter extends OncePerRequestFilter {
 
-    private final JWTUtil jwtUtil;
-    private final CustomUserDetailService userDetailService;
-    private final TokenService tokenService;
+
+    private final TokenValidationService tokenValidationService;
 
     // 해당 필터로직(doFilterInternal)을 수행할지 여부를 결정하는 메서드
     @Override
@@ -158,47 +154,33 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         }
 
         try {
-            // Bearer accessToken 형태로 전달되므로 Bearer 제거
-            String accessToken = autHeaderStr.substring(7);// Bearer 제거
-            // 쿠키로 가져와
-            log.info("JWTCheckFilter accessToken: {}", accessToken);
-
-            // 블랙리스트(로그아웃된) 토큰 확인
-            if (tokenService.isTokenBlacklisted(accessToken)) {
-                throw new RuntimeException("블랙리스트(로그아웃)에 등록된 토큰입니다.");
-            }
-
-            Map<String, Object> claims = jwtUtil.validateToken(accessToken);
-
-            log.info("JWT claims: {}", claims);
-
-            MemberDTO memberDTO = (MemberDTO) userDetailService.loadUserByUsername((String) claims.get("email"));
-
-            log.info("memberDTO: {}", memberDTO);
-            log.info("memberDto.getAuthorities(): {}", memberDTO.getAuthorities());
-
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(memberDTO, memberDTO.getPassword(), memberDTO.getAuthorities());
-
-            // SecurityContextHolder에 인증 객체 저장
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-            // 다음 필터로 이동
+            String token = autHeaderStr.substring(7);
+            
+            // TokenValidationService를 사용하여 인증
+            Authentication authentication = tokenValidationService.validateTokenAndCreateAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            log.error("JWT Check Error...........");
-            log.error("e.getMessage(): {}", e.getMessage());
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            String msg = objectMapper.writeValueAsString(Map.of("error", "ERROR_ACCESS_TOKEN"));
-
-            response.setContentType("application/json;charset=UTF-8");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            PrintWriter printWriter = response.getWriter();
-            printWriter.println(msg);
-            printWriter.close();
+            log.error("JWT Check Error: {}", e.getMessage());
+            handleAuthenticationError(response, e);
         }
+    }
 
+    /**
+     * 인증 오류 처리
+     * @param response 응답
+     * @param e 인증 오류
+     * @throws IOException IO 예외
+     */
+    private void handleAuthenticationError(HttpServletResponse response, Exception e) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = objectMapper.writeValueAsString(Map.of("error", "ERROR_ACCESS_TOKEN"));
 
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        PrintWriter printWriter = response.getWriter();
+        printWriter.println(msg);
+        printWriter.close();
     }
 }

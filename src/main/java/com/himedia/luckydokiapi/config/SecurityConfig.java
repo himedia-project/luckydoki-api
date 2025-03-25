@@ -152,9 +152,6 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-
-
-
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 출처 설정 (모든 출처 허용)

@@ -1,21 +1,15 @@
 package com.himedia.luckydokiapi.domain.chat.document;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
-@Document(collection = "chatMessages")
+@Document(collection = "chat_message")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

@@ -8,12 +8,11 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.Update;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+
 public interface ChatMessageRepository extends MongoRepository<ChatMessage, String> {
 //jpa 레포지토리 처럼 이름규칙에 따라 자동으로 쿼리 생성
 

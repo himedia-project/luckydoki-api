@@ -2,8 +2,8 @@ package com.himedia.luckydokiapi.domain.chat.service;
 
 import com.himedia.luckydokiapi.domain.chat.document.ChatMessage;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatHistoryDTO;
-import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageResponseDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageRequestDTO;
+import com.himedia.luckydokiapi.domain.chat.dto.ChatMessageResponseDTO;
 import com.himedia.luckydokiapi.domain.chat.dto.ChatRoomDTO;
 import com.himedia.luckydokiapi.domain.chat.entity.ChatRoom;
 import com.himedia.luckydokiapi.domain.chat.repository.ChatMessageRepository;
@@ -17,11 +17,13 @@ import com.himedia.luckydokiapi.exception.NotAccessChatRoom;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ChatServiceImpl implements ChatService {
 
-    private final MongoTemplate mongoTemplate;
+
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final MemberRepository memberRepository;
@@ -230,7 +232,7 @@ public class ChatServiceImpl implements ChatService {
         // document 변환
         ChatMessage chatMessage = this.convertToDocument(chatMessageRequestDTO, member, shop, chatRoom.getId());
         //mongodb 에 저장된 document
-        mongoTemplate.save(chatMessage);
+        chatMessageRepository.save(chatMessage);
         //저장된 document 를 다시 dto 로 변환하여 전달
         notificationService.sendChattingMessage(sender, convertToDTO(chatMessage, sender), member);
 
