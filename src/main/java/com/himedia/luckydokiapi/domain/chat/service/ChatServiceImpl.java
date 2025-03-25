@@ -112,6 +112,8 @@ public class ChatServiceImpl implements ChatService {
                         .shopImage(chatRoom.getShop().getImage())
                         .message(chatMessage.getMessage())
                         .sendTime(chatMessage.getSendTime())
+                        .messageType(chatMessage.getMessageType())
+                        .image(chatMessage.getImage())
                         .build())
                 .toList();
     }

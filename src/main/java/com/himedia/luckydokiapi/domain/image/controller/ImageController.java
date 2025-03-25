@@ -87,6 +87,7 @@ public class ImageController {
     )
     @PostMapping("/upload/thumbnail")
     public ResponseEntity<String> thumbnailUploadFilePOST(@RequestPart("file") MultipartFile file) {
+        log.info("Thumbnail upload request received: {}", file.getOriginalFilename());
         return ResponseEntity.ok(fileUtil.uploadToThumbnailS3File(file));
     }
 
@@ -101,6 +102,7 @@ public class ImageController {
     )
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFilePOST(@RequestPart("file") MultipartFile file) {
+        log.info("Image upload request received: {}", file.getOriginalFilename());
         return ResponseEntity.ok(fileUtil.uploadS3File(file));
     }
 

@@ -31,6 +31,8 @@ public class ChatMessage {
     private Long shopId;     // 상품 ID
     private String message;     // 채팅 내용
     private LocalDateTime sendTime;
+    private String messageType;
+    private String image;
     @Builder.Default
     private boolean isRead = false;
 

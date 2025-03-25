@@ -20,4 +20,7 @@ public class ChatHistoryDTO {
     private String message;     // 채팅 내용
     @JsonFormat( pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime sendTime;
+
+    private String messageType; // 메세지 타입 (text, image)
+    private String image;
 }

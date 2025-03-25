@@ -106,6 +106,7 @@ public class AwsS3Util {
      * @return 업로드된 400X400 썸네일 파일 URL
      */
     public String uploadToThumbnailS3File(MultipartFile file) {
+        log.info("uploadToThumbnailS3File: {}", file.getOriginalFilename());
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }
@@ -136,6 +137,7 @@ public class AwsS3Util {
 
             // S3에 업로드
             s3Client.putObject(new PutObjectRequest(bucketName, thumbnailPath.toFile().getName(), thumbnailPath.toFile()));
+            log.info("S3에 업로드 성공! thumbnailPath: {}", thumbnailPath);
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
         } finally {
