@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,5 +19,5 @@ public class ChatHistoryDTO {
     private String shopImage;
     private String message;     // 채팅 내용
     @JsonFormat( pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime lastMessageTime; //마지막 대화 시간
+    private LocalDateTime sendTime;
 }

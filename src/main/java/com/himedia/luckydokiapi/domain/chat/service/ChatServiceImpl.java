@@ -111,7 +111,7 @@ public class ChatServiceImpl implements ChatService {
                         .shopId(chatRoom.getShop().getId())
                         .shopImage(chatRoom.getShop().getImage())
                         .message(chatMessage.getMessage())
-                        .lastMessageTime(chatMessage.getSendTime())
+                        .sendTime(chatMessage.getSendTime())
                         .build())
                 .toList();
     }
