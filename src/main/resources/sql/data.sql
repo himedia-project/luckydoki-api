@@ -3706,7 +3706,6 @@ INSERT INTO `community_tag` (`id`, `community_id`, `tag_id`) VALUES (84, 40, 532
 INSERT INTO `community_tag` (`id`, `community_id`, `tag_id`) VALUES (85, 40, 511);
 INSERT INTO `community_tag` (`id`, `community_id`, `tag_id`) VALUES (86, 40, 204);
 INSERT INTO `community_tag` (`id`, `community_id`, `tag_id`) VALUES (87, 40, 528);
-INSERT INTO `community_tag` (`id`, `community_id`, `tag_id`) VALUES (88, 34, 721);
 INSERT INTO `community_tag` (`id`, `community_id`, `tag_id`) VALUES (89, 34, 499);
 INSERT INTO `community_tag` (`id`, `community_id`, `tag_id`) VALUES (90, 33, 29);
 INSERT INTO `community_tag` (`id`, `community_id`, `tag_id`) VALUES (91, 33, 493);
