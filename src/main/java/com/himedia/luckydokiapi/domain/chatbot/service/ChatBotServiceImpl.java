@@ -40,7 +40,16 @@ public class ChatBotServiceImpl implements ChatBotService {
                         Sort.by("id").ascending() : Sort.by("id").descending()
         );
 
-        Page<ChatbotRoom> result = chatBotRoomRepository.findAll(pageable);
+        Page<ChatbotRoom> result;
+        
+        // searchKeyword가 있는 경우와 없는 경우 구분하여 처리
+        if (requestDTO.getSearchKeyword() != null && !requestDTO.getSearchKeyword().isEmpty()) {
+            // 이메일, ID, 세션ID로 검색
+            result = chatBotRoomRepository.searchByKeywordAlternative(
+                    requestDTO.getSearchKeyword(), pageable);
+        } else {
+            result = chatBotRoomRepository.findAll(pageable);
+        }
 
         return PageResponseDTO.<ChatBotRoomResponseDTO>withAll()
                 .dtoList(result.stream().map(ChatBotRoomResponseDTO::toDto).toList())
