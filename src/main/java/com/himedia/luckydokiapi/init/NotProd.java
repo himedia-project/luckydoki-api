@@ -24,7 +24,7 @@ import java.util.List;
 
 @Slf4j
 @Configuration
-@Profile({"!prod"})
+//@Profile({"!prod"})
 @RequiredArgsConstructor
 public class NotProd {
 
