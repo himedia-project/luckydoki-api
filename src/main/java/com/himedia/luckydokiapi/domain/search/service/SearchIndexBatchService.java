@@ -21,6 +21,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,10 +34,27 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class SearchIndexBatchService {
+public class SearchIndexBatchService implements ApplicationListener<ContextRefreshedEvent> {
     private final ElasticsearchClient elasticsearchClient;
     private final ProductRepository productRepository;
     private final CommunityRepository communityRepository;
+    private boolean isFirstRun = true;
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        // 애플리케이션 시작 시 최초 한 번만 실행
+        if (isFirstRun) {
+            isFirstRun = false;
+            try {
+                log.info("배포 후 초기 인덱스 재생성 시작");
+                recreateIndices();
+                reindexAllData();
+                log.info("배포 후 초기 인덱스 재생성 완료");
+            } catch (Exception e) {
+                log.error("배포 후 초기 인덱스 재생성 중 오류 발생", e);
+            }
+        }
+    }
 
     public void recreateIndices() throws IOException {
         recreateProductIndex();
