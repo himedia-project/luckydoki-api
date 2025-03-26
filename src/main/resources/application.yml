@@ -48,6 +48,11 @@ spring:
   #      data-locations: classpath:sql/data.sql # ddl-auto가 create, create-drop, update일 경우에만 해당, validate/none일 경우 무시됨
   #      mode: always # SQL 초기화 모드 (always, never, embedded, embedded-always)
 
+  elasticsearch:
+    uris: http://localhost:9200
+    username: ${ELASTICSEARCH_USERNAME}
+    password: ${ELASTICSEARCH_PASSWORD}
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -143,11 +148,6 @@ spring:
   config:
     activate:
       on-profile: local
-
-  elasticsearch:
-    uris: http://localhost:9200
-    username: ${ELASTICSEARCH_USERNAME}
-    password: ${ELASTICSEARCH_PASSWORD}
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

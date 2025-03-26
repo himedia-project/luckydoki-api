@@ -92,7 +92,9 @@ dependencies {
     implementation 'org.seleniumhq.selenium:selenium-java:4.25.0'
 
     // Firebase Admin SDK
-    implementation 'com.google.firebase:firebase-admin:9.2.0'
+    implementation('com.google.firebase:firebase-admin:9.2.0') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
 
     // SMTP
     implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -133,7 +135,9 @@ dependencies {
     implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
 
     // Google Cloud Translation API
-    implementation 'com.google.cloud:google-cloud-translate:2.3.0'
+    implementation('com.google.cloud:google-cloud-translate:2.3.0') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
 }
 
 tasks.named('test') {

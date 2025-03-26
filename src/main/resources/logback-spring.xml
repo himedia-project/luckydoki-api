@@ -120,7 +120,13 @@
 
     <springProfile name="prod">
         <!-- 운영 환경 설정 -->
-        <root level="WARN">
+        <!-- <root level="WARN">
+            <appender-ref ref="APP_LOG"/>
+            <appender-ref ref="ERROR_LOG"/>
+            <appender-ref ref="LOGSTASH"/>
+        </root> -->
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
             <appender-ref ref="APP_LOG"/>
             <appender-ref ref="ERROR_LOG"/>
             <appender-ref ref="LOGSTASH"/>
