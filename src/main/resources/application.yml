@@ -143,10 +143,6 @@ google:
   translation:
     api-key: ${GOOGLE_TRANSLATION_API_KEY}
 
-firebase:
-  config:
-    path: classpath:/firebase-service-account.json
-
 ---
 spring:
   config:
