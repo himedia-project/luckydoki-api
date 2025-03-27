@@ -22,13 +22,12 @@ public class FirebaseConfig {
      * Firebase Admin SDK JSON 파일 경로
      */
     @Value("classpath:/firebase-service-account.json")
-    private String firebaseConfigFilePath;
+    private Resource firebaseConfigFilePath;
 
     @PostConstruct
     public void initialize() {
         try {
-            ClassPathResource resource = new ClassPathResource(firebaseConfigFilePath);
-            InputStream serviceAccount = resource.getInputStream();
+            InputStream serviceAccount = firebaseConfigFilePath.getInputStream();
             
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
