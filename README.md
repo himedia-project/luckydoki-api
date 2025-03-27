@@ -61,44 +61,37 @@ graph TD
 <br>
 
 ## 🔑 KEY SUMMARY
-1. **대용량 트래픽 처리**
-   - Kafka를 활용한 대용량 쿠폰 발급 시스템 구현
-   - Redis Redisson 분산락으로 쿠폰 등록 동시성 제어
-   - CloudFront CDN으로 이미지 로딩 최적화
-
-2. **실시간 데이터 처리**
-   - WebSocket 기반 실시간 1:1 채팅
-   - Redis 기반 실시간 인기 검색어 관리
-   - Firebase FCM 실시간 알림
-
-3. **검색 기능 고도화**
-   - Elasticsearch 한글 형태소 분석기 적용
-   - 상품 및 커뮤니티 통합 검색
-   - Google Translation API 다국어 지원
-
-<br>
-
-## 🛠 주요 기능
 
 ### 1. 실시간 처리 시스템
+
 - WebSocket 기반 실시간 1:1 채팅
 - Firebase Cloud Messaging 푸시 알림
 - Redis 기반 실시간 인기 검색어 및 최근 본 상품
 
 ### 2. 검색 엔진
+
 - Elasticsearch 한글 형태소 분석
 - 통합 검색 (상품 + 커뮤니티)
 - Google Translation API 자동 번역
 
 ### 3. 인증/보안
+
 - JWT + Redis 기반 토큰 관리
 - 분산 환경 세션 관리
 - Spring Security 기반 인증/인가
+- Oauth2 카카오, 구글 로그인 인증
 
 ### 4. 대용량 처리
+
 - Kafka 기반 쿠폰 발급 시스템
 - Redisson 분산락 동시성 제어
 - CloudFront CDN 이미지 최적화
+
+### 5. AI 챗봇, 비즈니스보고서
+
+- RAG 아키텍처: OpenAI GPT 모델 기반 챗봇 시스템
+- PGVector: 벡터 데이터베이스 기반 유사도 검색 구현
+- AI 비즈니스 보고서: 판매 데이터 분석 및 자동 인사이트 도출
 
 <br>
 
