@@ -28,12 +28,8 @@ jobs:
           echo "${{ secrets.FIREBASE_ACCOUNT_JSON }}" > ./src/main/resources/firebase-service-account.json
           echo "### .env 파일 목록 확인 ###"
           ls -al ./.env
-          echo "### .env 파일 내용 확인 ###"
-          cat ./.env
           echo "### firebase-service-account.json 파일 목록 확인 ###"
           ls -al ./src/main/resources/firebase-service-account.json
-          echo "### firebase-service-account.json 파일 내용 확인 ###"
-          cat ./src/main/resources/firebase-service-account.json
 
       - name: Gradle 빌드
         run: |
