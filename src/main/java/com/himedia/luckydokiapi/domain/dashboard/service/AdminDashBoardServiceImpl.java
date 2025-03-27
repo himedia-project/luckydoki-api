@@ -47,7 +47,9 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
 
         // 최근 한달간 총 매출
-        Integer monthlyRevenue = orderRepository.calculateMonthlyRevenue(monthAgo, now);
+        Integer monthlyRevenue = orderRepository.calculateMonthlyRevenue(monthAgo, now) != null 
+            ? orderRepository.calculateMonthlyRevenue(monthAgo, now) 
+            : 0;
 
         // 오늘의 매출
         Long todayRevenue = orderRepository.calculateTodayRevenue(startOfDay, endOfDay);
