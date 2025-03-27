@@ -22,9 +22,10 @@ jobs:
           java-version: "17" # 사용하는 JDK 버전에 맞춰 변경
           distribution: "temurin"
 
-      - name: Create .env file
+      - name: Create .env file && firebase.json file
         run: |
           echo "${{ secrets.ENV_FILE }}" > src/.env
+          echo "${{ secrets.FIREBASE_ACCOUNT_JSON }}" > src/firebase-service-account.json
 
       - name: Gradle 빌드
         run: |
