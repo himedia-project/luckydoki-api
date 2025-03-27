@@ -10,6 +10,8 @@
  * 사용자: www.luckydoki.shop
  * 관리자: www.admin.luckydoki.shop
 
+<br>
+
 ## 📂 프로젝트 구조
 ```mermaid
 graph TD
@@ -35,7 +37,7 @@ graph TD
 2. **[luckydoki-ai-api](https://github.com/himedia-project/luckydoki-ai-api)**
    - AI 서비스 전용 백엔드 서버
    - OpenAI, PGVector 기반 RAG 시스템
-   - 챗봇, 문서 검색, 컨텍스트 처리
+   - 챗봇, admin 비즈니스 보고서 작성
 
 ### Frontend Repositories
 1. **[luckydoki-user](https://github.com/himedia-project/luckydoki-user)**
@@ -52,15 +54,16 @@ graph TD
    - React.js 기반 어드민 패널
    - 기술 스택:
      - JavaScript/React.js
-     - 실시간 모니터링
-     - 데이터 시각화
-     - 관리자 권한 관리
+     - 실시간 대시보드 대시보드
+     - 문서 생성, 비즈니스 보고서, 상품 엑셀 upload/download
+     - 관리자 권한으로 각 도메인 관리리
 
+<br>
 
 ## 🔑 KEY SUMMARY
 1. **대용량 트래픽 처리**
    - Kafka를 활용한 대용량 쿠폰 발급 시스템 구현
-   - Redis Redisson 분산락으로 동시성 제어
+   - Redis Redisson 분산락으로 쿠폰 등록 동시성 제어
    - CloudFront CDN으로 이미지 로딩 최적화
 
 2. **실시간 데이터 처리**
@@ -72,6 +75,8 @@ graph TD
    - Elasticsearch 한글 형태소 분석기 적용
    - 상품 및 커뮤니티 통합 검색
    - Google Translation API 다국어 지원
+
+<br>
 
 ## 🛠 주요 기능
 
@@ -95,6 +100,7 @@ graph TD
 - Redisson 분산락 동시성 제어
 - CloudFront CDN 이미지 최적화
 
+<br>
 
 ## 🔧 기술적 고도화
 
@@ -113,24 +119,13 @@ graph TD
 - CloudFront CDN 엣지 캐싱
 - 검색 결과 캐싱
 
-### 1. AI 챗봇 시스템
+### 4. AI 챗봇 시스템
 - **RAG(Retrieval-Augmented Generation) 아키텍처**
   - OpenAI GPT 모델 기반 자연어 처리
   - PGVector를 활용한 벡터 데이터베이스 구현
-  - 컨텍스트 기반 정확한 응답 생성
+  - PGVector의 벡터 유사도 기반으로로 정확한 응답 생성
 
-### 2. 고도화된 검색 시스템
-- **벡터 기반 유사도 검색**
-  - 텍스트 임베딩을 통한 시맨틱 검색
-  - PGVector의 벡터 연산으로 유사 문서 검색
-  - 실시간 문서 유사도 분석
-
-### 3. 컨텍스트 인식 시스템
-- **맥락 기반 응답 생성**
-  - 사용자 이전 대화 기록 분석
-  - 상황 맥락을 고려한 개인화된 응답 프롬프트로 개선
-  - 실시간 학습 및 응답 최적화
-
+<br>
 
 ## 🚨 트러블 슈팅
 
@@ -164,6 +159,7 @@ graph TD
   - 컨텍스트 윈도우 사이즈 조정
   - 응답 시간 50% 개선, 정확도 30% 향상
 
+<br>
 
 ## CI/CD 배포 아키텍쳐
 - GitHub Actions를 통한 자동화된 빌드/배포
@@ -172,7 +168,7 @@ graph TD
 
 ![image](https://github.com/user-attachments/assets/c4f7c86b-7252-413b-8f57-968f8ecd0657)
 
-
+<br>
 
 ## 🛠 기술 스택
 - **Backend**: Spring Boot 3.4.2, Java 17
