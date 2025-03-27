@@ -6,8 +6,10 @@ import com.google.firebase.FirebaseOptions;
 import com.himedia.luckydokiapi.props.FcmProps;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,10 +18,16 @@ import java.io.InputStream;
 @Configuration
 public class FirebaseConfig {
 
+    /**
+     * Firebase Admin SDK JSON 파일 경로
+     */
+    @Value("classpath:/firebase-service-account.json")
+    private String firebaseConfigFilePath;
+
     @PostConstruct
     public void initialize() {
         try {
-            ClassPathResource resource = new ClassPathResource(FcmProps.FCM_FILE_PATH);
+            ClassPathResource resource = new ClassPathResource(firebaseConfigFilePath);
             InputStream serviceAccount = resource.getInputStream();
             
             FirebaseOptions options = FirebaseOptions.builder()
