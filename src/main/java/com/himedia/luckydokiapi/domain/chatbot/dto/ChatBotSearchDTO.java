@@ -1,4 +1,16 @@
 package com.himedia.luckydokiapi.domain.chatbot.dto;
 
-public class ChatBotSearchDTO {
+import com.himedia.luckydokiapi.dto.PageRequestDTO;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@SuperBuilder
+@ToString
+public class ChatBotSearchDTO extends PageRequestDTO {
+
+    private String searchKeyword;
 }

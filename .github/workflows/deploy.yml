@@ -1,4 +1,4 @@
-name: Deploy To EC2
+name: Deploy To EC2 with S3
 
 on:
   push:
@@ -6,19 +6,57 @@ on:
       - main
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     env:
       REPOSITORY_NAME: luckydoki-api
+      S3_BUCKET_NAME: luckydoki-web # 실제 S3 버킷 이름으로 변경
 
     steps:
       - name: Github Repository 파일 불러오기
         uses: actions/checkout@v4
 
+      - name: JDK 설정
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17' # 사용하는 JDK 버전에 맞춰 변경
+          distribution: 'temurin'
+
       - name: Create .env file
         run: |
           echo "${{ secrets.ENV_FILE }}" > src/.env
 
+      - name: Gradle 빌드
+        run: |
+          cd ${{ env.REPOSITORY_NAME }}
+          chmod +x ./gradlew
+          ./gradlew clean build
+
+      - name: 빌드 결과물 압축
+        run: |
+          cd ${{ env.REPOSITORY_NAME }}/build/libs
+          JAR_FILE=$(ls *SNAPSHOT.jar)
+          zip deploy.zip $JAR_FILE
+
+      - name: AWS 자격 증명 설정
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2 # 사용하는 AWS 리전으로 변경
+
+      - name: 빌드 결과물 S3에 업로드
+        run: |
+          aws s3 cp ${{ env.REPOSITORY_NAME }}/build/libs/deploy.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.REPOSITORY_NAME }}/deploy.zip
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      REPOSITORY_NAME: luckydoki-api
+      S3_BUCKET_NAME: luckydoki-web # 실제 S3 버킷 이름으로 변경
+
+    steps:
       - name: SSH로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -29,9 +67,15 @@ jobs:
           script: |
             cd /home/ubuntu/${{ env.REPOSITORY_NAME }}
             sudo chown -R ubuntu:ubuntu .  # 현재 디렉토리 전체의 소유권을 ubuntu 사용자로 변경
-            git pull origin main
-            chmod +x ./gradlew
-            ./gradlew clean build
-            sudo fuser -k -n tcp 8080 || true # || true를 붙인 이유는 8080에 종료시킬 프로세스가 없더라도 실패로 처리하지 않기 위해서이다. 
-            # jar 파일을 실행시키는 명령어이다. 그리고 발생하는 로그들을 ./output.log 파일에 남기는 명령어이다.
-            nohup java -jar build/libs/*SNAPSHOT.jar --spring.profiles.active=prod > ./output.log 2>&1 &
+
+            # S3에서 빌드 결과물 다운로드
+            aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.REPOSITORY_NAME }}/deploy.zip /home/ubuntu/${{ env.REPOSITORY_NAME }}/deploy.zip
+
+            # 기존 빌드 결과물 제거 및 압축 해제
+            rm -rf build/libs/*
+            mkdir -p build/libs
+            unzip /home/ubuntu/${{ env.REPOSITORY_NAME }}/deploy.zip -d build/libs
+
+            chmod +x ./gradlew # 혹시 모를 실행 권한 문제 방지
+            sudo fuser -k -n tcp 8080 || true
+            nohup java -jar build/libs/*.jar --spring.profiles.active=prod > ./output.log 2>&1 &
