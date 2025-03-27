@@ -28,95 +28,9 @@ graph TD
     D --> L[Elasticsearch]
 ```
 
-### Backend Repositories
-1. **[luckydoki-api](https://github.com/himedia-project/luckydoki-api)**
-   - 메인 백엔드 API 서버
-   - Spring Boot 3.4.2, Java 17 기반
-   - 주요 기능: 인증/인가, 상품/주문 관리, 결제, 알림
-
-2. **[luckydoki-ai-api](https://github.com/himedia-project/luckydoki-ai-api)**
-   - AI 서비스 전용 백엔드 서버
-   - OpenAI, PGVector 기반 RAG 시스템
-   - 챗봇, admin 비즈니스 보고서 작성
-
-### Frontend Repositories
-1. **[luckydoki-user](https://github.com/himedia-project/luckydoki-user)**
-   - 사용자용 웹 클라이언트
-   - React.js 기반 SPA
-   - 기술 스택:
-     - JavaScript/React.js
-     - CSS Modules
-     - WebSocket 클라이언트
-     - FCM 클라이언트
-
-2. **[luckydoki-admin](https://github.com/himedia-project/luckydoki-admin)**
-   - 관리자용 대시보드
-   - React.js 기반 어드민 패널
-   - 기술 스택:
-     - JavaScript/React.js
-     - 실시간 대시보드 대시보드
-     - 문서 생성, 비즈니스 보고서, 상품 엑셀 upload/download
-     - 관리자 권한으로 각 도메인 관리리
-
-<br>
-
-## 🔑 KEY SUMMARY
-
-### 1. 실시간 처리 시스템
-
-- WebSocket 기반 실시간 1:1 채팅
-- Firebase Cloud Messaging 푸시 알림
-- Redis 기반 실시간 인기 검색어 및 최근 본 상품
-
-### 2. 검색 엔진
-
-- Elasticsearch 한글 형태소 분석
-- 통합 검색 (상품 + 커뮤니티)
-- Google Translation API 자동 번역
-
-### 3. 인증/보안
-
-- JWT + Redis 기반 토큰 관리
-- 분산 환경 세션 관리
-- Spring Security 기반 인증/인가
-- Oauth2 카카오, 구글 로그인 인증
-
-### 4. 대용량 처리
-
-- Kafka 기반 쿠폰 발급 시스템
-- Redisson 분산락 동시성 제어
-- CloudFront CDN 이미지 최적화
-
-### 5. AI 챗봇, 비즈니스보고서
-
-- RAG 아키텍처: OpenAI GPT 모델 기반 챗봇 시스템
-- PGVector: 벡터 데이터베이스 기반 유사도 검색 구현
-- AI 비즈니스 보고서: 판매 데이터 분석 및 자동 인사이트 도출
-
-<br>
-
-## 🔧 기술적 고도화
-
-### 1. 분산 처리 아키텍처
-- Redis Sentinel 구성으로 고가용성 확보
-- Kafka를 통한 비동기 메시지 처리
-- Redisson 분산락으로 데이터 정합성 보장
-
-### 2. 모니터링 및 로깅
-- ELK 스택 구축 (Elasticsearch, Logstash, Kibana)
-- 로그 중앙화 및 실시간 모니터링
-- 성능 메트릭 수집 및 분석
-
-### 3. 캐싱 전략
-- Redis 다중 계층 캐싱
-- CloudFront CDN 엣지 캐싱
-- 검색 결과 캐싱
-
-### 4. AI 챗봇 시스템
-- **RAG(Retrieval-Augmented Generation) 아키텍처**
-  - OpenAI GPT 모델 기반 자연어 처리
-  - PGVector를 활용한 벡터 데이터베이스 구현
-  - PGVector의 벡터 유사도 기반으로로 정확한 응답 생성
+### Backend Reposito선
+- MongoDB Atlas 로 챗봇 채팅 내역 기록/관리 
+- 프롬프트 개선으로 정확한 응답 생성
 
 <br>
 
