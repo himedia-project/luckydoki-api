@@ -33,7 +33,7 @@ jobs:
 
       - name: 빌드 결과물 압축
         run: |
-          cd ${{ env.REPOSITORY_NAME }}/build/libs
+          cd build/libs
           JAR_FILE=$(ls *SNAPSHOT.jar)
           zip deploy.zip $JAR_FILE
 
@@ -46,7 +46,7 @@ jobs:
 
       - name: 빌드 결과물 S3에 업로드
         run: |
-          aws s3 cp ${{ env.REPOSITORY_NAME }}/build/libs/deploy.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.REPOSITORY_NAME }}/deploy.zip
+          aws s3 cp build/libs/deploy.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.REPOSITORY_NAME }}/deploy.zip
 
   deploy:
     needs: build
