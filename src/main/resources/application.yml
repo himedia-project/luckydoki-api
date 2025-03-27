@@ -143,6 +143,10 @@ google:
   translation:
     api-key: ${GOOGLE_TRANSLATION_API_KEY}
 
+firebase:
+  config:
+    path: classpath:/firebase-service-account.json
+
 ---
 spring:
   config:
@@ -230,7 +234,7 @@ app:
 
 logging:
   level:
-#    org.hibernate.SQL: error # Hibernate SQL 로그 레벨
+    #    org.hibernate.SQL: error # Hibernate SQL 로그 레벨
     org.hibernate.SQL: debug # Hibernate SQL 로그 레벨
     org.hibernate.orm.jdbc.bind: trace # Hibernate SQL 바인딩 로그 레벨
     org.springframework.transaction.interceptor: trace # Spring 트랜잭션 인터셉터 로그 레벨

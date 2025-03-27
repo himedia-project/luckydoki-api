@@ -21,7 +21,7 @@ public class FirebaseConfig {
     /**
      * Firebase Admin SDK JSON 파일 경로
      */
-    @Value("classpath:/firebase-service-account.json")
+    @Value("${firebase.config.path}")
     private Resource firebaseConfigFilePath;
 
     @PostConstruct
