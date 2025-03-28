@@ -69,12 +69,14 @@ graph TD
 - WebSocket 기반 실시간 1:1 채팅
 - Firebase Cloud Messaging 푸시 알림
 - Redis 기반 실시간 인기 검색어 및 최근 본 상품
+- mongoDB Atlas 기반 실시간 채팅 내역 저장
 
 ### 2. 검색 엔진
 
 - Elasticsearch 한글 형태소 분석
 - 통합 검색 (상품 + 커뮤니티)
 - Google Translation API 자동 번역
+- ELK 로깅 시스템 구축
 
 ### 3. 인증/보안
 
