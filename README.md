@@ -174,7 +174,9 @@ https://www.figma.com/design/fKeAplwU25tyqQQlonz3oI/luckydoki?node-id=0-1&t=gSTm
 - Docker 컨테이너화로 일관된 환경 제공
 - AWS Route53를 도메인 기반 라우팅 설정
 
-![image](https://github.com/user-attachments/assets/c4f7c86b-7252-413b-8f57-968f8ecd0657)
+![luckydoki_아키텍쳐_v1](https://github.com/user-attachments/assets/6238b7d6-411c-4931-aac2-5ca7bf18ba98)
+
+
 
 <br>
 
