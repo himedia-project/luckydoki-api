@@ -14,6 +14,7 @@
 
  * 사용자: www.luckydoki.shop
  * 관리자: www.admin.luckydoki.shop
+ * swagger: https://api.luckydoki.shop/swagger-ui/index.html
 
 ```mermaid
 graph TD
@@ -59,6 +60,15 @@ graph TD
      - 실시간 대시보드 대시보드
      - 문서 생성, 비즈니스 보고서, 상품 엑셀 upload/download
      - 관리자 권한으로 각 도메인 관리리
+
+<br>
+
+## 기획도(feat.Figma) && ERD
+
+https://www.figma.com/design/fKeAplwU25tyqQQlonz3oI/luckydoki?node-id=0-1&t=gSTm0qvqKv7m1rM5-1
+
+![image](https://github.com/user-attachments/assets/45012188-7049-4e6f-9c8e-5d8dcdeae14f)
+
 
 <br>
 
