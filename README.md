@@ -65,9 +65,12 @@ graph TD
 
 ## 기획도(feat.Figma) && ERD
 
+### 1. 기획도
 https://www.figma.com/design/fKeAplwU25tyqQQlonz3oI/luckydoki?node-id=0-1&t=gSTm0qvqKv7m1rM5-1
 
-![image](https://github.com/user-attachments/assets/45012188-7049-4e6f-9c8e-5d8dcdeae14f)
+### 2. ERD
+![image](https://github.com/user-attachments/assets/bc350313-df65-44f8-92aa-82459ebcdc4b)
+
 
 
 <br>
