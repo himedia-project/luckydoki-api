@@ -10,8 +10,11 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+/**
+ * URL 디코딩 필터
+ */
 @Component
-public class UrlEncodingFilter implements Filter {
+public class UrlDecodingFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -24,17 +27,27 @@ public class UrlEncodingFilter implements Filter {
             super(request);
         }
 
+        /**
+         * 반환, 디코딩된 매개변수 값을 반환합니다.
+         * @param name  매개변수 이름
+         *
+         * @return  디코딩된 매개변수 값
+         */
         @Override
         public String getParameter(String name) {
             String value = super.getParameter(name);
             return decodeValue(value);
         }
 
+        /**
+         * 반환, 디코딩된 매개변수 맵을 반환합니다.
+         * @return 디코딩된 매개변수 맵
+         */
         @Override
         public Map<String, String[]> getParameterMap() {
             Map<String, String[]> paramMap = super.getParameterMap();
             Map<String, String[]> result = new HashMap<>();
-            
+
             for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
                 String[] values = entry.getValue();
                 String[] decodedValues = new String[values.length];
@@ -46,13 +59,19 @@ public class UrlEncodingFilter implements Filter {
             return result;
         }
 
+        /**
+         * 디코딩된 매개변수 값을 반환합니다.
+         * @param name 매개변수 이름
+         *
+         * @return 디코딩된 매개변수 값
+         */
         @Override
         public String[] getParameterValues(String name) {
             String[] values = super.getParameterValues(name);
             if (values == null) {
                 return null;
             }
-            
+
             String[] decodedValues = new String[values.length];
             for (int i = 0; i < values.length; i++) {
                 decodedValues[i] = decodeValue(values[i]);
@@ -60,6 +79,11 @@ public class UrlEncodingFilter implements Filter {
             return decodedValues;
         }
 
+        /**
+         * 디코딩된 매개변수 값을 반환합니다.
+         * @param value 디코딩할 값
+         * @return 디코딩된 값
+         */
         private String decodeValue(String value) {
             if (value == null) {
                 return null;
@@ -76,4 +100,4 @@ public class UrlEncodingFilter implements Filter {
             }
         }
     }
-} 
+}
