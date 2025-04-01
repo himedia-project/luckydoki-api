@@ -2,10 +2,19 @@
 # 🎯 LuckyDoki - 실시간 커머스 플랫폼
 ![Luckydoki-MZ](https://github.com/user-attachments/assets/98c5b391-0a04-474b-8249-f87335ef8027)
 
+LuckyDoki는 실시간 커머스 플랫폼으로, 대용량 트래픽 처리와 성능 최적화에 중점을 둔 종합 이커머스 솔루션입니다. 주요 기능으로는 상품 관리, 주문 및 결제 처리, 실시간 채팅, 푸시 알림, AI 챗봇, 검색 시스템, 소셜 로그인, 쿠폰 발급 시스템, 커뮤니티 등이 있습니다. 사용자, 판매자, 관리자 간의 효율적인 상호작용을 지원하는 다양한 기능을 제공합니다.
+
+* 일반 사용자: 상품 구매, 리뷰 작성, 커뮤니티 활동, 채팅 등을 수행하는 고객
+* 판매자(셀러): 상품 등록, 판매, 주문 관리, 재고 관리 등을 담당하는 판매자
+* 관리자: 플랫폼 전체 관리, 상품 승인, 통계 관리, 마케팅 등을 담당하는 관리자
+
+<br>
+
 ## 프로젝트 핵심 목표
 - 대용량 트래픽 처리와 성능 최적화에 중점을 둔 실시간 커머스 플랫폼 구축
 - 분산 환경에서의 데이터 일관성과 동시성 제어
-- 실시간 데이터 처리 및 검색 기능 고도화
+- 실시간 커뮤니케이션 처리 및 검색 기능 고도화
+- AI 기반 챗봇 지원 및 비즈니스 인사이트 보고서 생성
 
 
 <br>
@@ -59,7 +68,7 @@ graph TD
      - JavaScript/React.js
      - 실시간 대시보드 대시보드
      - 문서 생성, 비즈니스 보고서, 상품 엑셀 upload/download
-     - 관리자 권한으로 각 도메인 관리리
+     - 관리자 권한으로 각 도메인 관리
 
 <br>
 
@@ -184,10 +193,22 @@ https://www.figma.com/design/fKeAplwU25tyqQQlonz3oI/luckydoki?node-id=0-1&t=gSTm
 <br>
 
 ## 🛠 기술 스택
-- **Backend**: Spring Boot 3.4.2, Java 17
-- **Database**: MySQL, MongoDB, Redis
-- **Message Queue**: Kafka
-- **Search Engine**: Elasticsearch
-- **Monitoring**: ELK Stack
-- **DevOps**: AWS, CloudFront
-- **Others**: WebSocket, FCM, Google Translation API
+* 언어 및 프레임워크: Java 17, Spring Boot 3.4.2
+* 데이터베이스:
+    * MySQL: 주요 관계형 데이터 저장
+    * MongoDB: 채팅 기록 등 문서 기반 데이터 저장
+    * Redis: 캐싱, 세션 관리, 실시간 데이터 처리
+    * Elasticsearch: 검색 엔진
+    * PGVector: AI 챗봇용 벡터 데이터베이스
+* 메시지 큐: Kafka (쿠폰 발급 등 비동기 처리)
+* 인증/보안: Spring Security, JWT, OAuth2
+* 클라우드/인프라: AWS, CloudFront CDN
+* 모니터링: ELK 스택 (Elasticsearch, Logstash, Kibana)
+* 실시간 통신: WebSocket, Firebase Cloud Messaging
+* AI/ML: OpenAI GPT, RAG 아키텍처
+* 기타:
+    * Google Translation API
+    * Redisson (분산 락)
+    * Querydsl (타입 안전 쿼리)
+
+<br>
