@@ -37,5 +37,5 @@ public interface AdminProductService {
 
     void modifyProductIsNew(List<Long> modifyProductIdList);
 
-    Long copyProduct(Long id);
+    Long copyProduct(Long productId);
 }

@@ -285,25 +285,33 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     /**
-     * 상품 복사
-     * @param id 상품 id
-     * @return 복사된 상품 id
+     * 상품 복사 - 지정된 상품을 복제하여 새로운 상품으로 등록
+     * 
+     * @param productId 복사할 상품 ID
+     * @return 복사된 새 상품의 ID
      */
     @Override
-    public Long copyProduct(Long id) {
-
-        Product originProduct = getEntity(id);
-        Category category = getCategory(originProduct.getCategory().getId());
-        Shop shop = null;
-        if (originProduct.getShop() != null) {
-            shop = getShop(originProduct.getShop().getId());
-        }
-
-        // 상품 복사
-        // 상품 이미지, 상품 shop, 상품 카테고리
-        Product newProduct = Product.of(entityToReqDTO(originProduct), category, shop);
-        productRepository.save(newProduct);
-        return newProduct.getId();
+    @Transactional
+    public Long copyProduct(Long productId) {
+        log.info("상품 복사 시작. 원본 상품 ID: {}", productId);
+        
+        // 원본 상품 조회
+        Product originalProduct = this.getEntity(productId);
+        
+        // 상품 정보를 Request DTO로 변환
+        ProductDTO.Request productRequest = entityToReqDTO(originalProduct);
+        
+        // 태그 정보 복사
+        List<String> tagStrList = originalProduct.getProductTagList().stream()
+                .map(productTag -> "#" + productTag.getTag().getName())
+                .collect(Collectors.toList());
+        productRequest.setTagStrList(tagStrList);
+        
+        // register 메소드를 활용하여 상품 등록
+        Long newProductId = register(productRequest);
+        
+        log.info("상품 복사 완료. 새 상품 ID: {}", newProductId);
+        return newProductId;
     }
 
 
