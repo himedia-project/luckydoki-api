@@ -30,9 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 @Slf4j
 @Service
@@ -192,29 +190,39 @@ public class PaymentServiceImpl implements PaymentService {
                  * 이렇게 구현하면 세 가지 작업이 병렬로 처리되어 전체 처리 시간이 단축될 것. 또한 주문 상태 변경은 즉시 반영되므로 데이터 정합성도 유지
                  */
                 // 비동기 작업 리스트 생성
-                List<Callable<Void>> tasks = List.of(
+                List<Callable<Boolean>> tasks = List.of(
                         () -> {
                             // 쿠폰 사용 처리
                             couponService.useCoupon(order.getMember().getEmail(), order.getCoupon());
-                            return null;
+                            return true;
                         },
                         () -> {
                             // 장바구니 비우기
                             cartRepository.getCartOfMember(order.getMember().getEmail())
                                 .ifPresent(cart -> orderService.removeCartItemsMatchedOrderItemsBy(cart, order.getOrderItems()));
-                            return null;
+                            return true;
                         },
                         () -> {
                             // 주문 내역 이메일 전송
                             String userEmail = order.getMember().getEmail();
                             emailService.sendPaymentConfirmation(userEmail, orderId, amount.toString());
-                            return null;
+                            return true;
                         }
                 );
 
                 try {
                     // 모든 작업 병렬 실행
-                    executorService.invokeAll(tasks);
+                    List<Future<Boolean>> futures = executorService.invokeAll(tasks);
+
+                    // 각 작업의 완료 상태 확인 (선택적)
+                    for (Future<Boolean> future : futures) {
+                        try {
+                            future.get(); // 각 작업의 결과를 확인 (예외 발생 여부)
+                        } catch (ExecutionException e) {
+                            log.error("비동기 작업 실행 중 예외 발생: {}", e.getCause().getMessage(), e.getCause());
+                            // 실패한 작업에 대한 추가 처리 (필요시)
+                        }
+                    }
                     log.info("결제 확인 성공: {}", response.getBody());
                 } catch (InterruptedException e) {
                     log.error("비동기 작업 처리 중 오류 발생", e);
