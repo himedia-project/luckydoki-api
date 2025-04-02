@@ -27,8 +27,12 @@ import org.springframework.web.client.RestTemplate;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @Service
@@ -53,6 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final CartRepository cartRepository;
 
+    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     @Override
     public void preparePayment(PaymentPrepareDTO dto) {
@@ -174,25 +179,47 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.setApprovedAt(Objects.requireNonNull(response.getBody()).getApprovedAt().toLocalDateTime());
                 paymentRepository.save(payment);
 
-                // 주문 상태 변경
+                // 주문 상태 변경 (동기 처리)
                 Order order = orderService.getEntityByCode(orderId);
                 order.changeStatusToConfirm();
 
-                // 쿠폰 사용 처리
-                if (order.getCoupon() != null) {
-                    couponService.useCoupon(order.getMember().getEmail(), order.getCoupon());
+                /**
+                 * 주요 변경사항:
+                 * ExecutorService를 3개의 스레드로 구성
+                 * 주문 상태 변경은 즉시 처리
+                 * 쿠폰 처리, 장바구니 비우기, 이메일 전송을 비동기로 처리
+                 * invokeAll()을 사용하여 모든 작업이 완료될 때까지 대기
+                 * 이렇게 구현하면 세 가지 작업이 병렬로 처리되어 전체 처리 시간이 단축될 것. 또한 주문 상태 변경은 즉시 반영되므로 데이터 정합성도 유지
+                 */
+                // 비동기 작업 리스트 생성
+                List<Callable<Void>> tasks = List.of(
+                        () -> {
+                            // 쿠폰 사용 처리
+                            couponService.useCoupon(order.getMember().getEmail(), order.getCoupon());
+                            return null;
+                        },
+                        () -> {
+                            // 장바구니 비우기
+                            cartRepository.getCartOfMember(order.getMember().getEmail())
+                                .ifPresent(cart -> orderService.removeCartItemsMatchedOrderItemsBy(cart, order.getOrderItems()));
+                            return null;
+                        },
+                        () -> {
+                            // 주문 내역 이메일 전송
+                            String userEmail = order.getMember().getEmail();
+                            emailService.sendPaymentConfirmation(userEmail, orderId, amount.toString());
+                            return null;
+                        }
+                );
+
+                try {
+                    // 모든 작업 병렬 실행
+                    executorService.invokeAll(tasks);
+                    log.info("결제 확인 성공: {}", response.getBody());
+                } catch (InterruptedException e) {
+                    log.error("비동기 작업 처리 중 오류 발생", e);
+                    Thread.currentThread().interrupt();
                 }
-
-                // 장바구니 비우기
-                cartRepository.getCartOfMember(order.getMember().getEmail()).ifPresent(cart -> {
-                    orderService.removeCartItemsMatchedOrderItemsBy(cart, order.getOrderItems());
-                });
-
-                log.info(" 결제 확인 성공: {}", response.getBody());
-
-                //  결제 성공 후 이메일 전송
-                String userEmail = order.getMember().getEmail();
-                emailService.sendPaymentConfirmation(userEmail, orderId, amount.toString());
 
                 return response.getBody();
             }
