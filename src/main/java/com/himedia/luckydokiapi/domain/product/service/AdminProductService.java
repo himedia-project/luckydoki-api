@@ -33,31 +33,9 @@ public interface AdminProductService {
 
     List<ProductDTO.Response> getProductsByApprovalStatus(ProductApproval status);
 
-    default ProductDTO.Request entityToReqDTO(Product product) {
-        ProductDTO.Request request = ProductDTO.Request.builder()
-                .categoryId(product.getCategory().getId())
-                .name(product.getName())
-                .price(product.getPrice())
-                .discountPrice(product.getDiscountPrice())
-                .description(product.getDescription())
-                .build();
-
-        List<ProductImage> imageList = product.getImageList();
-
-        if (imageList == null || imageList.isEmpty()) {
-            return request;
-        }
-
-        List<String> fileNameList = imageList.stream().map(ProductImage::getImageName).toList();
-
-        request.setUploadFileNames(fileNameList);
-        request.setCategoryId(product.getCategory().getId());
-
-        return request;
-    }
-
-
     void modifyProductBest(List<Long> modifyProductIdList);
 
     void modifyProductIsNew(List<Long> modifyProductIdList);
+
+    Long copyProduct(Long productId);
 }

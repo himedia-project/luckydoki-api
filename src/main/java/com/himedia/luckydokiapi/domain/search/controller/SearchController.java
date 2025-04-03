@@ -37,7 +37,11 @@ public class SearchController {
     @GetMapping("/products")
     public ResponseEntity<List<ProductDocument>> searchProducts(@RequestParam String keyword, @AuthenticationPrincipal MemberDTO memberDTO) throws IOException, IOException {
         log.info("Search products by keyword: {}, memberDTO: {}", keyword, memberDTO);
-        return ResponseEntity.ok(searchService.searchProducts(keyword, memberDTO.getEmail()));
+        String email = null;
+        if (memberDTO != null) {
+            email = memberDTO.getEmail();
+        }
+        return ResponseEntity.ok(searchService.searchProducts(keyword, email));
     }
 
     // 커뮤니티 검색 API

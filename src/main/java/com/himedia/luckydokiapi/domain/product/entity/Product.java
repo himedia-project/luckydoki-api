@@ -147,6 +147,29 @@ public class Product extends BaseEntity {
     @Builder.Default
     private List<CommunityProduct> communityProducts = new ArrayList<>();
 
+    public static Product copy(Product originProduct) {
+        return Product.builder()
+                .id(originProduct.getId())
+                .code(originProduct.getCode())
+                .name(originProduct.getName())
+                .price(originProduct.getPrice())
+                .discountPrice(originProduct.getDiscountPrice())
+                .discountRate(originProduct.getDiscountRate())
+                .description(originProduct.getDescription())
+                .delFlag(originProduct.getDelFlag())
+                .stockNumber(originProduct.getStockNumber())
+                .isNew(originProduct.getIsNew())
+                .best(originProduct.getBest())
+                .event(originProduct.getEvent())
+                .approvalStatus(originProduct.getApprovalStatus())
+                .category(originProduct.getCategory())
+                .shop(originProduct.getShop())
+                .imageList(new ArrayList<>(originProduct.imageList))
+                .productTagList(new ArrayList<>(originProduct.productTagList))
+                .categoryBridges(new ArrayList<>(originProduct.categoryBridges))
+                .build();
+    }
+
 
     public Integer productLikesCount(ProductLike productLike) {
         return productLikes.size();

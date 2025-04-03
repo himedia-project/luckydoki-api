@@ -115,21 +115,25 @@ https://www.figma.com/design/fKeAplwU25tyqQQlonz3oI/luckydoki?node-id=0-1&t=gSTm
 ## 🔧 기술적 고도화
 
 ### 1. 분산 처리 아키텍처
-- Redis Sentinel 구성으로 고가용성 확보
-- Kafka를 통한 비동기 메시지 처리
-- Redisson 분산락으로 데이터 정합성 보장
+- Redis로 refreshToken 관리 및 실시간인기검색어 저장
+- Kafka를 통한 관리자 쿠폰 등록 비동기 처리
+- Redisson 분산락으로 사용자 쿠폰 등록 데이터 정합성 보장
 
 ### 2. 모니터링 및 로깅
-- ELK 스택 구축 (Elasticsearch, Logstash, Kibana)
+- ELK 스택 구축 (Elasticsearch, Logstash, Kibana)으로 로그관리
 - 로그 중앙화 및 실시간 모니터링
-- 성능 메트릭 수집 및 분석
+- Kibana 대시보드를 통해 실시간 성능 모니터링이 가능
 
 ### 3. 캐싱 전략
-- Redis 다중 계층 캐싱
-- CloudFront CDN 엣지 캐싱
-- 검색 결과 캐싱
+- 검색 결과(현재 커뮤니티만) Redis로 캐싱 
+- CloudFront CDN 엣지 캐싱으로 이미지 로딩 개선
 
-### 4. AI 챗봇 시스템
+### 4. 실시간 양방향 채팅
+ - WebSocket을 통해 실시간 양방향 1:1 채팅 경험을 제공합니다. 
+ - STOMP 프로토콜을 활용하여 구조화된 메시징 시스템을 구현
+ - Firebase Cloud Messaging(FCM)을 통해 모바일 및 웹 클라이언트에 푸시 알림을 효율적으로 전송
+
+### 5. AI 챗봇 시스템
 - **RAG(Retrieval-Augmented Generation) 아키텍처**
 - OpenAI GPT 모델 기반 자연어 처리
 - MongoDB Atlas 로 챗봇 채팅 내역 기록/관리 
@@ -143,8 +147,8 @@ https://www.figma.com/design/fKeAplwU25tyqQQlonz3oI/luckydoki?node-id=0-1&t=gSTm
 ### 1. 대용량 쿠폰 발급 시스템
 - **문제**: 동시 다발적 쿠폰 발급 요청으로 인한 성능 저하
 - **해결**: 
-  - Kafka를 도입하여 비동기 처리
-  - Redisson 분산락으로 동시성 제어
+  - admin단 -> Kafka를 도입하여 비동기 처리
+  - user단 -> Redisson 분산락으로 동시성 제어
   - 처리량 300% 향상
 
 ### 2. 실시간 검색 성능
@@ -161,7 +165,14 @@ https://www.figma.com/design/fKeAplwU25tyqQQlonz3oI/luckydoki?node-id=0-1&t=gSTm
   - 이미지 최적화 및 압축
   - 로딩 시간 60% 단축
 
-### 4. AI 응답 생성 최적화
+### 4. Toss 결제로직 내 성능개선
+- **문제**: 결제 처리 순차적 실행 비효율
+- **해결**:
+  - Executor 인터페이스 활용 비동기 처리
+  - 병렬 처리 가능 로직 분리 (cart, order, notification, coupon)
+
+
+### 5. AI 응답 생성 최적화
 - **문제**: 
   - RAG 시스템의 높은 지연 시간
   - 부정확한 컨텍스트 참조

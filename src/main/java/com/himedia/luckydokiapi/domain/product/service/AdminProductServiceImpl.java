@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.himedia.luckydokiapi.domain.product.dto.ProductDTO.Response.entityToReqDTO;
 import static com.himedia.luckydokiapi.domain.product.enums.ProductBest.N;
 import static com.himedia.luckydokiapi.domain.product.enums.ProductBest.Y;
 
@@ -175,7 +176,7 @@ public class AdminProductServiceImpl implements AdminProductService {
 
         Product product = this.getEntity(id);
 
-        ProductDTO.Request request = this.entityToReqDTO(product);
+        ProductDTO.Request request = entityToReqDTO(product);
 
         // 파일 업로드 처리
         //기존의 파일들 (데이터베이스에 존재하는 파일들 - 수정 과정에서 삭제되었을 수 있음)
@@ -281,6 +282,36 @@ public class AdminProductServiceImpl implements AdminProductService {
     public void modifyProductIsNew(List<Long> modifyProductIdList) {
         List<Product> idList = productRepository.findByIdList(modifyProductIdList);
         idList.forEach(this::changeEnumIsNew);
+    }
+
+    /**
+     * 상품 복사 - 지정된 상품을 복제하여 새로운 상품으로 등록
+     * 
+     * @param productId 복사할 상품 ID
+     * @return 복사된 새 상품의 ID
+     */
+    @Override
+    @Transactional
+    public Long copyProduct(Long productId) {
+        log.info("상품 복사 시작. 원본 상품 ID: {}", productId);
+        
+        // 원본 상품 조회
+        Product originalProduct = this.getEntity(productId);
+        
+        // 상품 정보를 Request DTO로 변환
+        ProductDTO.Request productRequest = entityToReqDTO(originalProduct);
+        
+        // 태그 정보 복사
+        List<String> tagStrList = originalProduct.getProductTagList().stream()
+                .map(productTag -> "#" + productTag.getTag().getName())
+                .collect(Collectors.toList());
+        productRequest.setTagStrList(tagStrList);
+        
+        // register 메소드를 활용하여 상품 등록
+        Long newProductId = register(productRequest);
+        
+        log.info("상품 복사 완료. 새 상품 ID: {}", newProductId);
+        return newProductId;
     }
 
 

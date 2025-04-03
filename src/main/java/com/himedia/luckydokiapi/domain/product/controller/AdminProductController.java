@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-    @RequestMapping("/api/admin/product")
+@RequestMapping("/api/admin/product")
 @RequiredArgsConstructor
 public class AdminProductController {
 
@@ -103,7 +103,6 @@ public class AdminProductController {
     }
 
 
-
     // 승인
     @PutMapping("/approve")
     public ResponseEntity<String> approveProduct(@RequestBody ModifyProductIdsDTO requestDTO) {
@@ -121,5 +120,12 @@ public class AdminProductController {
         return ResponseEntity.ok(products);
     }
 
+    // 상품 복사
+    @PostMapping("/{id}/copy")
+    public ResponseEntity<Long> copyProduct(@PathVariable Long id) {
+        log.info("상품 복사 요청: productId={}", id);
+        Long copiedProductId = productService.copyProduct(id);
+        return ResponseEntity.ok(copiedProductId);
+    }
 
 }
