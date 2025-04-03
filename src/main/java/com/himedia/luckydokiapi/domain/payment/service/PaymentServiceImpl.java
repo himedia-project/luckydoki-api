@@ -1,9 +1,7 @@
 package com.himedia.luckydokiapi.domain.payment.service;
 
 
-import com.himedia.luckydokiapi.domain.cart.entity.Cart;
 import com.himedia.luckydokiapi.domain.cart.repository.CartRepository;
-import com.himedia.luckydokiapi.domain.cart.service.CartService;
 import com.himedia.luckydokiapi.domain.coupon.service.CouponService;
 import com.himedia.luckydokiapi.domain.email.service.EmailService;
 import com.himedia.luckydokiapi.domain.order.entity.Order;
@@ -38,15 +36,16 @@ import java.util.concurrent.*;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-    private final CartService cartService;
-    private final EmailService emailService;
+
     @Value("${toss.secret-key}")
     private String secretKey;
 
+    @Value(("${toss.url}"))
+    private String tossUrl;
+
     private final RestTemplate restTemplate;
 
-    private static final String TOSS_URL = "https://api.tosspayments.com/v1";
-
+    private final EmailService emailService;
     private final PaymentRepository paymentRepository;
 
     private final OrderService orderService;
@@ -162,7 +161,7 @@ public class PaymentServiceImpl implements PaymentService {
         params.put("amount", amount);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(params, headers);
-        String confirmUrl = TOSS_URL + "/payments/confirm";
+        String confirmUrl = tossUrl + "/payments/confirm";
 
         try {
             ResponseEntity<PaymentResponseDTO> response = restTemplate.postForEntity(
@@ -255,7 +254,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         RestTemplate restTemplate = new RestTemplate();
         PaymentResponseDTO response = restTemplate.postForObject(
-                TOSS_URL + "/" + payment.getPaymentKey() + "/cancel",
+                tossUrl + "/" + payment.getPaymentKey() + "/cancel",
                 request,
                 PaymentResponseDTO.class
         );
