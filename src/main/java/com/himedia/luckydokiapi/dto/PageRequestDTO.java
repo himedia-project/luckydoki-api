@@ -6,11 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+/**
+ * abstract class 가능
+ */
 @Data
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PageRequestDTO {
+public abstract class PageRequestDTO {
 
   @Builder.Default
   private int page = 1;
