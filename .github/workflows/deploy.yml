@@ -15,10 +15,6 @@ jobs:
       - name: Github Repository 파일 불러오기
         uses: actions/checkout@v4
 
-      - name: Create .env file
-        run: |
-          echo "${{ secrets.ENV_FILE }}" > ./.env
-
       - name: SSH로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -29,6 +25,7 @@ jobs:
           script: |
             cd /home/ubuntu/${{ env.REPOSITORY_NAME }}
             sudo chown -R ubuntu:ubuntu .  # 현재 디렉토리 전체의 소유권을 ubuntu 사용자로 변경
+            echo "${{ secrets.ENV_FILE }}" > ./.env  # .env 파일 생성
             git pull origin main
             chmod +x ./gradlew
             ./gradlew clean build
