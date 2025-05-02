@@ -15,20 +15,40 @@ jobs:
       - name: Github Repository 파일 불러오기
         uses: actions/checkout@v4
 
-      - name: SSH로 EC2에 접속하기
+      - name: JDK 설정
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > ./.env
+
+      - name: Gradle로 빌드하기
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build
+
+      - name: EC2에 JAR 파일 전송 및 배포
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          source: "build/libs/*SNAPSHOT.jar,.env"
+          target: "/home/ubuntu/${{ env.REPOSITORY_NAME }}"
+          strip_components: 0
+
+      - name: SSH로 EC2에 접속하여 애플리케이션 실행
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          script_stop: true # 이전에 실행중인 컨테이너 중지
+          script_stop: true
           script: |
             cd /home/ubuntu/${{ env.REPOSITORY_NAME }}
-            sudo chown -R ubuntu:ubuntu .  # 현재 디렉토리 전체의 소유권을 ubuntu 사용자로 변경
-            echo "${{ secrets.ENV_FILE }}" > ./.env  # .env 파일 생성
-            git pull origin main
-            chmod +x ./gradlew
-            ./gradlew clean build
-            sudo fuser -k -n tcp 8080 || true # || true를 붙인 이유는 8080에 종료시킬 프로세스가 없더라도 실패로 처리하지 않기 위해서이다. 
-            # jar 파일을 실행시키는 명령어이다. 그리고 발생하는 로그들을 ./output.log 파일에 남기는 명령어이다.
-            nohup java -jar build/libs/*SNAPSHOT.jar --spring.profiles.active=prod > ./output.log 2>&1 &
+            sudo chown -R ubuntu:ubuntu .
+            sudo fuser -k -n tcp 8080 || true
+            nohup java -jar *SNAPSHOT.jar --spring.profiles.active=prod > ./output.log 2>&1 &
