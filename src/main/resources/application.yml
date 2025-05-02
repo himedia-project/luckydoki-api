@@ -152,6 +152,12 @@ spring:
     username: ${LOCAL_MYSQL_USERNAME}
     password: ${LOCAL_MYSQL_PASSWORD}
 
+#  sql:
+#    init:
+#      platform: mysql
+#      data-locations: classpath:sql/data.sql
+#      mode: always
+
   data:
     mongodb:
       uri: ${LOCAL_MONGODB_URI}
@@ -192,11 +198,11 @@ spring:
         highlight_sql: true # SQL 하이라이트 출력
         use_sql_comments: true # JPQL SQL 주석 사용
         default_batch_fetch_size: 100 # 기본 배치 크기 설정
-  sql:
-    init:
-      platform: mysql # SQL 초기화 플랫폼 (mysql, h2, postgresql, oracle, sqlserver)
-      data-locations: classpath:sql/data.sql # ddl-auto가 create, create-drop, update일 경우에만 해당, validate/none일 경우 무시됨
-      mode: never # SQL 초기화 모드 (always, never, embedded, embedded-always)
+#  sql:
+#    init:
+#      platform: mysql # SQL 초기화 플랫폼 (mysql, h2, postgresql, oracle, sqlserver)
+#      data-locations: classpath:sql/data.sql # ddl-auto가 create, create-drop, update일 경우에만 해당, validate/none일 경우 무시됨
+#      mode: never # SQL 초기화 모드 (always, never, embedded, embedded-always)
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
