@@ -27,11 +27,11 @@ jobs:
 
       - name: Create firebase-service-account.json file
         run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ./firebase-service-account.json
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ./src/main/resources/firebase-service-account.json
 
       - name: Create google-translation-account.json file
         run: |
-          echo '${{ secrets.GOOGLE_TRANSLATION_ACCOUNT }}' > ./google-translation-account.json
+          echo '${{ secrets.GOOGLE_TRANSLATION_ACCOUNT }}' > ./src/main/resources/google-translation-account.json
 
       - name: Gradle로 빌드하기
         run: |
@@ -58,5 +58,9 @@ jobs:
           script: |
             cd /home/ubuntu/${{ env.REPOSITORY_NAME }}
             sudo chown -R ubuntu:ubuntu .
+            # 파일 이동
+            mv src/main/resources/firebase-service-account.json src/main/resources/firebase-service-account.json 2>/dev/null || true
+            mv src/main/resources/google-translation-account.json src/main/resources/google-translation-account.json 2>/dev/null || true
+
             sudo fuser -k -n tcp 8080 || true
             nohup java -jar build/libs/*SNAPSHOT.jar --spring.profiles.active=prod > ./output.log 2>&1 &
