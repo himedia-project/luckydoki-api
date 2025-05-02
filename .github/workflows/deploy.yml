@@ -29,6 +29,10 @@ jobs:
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ./firebase-service-account.json
 
+      - name: Create google-translation-account.json file
+        run: |
+          echo '${{ secrets.GOOGLE_TRANSLATION_ACCOUNT }}' > ./google-translation-account.json
+
       - name: Gradle로 빌드하기
         run: |
           chmod +x ./gradlew
@@ -40,7 +44,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          source: "build/libs/*SNAPSHOT.jar,.env,firebase-service-account.json"
+          source: "build/libs/*SNAPSHOT.jar,.env,src/main/resources/firebase-service-account.json,src/main/resources/google-translation-account.json"
           target: "/home/ubuntu/${{ env.REPOSITORY_NAME }}"
           strip_components: 0
 
