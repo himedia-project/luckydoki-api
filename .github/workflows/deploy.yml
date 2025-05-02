@@ -25,18 +25,22 @@ jobs:
         run: |
           echo "${{ secrets.ENV_FILE }}" > ./.env
 
+      - name: Create firebase-service-account.json file
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ./firebase-service-account.json
+
       - name: Gradle로 빌드하기
         run: |
           chmod +x ./gradlew
           ./gradlew clean build
 
-      - name: EC2에 JAR 파일 전송 및 배포
+      - name: EC2에 JAR 파일 및 설정 파일 전송
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          source: "build/libs/*SNAPSHOT.jar,.env"
+          source: "build/libs/*SNAPSHOT.jar,.env,firebase-service-account.json"
           target: "/home/ubuntu/${{ env.REPOSITORY_NAME }}"
           strip_components: 0
 
@@ -51,4 +55,4 @@ jobs:
             cd /home/ubuntu/${{ env.REPOSITORY_NAME }}
             sudo chown -R ubuntu:ubuntu .
             sudo fuser -k -n tcp 8080 || true
-            nohup java -jar *SNAPSHOT.jar --spring.profiles.active=prod > ./output.log 2>&1 &
+            nohup java -jar build/libs/*SNAPSHOT.jar --spring.profiles.active=prod > ./output.log 2>&1 &
