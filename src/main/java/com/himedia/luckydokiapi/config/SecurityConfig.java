@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,7 +52,6 @@ public class SecurityConfig {
 //        http
 //                .authorizeHttpRequests((authorizedHttpRequests) -> authorizedHttpRequests
 //                        .requestMatchers(new AntPathRequestMatcher("/**")).permitAll());
-
         http.authorizeHttpRequests(
                 authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(new AntPathRequestMatcher("/api/email/**")).permitAll()
@@ -119,7 +119,7 @@ public class SecurityConfig {
             sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         });
 
-        http.csrf(AbstractHttpConfigurer::disable);
+        http.csrf(AbstractHttpConfigurer::disable); // CSRF 보호 기능이 끎 REST API에서는 일반적으로 CSRF 보호가 필요하지 않음
 
 
         // h2-console, 해당 페이지가 동일한 출처에서만 프레임으로 로드될 수 있도록 설정
@@ -129,7 +129,11 @@ public class SecurityConfig {
                             new XFrameOptionsHeaderWriter(
                                     XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN
                             )
-                    );
+                    )
+                            // xss 방지 설정
+                            .xssProtection(HeadersConfigurer.XXssConfig::disable)
+                            // csp? Content Security Policy : 악성코드 실행을 방지하는 보안 정책 -> 외부 스크립트 실행을 제한하여 xss 공격을 방지
+                            .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"));
 
                 });
 
