@@ -84,7 +84,7 @@ public class CustomFileUtil {
         try {
             return s3Util.getFile(fileName);
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             log.error("getFile error: {}", e.getMessage());
             throw new RuntimeException("Failed to get file: " + fileName);
         }
@@ -234,7 +234,7 @@ public class CustomFileUtil {
                     multipartFiles.add(multipartFile);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
                 log.error("uploadImagePathS3Files error: {}", e.getMessage());
                 throw new RuntimeException("Failed to download file from URL: " + imagePath);
             }

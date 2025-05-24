@@ -82,8 +82,8 @@ public class SearchService {
                     .map(hit -> hit.source())
                     .toList();
         } catch (Exception e) {
+//            e.printStackTrace();
             log.error("Error while searching communities", e);
-            e.printStackTrace();
             throw new RuntimeException("커뮤니티 검색 중 오류 발생: " + e.getMessage(), e);
         }
     }

@@ -16,7 +16,8 @@ public class TimeUtil {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            throw new RuntimeException("Thread sleep error", e);
         }
     }
 
@@ -33,7 +34,8 @@ public class TimeUtil {
         try {
             Thread.sleep(randomTime);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            throw new RuntimeException("Thread sleep error", e);
         }
     }
 

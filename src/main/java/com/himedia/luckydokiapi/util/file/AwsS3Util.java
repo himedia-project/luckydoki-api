@@ -212,32 +212,35 @@ public class AwsS3Util {
 
 //        String urlStr = s3Client.getUrl(bucketName, fileName).toString();
         
-        Resource resource;
         HttpHeaders headers = new HttpHeaders();
         try {
             URL url = new URL(urlStr);
             URLConnection urlConnection = url.openConnection();
             // 캐싱 최적화를 위한 헤더 추가
             urlConnection.setRequestProperty("Cache-Control", "max-age=31536000");
-            InputStream inputStream = urlConnection.getInputStream();
-            resource = new InputStreamResource(inputStream);
-
-            // MIME 타입 설정
-            String mimeType = urlConnection.getContentType();
-            if (mimeType == null) {
-                Path path = Paths.get(fileName);
-                mimeType = Files.probeContentType(path);
+            
+            // try-with-resources를 사용하여 InputStream 자동으로 닫기
+            try (InputStream inputStream = urlConnection.getInputStream()) {
+                byte[] data = inputStream.readAllBytes();
+                Resource resource = new ByteArrayResource(data);
+                
+                // MIME 타입 설정
+                String mimeType = urlConnection.getContentType();
+                if (mimeType == null) {
+                    Path path = Paths.get(fileName);
+                    mimeType = Files.probeContentType(path);
+                }
+                headers.add("Content-Type", mimeType);
+                // 캐시 관련 헤더 추가
+                headers.add("Cache-Control", "max-age=31536000, public");
+                
+                return ResponseEntity.ok().headers(headers).body(resource);
             }
-            headers.add("Content-Type", mimeType);
-            // 캐시 관련 헤더 추가
-            headers.add("Cache-Control", "max-age=31536000, public");
         } catch (IOException e) {
             log.error("CloudFront 파일 가져오기 오류: {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
-        return ResponseEntity.ok().headers(headers).body(resource);
     }
-
 
     /**
      * S3에 파일 삭제
