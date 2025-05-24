@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -287,10 +288,12 @@ public class AwsS3Util {
             // 캐싱 최적화
             // max-age=31536000: 1년 동안 캐싱
             urlConnection.setRequestProperty("Cache-Control", "max-age=31536000");
-            InputStream inputStream = urlConnection.getInputStream();
-            
-            // InputStreamResource 생성 및 반환
-            return new InputStreamResource(inputStream);
+
+            // try-with-resources를 사용하여 자동으로 InputStream 닫기
+            try (InputStream inputStream = urlConnection.getInputStream()) {
+                byte[] bytes = inputStream.readAllBytes();
+                return new ByteArrayResource(bytes);
+            }
         } catch (IOException e) {
             log.error("CloudFront 리소스 가져오기 오류: {}", e.getMessage());
             throw new IOException("CloudFront에서 리소스를 가져오는 중 오류 발생: " + fileName, e);
