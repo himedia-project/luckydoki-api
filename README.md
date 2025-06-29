@@ -8,6 +8,8 @@ LuckyDoki는 실시간 커머스 플랫폼으로, 대용량 트래픽 처리와 
 * 판매자(셀러): 상품 등록, 판매, 주문 관리, 재고 관리 등을 담당하는 판매자
 * 관리자: 플랫폼 전체 관리, 상품 승인, 통계 관리, 마케팅 등을 담당하는 관리자
 
+📌 시연영상 - https://www.youtube.com/watch?v=3pSpCyMeNsg&list=PLrtykmiaS87ui_Krh9-BV6cQjmIm2siSH
+
 <br>
 
 ## 프로젝트 핵심 목표
