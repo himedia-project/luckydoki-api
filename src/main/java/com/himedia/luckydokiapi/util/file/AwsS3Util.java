@@ -48,7 +48,6 @@ public class AwsS3Util {
     private boolean cloudfrontEnabled;
 
     private final S3Client s3Client;
-    private final ThumbnailUtil thumbnailUtil;
 
     /**
      * S3에 파일 업로드
@@ -121,11 +120,11 @@ public class AwsS3Util {
         
         try {
             // ThumbnailUtil을 사용하여 썸네일 생성
-            thumbnailPath = thumbnailUtil.createThumbnail(file);
+            thumbnailPath = ThumbnailUtil.createThumbnail(file);
             
             // 생성된 썸네일 파일 정보
             String thumbnailFileName = thumbnailPath.getFileName().toString();
-            String outputExtension = thumbnailUtil.getExtensionFromPath(thumbnailPath);
+            String outputExtension = ThumbnailUtil.getExtensionFromPath(thumbnailPath);
             
             // S3에 업로드 - try-with-resource로 FileInputStream 자동 close
             try (FileInputStream fileInputStream = new FileInputStream(thumbnailPath.toFile())) {
@@ -133,7 +132,7 @@ public class AwsS3Util {
                         .bucket(bucketName)
                         .key(thumbnailFileName)
                         .contentLength(thumbnailPath.toFile().length())
-                        .contentType(thumbnailUtil.getContentType(outputExtension))
+                        .contentType(ThumbnailUtil.getContentType(outputExtension))
                         .build();
                 s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(fileInputStream, thumbnailPath.toFile().length()));
                 log.info("S3에 업로드 성공! thumbnailPath: {}, size: {} bytes", thumbnailPath, thumbnailPath.toFile().length());
@@ -147,7 +146,7 @@ public class AwsS3Util {
         } finally {
             // 썸네일 로컬 파일 삭제
             if (thumbnailPath != null) {
-                thumbnailUtil.cleanupFile(thumbnailPath);
+                ThumbnailUtil.cleanupFile(thumbnailPath);
             }
         }
     }

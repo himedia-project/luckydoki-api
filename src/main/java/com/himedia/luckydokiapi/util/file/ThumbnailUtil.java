@@ -14,12 +14,16 @@ import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
-@Component
-public class ThumbnailUtil {
+public final class ThumbnailUtil {
 
     private static final int THUMBNAIL_SIZE = 400;
     private static final float WEBP_QUALITY = 0.8f;
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("svg", "jpg", "jpeg", "png", "gif", "webp");
+
+    // 유틸리티 클래스이므로 인스턴스화 방지
+    private ThumbnailUtil() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     /**
      * 썸네일 파일 생성 (WebP 변환 지원)
@@ -28,7 +32,7 @@ public class ThumbnailUtil {
      * @return 생성된 썸네일 파일 경로
      * @throws IOException 파일 처리 중 오류 발생 시
      */
-    public Path createThumbnail(MultipartFile file) throws IOException {
+    public static Path createThumbnail(MultipartFile file) throws IOException {
         validateFile(file);
         
         String extension = getFileExtension(file.getOriginalFilename());
@@ -55,7 +59,7 @@ public class ThumbnailUtil {
     /**
      * 썸네일 파일 처리
      */
-    private void processThumbnail(MultipartFile file, String extension, Path thumbnailPath) throws IOException {
+    private static void processThumbnail(MultipartFile file, String extension, Path thumbnailPath) throws IOException {
         if ("gif".equals(extension)) {
             // GIF 파일은 애니메이션 보존을 위해 원본 그대로 저장
             log.info("GIF 파일은 원본 그대로 저장: {}", file.getOriginalFilename());
@@ -75,7 +79,7 @@ public class ThumbnailUtil {
     /**
      * WebP 썸네일 생성
      */
-    private void createWebPThumbnail(MultipartFile file, Path thumbnailPath) throws IOException {
+    private static void createWebPThumbnail(MultipartFile file, Path thumbnailPath) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
             Thumbnails.of(inputStream)
                     .size(THUMBNAIL_SIZE, THUMBNAIL_SIZE)
@@ -88,7 +92,7 @@ public class ThumbnailUtil {
     /**
      * 파일 유효성 검증
      */
-    private void validateFile(MultipartFile file) {
+    private static void validateFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("파일이 비어있습니다.");
         }
@@ -107,7 +111,7 @@ public class ThumbnailUtil {
     /**
      * 생성된 썸네일 파일 검증
      */
-    private void validateThumbnailFile(Path thumbnailPath, String thumbnailFileName) throws IOException {
+    private static void validateThumbnailFile(Path thumbnailPath, String thumbnailFileName) throws IOException {
         if (!Files.exists(thumbnailPath) || Files.size(thumbnailPath) == 0) {
             throw new RuntimeException("썸네일 파일 생성에 실패했습니다: " + thumbnailFileName);
         }
@@ -117,7 +121,7 @@ public class ThumbnailUtil {
     /**
      * 파일 확장자 추출
      */
-    private String getFileExtension(String filename) {
+    private static String getFileExtension(String filename) {
         if (filename == null || !filename.contains(".")) {
             throw new IllegalArgumentException("파일 확장자를 찾을 수 없습니다.");
         }
@@ -127,7 +131,7 @@ public class ThumbnailUtil {
     /**
      * 파일명에서 확장자를 제외한 기본 이름 추출
      */
-    private String getBaseFileName(String filename) {
+    private static String getBaseFileName(String filename) {
         if (filename == null || !filename.contains(".")) {
             return filename;
         }
@@ -137,14 +141,14 @@ public class ThumbnailUtil {
     /**
      * WebP 변환 여부 결정
      */
-    private boolean shouldConvertToWebP(String extension) {
+    private static boolean shouldConvertToWebP(String extension) {
         return !"webp".equals(extension) && !"gif".equals(extension);
     }
 
     /**
      * 파일 정리 (실패 시 임시 파일 삭제)
      */
-    public void cleanupFile(Path filePath) {
+    public static void cleanupFile(Path filePath) {
         if (filePath != null && Files.exists(filePath)) {
             try {
                 Files.delete(filePath);
@@ -158,7 +162,7 @@ public class ThumbnailUtil {
     /**
      * 파일 확장자에 따른 Content-Type 반환
      */
-    public String getContentType(String extension) {
+    public static String getContentType(String extension) {
         return switch (extension.toLowerCase()) {
             case "jpg", "jpeg" -> "image/jpeg";
             case "png" -> "image/png";
@@ -172,7 +176,7 @@ public class ThumbnailUtil {
     /**
      * 파일 경로에서 확장자 추출
      */
-    public String getExtensionFromPath(Path path) {
+    public static String getExtensionFromPath(Path path) {
         String filename = path.getFileName().toString();
         return getFileExtension(filename);
     }
