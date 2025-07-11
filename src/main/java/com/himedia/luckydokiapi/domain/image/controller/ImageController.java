@@ -76,6 +76,20 @@ public class ImageController {
         }
     }
 
+    @Operation(
+            summary = "이미지 업로드",
+            description = "S3에 이미지를 업로드.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "업로드 성공", content = @Content(schema = @Schema(type = "string"), mediaType = "text/plain")),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청 또는 파일 형식")
+            }
+    )
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFilePOST(@RequestPart("file") MultipartFile file) {
+        log.info("Image upload request received: {}", file.getOriginalFilename());
+        return ResponseEntity.ok(fileUtil.uploadS3File(file));
+    }
+
 
     @Operation(
             summary = "썸네일 이미지 업로드",
@@ -89,21 +103,6 @@ public class ImageController {
     public ResponseEntity<String> thumbnailUploadFilePOST(@RequestPart("file") MultipartFile file) {
         log.info("Thumbnail upload request received: {}", file.getOriginalFilename());
         return ResponseEntity.ok(fileUtil.uploadToThumbnailS3File(file));
-    }
-
-
-    @Operation(
-            summary = "이미지 업로드",
-            description = "S3에 이미지를 업로드.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "업로드 성공", content = @Content(schema = @Schema(type = "string"), mediaType = "text/plain")),
-                    @ApiResponse(responseCode = "400", description = "잘못된 요청 또는 파일 형식")
-            }
-    )
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadFilePOST(@RequestPart("file") MultipartFile file) {
-        log.info("Image upload request received: {}", file.getOriginalFilename());
-        return ResponseEntity.ok(fileUtil.uploadS3File(file));
     }
 
     /**
