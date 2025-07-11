@@ -17,8 +17,8 @@ services:
     volumes:
       - ./mysql/conf.d:/etc/mysql/conf.d
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
-    networks:
-      - app-network
+#    networks:
+#      - app-network
 
 #  mongodb:
 #    image: mongo:latest
@@ -50,8 +50,8 @@ services:
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
-    networks:
-      - app-network
+#    networks:
+#      - app-network
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
@@ -72,8 +72,8 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
-    networks:
-      - app-network
+#    networks:
+#      - app-network
     command: >
       bash -c '
         if [ ! -f /usr/share/elasticsearch/config/nori_installed ]; then
@@ -91,8 +91,8 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "2181:2181"
-    networks:
-      - app-network
+#    networks:
+#      - app-network
 
   kafka:
     image: confluentinc/cp-kafka:7.3.0
@@ -109,8 +109,8 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
-    networks:
-      - app-network
+#    networks:
+#      - app-network
 
   # 선택사항: Kafka UI 관리 도구 추가
   kafka-ui:
@@ -124,8 +124,8 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-    networks:
-      - app-network
+#    networks:
+#      - app-network
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.12.1
@@ -142,8 +142,8 @@ services:
       - "5000:5000/udp" # UDP
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    networks:
-      - app-network
+#    networks:
+#      - app-network
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.12.1
@@ -155,12 +155,12 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - XPACK_SECURITY_ENABLED=false
-    networks:
-      - app-network
+#    networks:
+#      - app-network
 
-networks:
-  app-network:
-    driver: bridge
+#networks:
+#  app-network:
+#    driver: bridge
 
 volumes:
   mongodb_data:
