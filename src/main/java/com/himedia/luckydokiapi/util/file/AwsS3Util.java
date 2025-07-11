@@ -106,9 +106,9 @@ public class AwsS3Util {
     }
 
     /**
-     * S3에 썸네일 파일로 업로드
+     * S3에 썸네일 파일로 업로드 (WebP 변환 지원)
      * @param file 이미지 파일
-     * @return 업로드된 400X400 썸네일 파일 URL
+     * @return 업로드된 400X400 썸네일 파일 URL (WebP 변환됨)
      */
     public String uploadToThumbnailS3File(MultipartFile file) {
         log.info("uploadToThumbnailS3File: {}", file.getOriginalFilename());
@@ -123,24 +123,47 @@ public class AwsS3Util {
         checkImageExtension(extension);
 
         String originalFilename = file.getOriginalFilename();
-        String thumbnailFileName = "s_" + UUID.randomUUID().toString() + "-" + originalFilename;
+        String baseFileName = originalFilename.substring(0, originalFilename.lastIndexOf("."));
+        
+        // WebP 변환 여부 결정 (GIF는 애니메이션 보존을 위해 원본 유지)
+        boolean convertToWebP = !"webp".equals(extension) && !"gif".equals(extension);
+        String outputExtension = convertToWebP ? "webp" : extension;
+        String thumbnailFileName = "s_" + UUID.randomUUID().toString() + "-" + baseFileName + "." + outputExtension;
+        
         Path thumbnailPath = null;
         
         try {
             thumbnailPath = Paths.get(thumbnailFileName);
             
-            // WebP, GIF 파일인 경우와 그 외 이미지 파일 처리를 분리
-            if ("webp".equals(extension) || "gif".equals(extension)) {
-                // WebP, GIF 파일은 원본 그대로 저장
+            if ("gif".equals(extension)) {
+                // GIF 파일은 애니메이션 보존을 위해 원본 그대로 저장
+                log.info("GIF 파일은 원본 그대로 저장: {}", originalFilename);
                 file.transferTo(thumbnailPath.toFile());
-            } else {
-                // 일반 이미지 파일은 썸네일 생성 - try-with-resource로 InputStream 자동 close
+            } else if ("webp".equals(extension)) {
+                // 이미 WebP인 경우 썸네일만 생성
+                log.info("WebP 파일 썸네일 생성: {}", originalFilename);
                 try (InputStream inputStream = file.getInputStream()) {
                     Thumbnails.of(inputStream)
                             .size(400, 400)
-                            .outputFormat(extension)
+                            .outputFormat("webp")
+                            .outputQuality(0.8f) // WebP 품질 설정 (0.0 ~ 1.0)
                             .toFile(thumbnailPath.toFile());
                 }
+            } else {
+                // 일반 이미지 파일은 WebP로 변환하면서 썸네일 생성
+                log.info("이미지 파일 WebP 변환 및 썸네일 생성: {} -> {}", originalFilename, thumbnailFileName);
+                try (InputStream inputStream = file.getInputStream()) {
+                    Thumbnails.of(inputStream)
+                            .size(400, 400)
+                            .outputFormat("webp")
+                            .outputQuality(0.8f) // WebP 품질 설정 (0.0 ~ 1.0)
+                            .toFile(thumbnailPath.toFile());
+                }
+            }
+
+            // 생성된 파일 검증
+            if (!Files.exists(thumbnailPath) || Files.size(thumbnailPath) == 0) {
+                throw new RuntimeException("썸네일 파일 생성에 실패했습니다: " + thumbnailFileName);
             }
 
             // S3에 업로드 - try-with-resource로 FileInputStream 자동 close
@@ -149,11 +172,13 @@ public class AwsS3Util {
                         .bucket(bucketName)
                         .key(thumbnailPath.toFile().getName())
                         .contentLength(thumbnailPath.toFile().length())
+                        .contentType(getContentType(outputExtension))
                         .build();
                 s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(fileInputStream, thumbnailPath.toFile().length()));
-                log.info("S3에 업로드 성공! thumbnailPath: {}", thumbnailPath);
+                log.info("S3에 업로드 성공! thumbnailPath: {}, size: {} bytes", thumbnailPath, thumbnailPath.toFile().length());
             }
         } catch (IOException e) {
+            log.error("파일 업로드 중 오류 발생: {}", e.getMessage());
             throw new RuntimeException("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
         } finally {
             // 썸네일 로컬 파일 삭제
@@ -161,6 +186,7 @@ public class AwsS3Util {
                 log.info("local thumbnailPath exist! {}", thumbnailPath);
                 try {
                     Files.delete(thumbnailPath);
+                    log.info("로컬 썸네일 파일 삭제 완료: {}", thumbnailPath);
                 } catch (IOException e) {
                     log.error("Failed to delete local thumbnail file: {}", e.getMessage());
                 }
@@ -180,6 +206,23 @@ public class AwsS3Util {
         if (!allowedExtensions.contains(extension)) {
             throw new IllegalArgumentException("이미지 확장자는 jpg, jpeg, png, svg, gif, webp만 허용됩니다.");
         }
+    }
+
+    /**
+     * 파일 확장자에 따른 Content-Type 반환
+     *
+     * @param extension 파일 확장자
+     * @return Content-Type
+     */
+    private String getContentType(String extension) {
+        return switch (extension.toLowerCase()) {
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "png" -> "image/png";
+            case "gif" -> "image/gif";
+            case "webp" -> "image/webp";
+            case "svg" -> "image/svg+xml";
+            default -> "application/octet-stream";
+        };
     }
 
     /**
