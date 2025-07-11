@@ -26,8 +26,10 @@ spring:
   #    throw-exception-if-no-handler-found: true # 요청 처리 핸들러 없을 때 예외 처리
   servlet:
     multipart:
-      max-request-size: 30MB # 최대 요청 크기, ⭐nginx client_max_body_size와 동일하게 설정
-      max-file-size: 10MB # 최대 파일 크기
+      enabled: true # 멀티파트 업로드 활성화
+      file-size-threshold: 2MB # 파일 크기 임계값, 2MB 초과시 임시 파일로 저장
+      max-request-size: 30MB # 전체요청, 최대 요청 크기, ⭐nginx client_max_body_size와 동일하게 설정
+      max-file-size: 10MB # 개별파일, 최대 파일 크기
 
   elasticsearch:
     uris: http://localhost:9200
