@@ -1,19 +1,20 @@
 package com.himedia.luckydokiapi.util.file;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -121,6 +122,7 @@ public class AwsS3Util {
         String originalFilename = file.getOriginalFilename();
         String thumbnailFileName = "s_" + UUID.randomUUID().toString() + "-" + originalFilename;
         Path thumbnailPath = null;
+        
         try {
             thumbnailPath = Paths.get(thumbnailFileName);
             
@@ -129,16 +131,22 @@ public class AwsS3Util {
                 // WebP, GIF 파일은 원본 그대로 저장
                 file.transferTo(thumbnailPath.toFile());
             } else {
-                // 일반 이미지 파일은 썸네일 생성
-                Thumbnails.of(file.getInputStream())
-                        .size(400, 400)
-                        .outputFormat(extension)
-                        .toFile(thumbnailPath.toFile());
+                // 일반 이미지 파일은 썸네일 생성 - try-with-resource로 InputStream 자동 close
+                try (InputStream inputStream = file.getInputStream()) {
+                    Thumbnails.of(inputStream)
+                            .size(400, 400)
+                            .outputFormat(extension)
+                            .toFile(thumbnailPath.toFile());
+                }
             }
 
-            // S3에 업로드
-            s3Client.putObject(new PutObjectRequest(bucketName, thumbnailPath.toFile().getName(), thumbnailPath.toFile()));
-            log.info("S3에 업로드 성공! thumbnailPath: {}", thumbnailPath);
+            // S3에 업로드 - try-with-resource로 FileInputStream 자동 close
+            try (FileInputStream fileInputStream = new FileInputStream(thumbnailPath.toFile())) {
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(thumbnailPath.toFile().length());
+                s3Client.putObject(new PutObjectRequest(bucketName, thumbnailPath.toFile().getName(), fileInputStream, metadata));
+                log.info("S3에 업로드 성공! thumbnailPath: {}", thumbnailPath);
+            }
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
         } finally {
