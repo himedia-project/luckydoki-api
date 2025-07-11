@@ -1,8 +1,5 @@
 package com.himedia.luckydokiapi.util.file;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
@@ -13,6 +10,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -45,14 +48,13 @@ public class AwsS3Util {
     @Value("${app.props.aws.cloudfront.enabled:true}")
     private boolean cloudfrontEnabled;
 
-    private final AmazonS3 s3Client;
+    private final S3Client s3Client;
 
     /**
      * S3에 파일 업로드
      * @param files 파일 리스트
      * @return 업로드된 파일 URL 리스트
      */
-
     public List<String> uploadFiles(List<MultipartFile> files) {
         return files.stream()
                 .map(this::uploadFile)
@@ -81,26 +83,27 @@ public class AwsS3Util {
 
         try {
             // MultipartFile의 입력 스트림을 직접 S3에 업로드
-            s3Client.putObject(bucketName, fileName, file.getInputStream(), null);
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .build();
+            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
             return fileName;
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
-
     /**
      * S3에 썸네일파일 리스트 업로드
      * @param files 파일 리스트
      * @return 업로드된 400X400 파일 URL 리스트
      */
-
     public List<String> uploadToThumbnailS3Files(List<MultipartFile> files) {
         return files.stream()
                 .map(this::uploadToThumbnailS3File)
                 .toList();
     }
-
 
     /**
      * S3에 썸네일 파일로 업로드
@@ -142,9 +145,12 @@ public class AwsS3Util {
 
             // S3에 업로드 - try-with-resource로 FileInputStream 자동 close
             try (FileInputStream fileInputStream = new FileInputStream(thumbnailPath.toFile())) {
-                ObjectMetadata metadata = new ObjectMetadata();
-                metadata.setContentLength(thumbnailPath.toFile().length());
-                s3Client.putObject(new PutObjectRequest(bucketName, thumbnailPath.toFile().getName(), fileInputStream, metadata));
+                PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(thumbnailPath.toFile().getName())
+                        .contentLength(thumbnailPath.toFile().length())
+                        .build();
+                s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(fileInputStream, thumbnailPath.toFile().length()));
                 log.info("S3에 업로드 성공! thumbnailPath: {}", thumbnailPath);
             }
         } catch (IOException e) {
@@ -176,7 +182,6 @@ public class AwsS3Util {
         }
     }
 
-
     /**
      * CloudFront URL로 파일 경로 가져오기
      * @param fileName 파일 이름
@@ -204,8 +209,12 @@ public class AwsS3Util {
             return getCloudfrontUrl(fileName);
         }
         
-        // 그렇지 않으면 S3 URL 반환
-        return s3Client.getUrl(bucketName, fileName).toString();
+        // 그렇지 않으면 S3 URL 반환 (v2 방식)
+        GetUrlRequest getUrlRequest = GetUrlRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
+        return s3Client.utilities().getUrl(getUrlRequest).toString();
     }
 
     /**
@@ -217,8 +226,6 @@ public class AwsS3Util {
     public ResponseEntity<Resource> getFile(String fileName) throws IOException {
         // CloudFront URL로 변경
         String urlStr = getUrl(fileName);
-
-//        String urlStr = s3Client.getUrl(bucketName, fileName).toString();
         
         HttpHeaders headers = new HttpHeaders();
         try {
@@ -265,50 +272,28 @@ public class AwsS3Util {
      * @param fileName  파일 이름
      */
     public void deleteFile(String fileName) {
-        s3Client.deleteObject(bucketName, fileName);
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
+        s3Client.deleteObject(deleteObjectRequest);
     }
 
     /**
-     * S3에 있는 파일 URL 가져오기
-     * @param fileName 파일 이름
-     * @return 파일 URL
-     */
-    /*
-    public String getUrl(String fileName) {
-        return s3Client.getUrl(bucketName, fileName).toString();
-    }*/
-
-
-    /**
-     * CloudFront에서 파일 리소스 가져오기 (기존 메서드 수정)
+     * S3에 있는 파일 리소스 가져오기
      * @param fileName 파일 이름
      * @return 파일 리소스
-     * @throws IOException 파일을 가져오는 중 오류 발생 시
+     * @throws IOException 파일이 없을 경우 예외 발생
      */
     public Resource getResource(String fileName) throws IOException {
-        // CloudFront URL로 변경
-        String urlStr = getUrl(fileName);
-        /*
-        // S3 URL 가져오기
-        String urlStr = s3Client.getUrl(bucketName, fileName).toString();
-        */
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
         
-        try {
-            URL url = new URL(urlStr);
-            URLConnection urlConnection = url.openConnection();
-            // 캐싱 최적화
-            // max-age=31536000: 1년 동안 캐싱
-            urlConnection.setRequestProperty("Cache-Control", "max-age=31536000");
-
-            // try-with-resources를 사용하여 자동으로 InputStream 닫기
-            try (InputStream inputStream = urlConnection.getInputStream()) {
-                byte[] bytes = inputStream.readAllBytes();
-                return new ByteArrayResource(bytes);
-            }
-        } catch (IOException e) {
-            log.error("CloudFront 리소스 가져오기 오류: {}", e.getMessage());
-            throw new IOException("CloudFront에서 리소스를 가져오는 중 오류 발생: " + fileName, e);
+        try (InputStream inputStream = s3Client.getObject(getObjectRequest)) {
+            byte[] data = inputStream.readAllBytes();
+            return new ByteArrayResource(data);
         }
     }
-
 }

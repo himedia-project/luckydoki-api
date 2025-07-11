@@ -68,8 +68,9 @@ dependencies {
     // security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    // aws s3
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    // AWS SDK v2 (완전 마이그레이션)
+    implementation 'software.amazon.awssdk:s3:2.20.26'
+    implementation 'software.amazon.awssdk:auth:2.20.26'
 
     // thumbnailator(gif,webp 지원 x)
     implementation 'net.coobird:thumbnailator:0.4.19'
@@ -84,6 +85,8 @@ dependencies {
 
     // Jakarta Activation (필요한 경우)
     implementation 'jakarta.activation:jakarta.activation-api:2.1.0'
+
+    // JAXB는 AWS SDK v2에서 더 이상 불필요
 
     // WebP 지원을 위한 의존성 추가
     implementation 'org.sejda.imageio:webp-imageio:0.1.6'
