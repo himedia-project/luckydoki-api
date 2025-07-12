@@ -52,13 +52,15 @@ public class CouponRepositoryImpl implements CouponRepositoryCustom {
 				.limit(pageable.getPageSize())
 				.fetch();
 
-		JPAQuery<Coupon> countQuery = queryFactory
-				.selectFrom(coupon)
+		Long total = queryFactory
+				.select(coupon.count())
+				.from(coupon)
 				.where(
 						containsSearchKeyword(requestDto.getSearchKeyword())
-				);
+				)
+				.fetchOne();
 
-		return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+		return PageableExecutionUtils.getPage(list, pageable, () -> total != null ? total : 0L);
 	}
 
 	private BooleanExpression containsSearchKeyword(String searchKeyword) {

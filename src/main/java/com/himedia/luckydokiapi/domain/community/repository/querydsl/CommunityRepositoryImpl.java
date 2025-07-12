@@ -72,8 +72,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
         // pageable의 sort 정보를 querydsl에 적용
 
-        JPAQuery<Community> countQuery = queryFactory
-                .select(community)
+        Long total = queryFactory
+                .select(community.countDistinct())
                 .from(community)
                 .leftJoin(community.imageList, communityImage).on(communityImage.ord.eq(0))
                 .leftJoin(community.communityTagList, communityTag)
@@ -83,10 +83,10 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .where(
                         containsSearchKeyword(requestDTO.getSearchKeyword())
                 )
-                .groupBy(community) // 커뮤니티별로 그룹화 -> 중복되지 않게 하기 위함
-                ;
+//                .groupBy(community) // 💥 total count를 세기 위해서는 삭제해야함! -> countDistinct 로 대체!
+                .fetchOne();
 
-        return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(list, pageable, () -> total != null ? total : 0L);
     }
 
 

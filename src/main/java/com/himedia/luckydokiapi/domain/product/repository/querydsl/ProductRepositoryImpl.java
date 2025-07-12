@@ -88,8 +88,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         // pageable의 sort 정보를 querydsl에 적용
 
-        JPAQuery<Product> countQuery = queryFactory
-                .select(product)
+        Long total = queryFactory
+                .select(product.countDistinct())
                 .from(product)
                 .leftJoin(product.imageList, productImage).on(productImage.ord.eq(0))
                 .leftJoin(product.productTagList, productTag)
@@ -105,10 +105,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         eqShopId(requestDTO.getShopId()),
                         betweenPrice(requestDTO.getMinPrice(), requestDTO.getMaxPrice())
                 )
-                .groupBy(product) // 상품별로 그룹화
-                ;
+                .fetchOne();
 
-        return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(list, pageable, () -> total != null ? total : 0L);
     }
 
 

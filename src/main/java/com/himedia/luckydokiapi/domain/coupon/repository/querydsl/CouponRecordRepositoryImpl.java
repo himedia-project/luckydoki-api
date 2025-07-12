@@ -49,15 +49,17 @@ public class CouponRecordRepositoryImpl implements CouponRecordRepositoryCustom 
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        JPAQuery<CouponRecord> countQuery = queryFactory
-                .selectFrom(couponRecord)
+        Long total = queryFactory
+                .select(couponRecord.count())
+                .from(couponRecord)
                 .leftJoin(couponRecord.coupon, coupon)
                 .leftJoin(couponRecord.member, member)
                 .where(
                         containsCouponRecordSearchKeyword(requestDto.getSearchKeyword())
-                );
+                )
+                .fetchOne();
 
-        return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(list, pageable, () -> total != null ? total : 0L);
     }
 
     @Override

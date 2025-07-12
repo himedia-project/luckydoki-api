@@ -53,15 +53,16 @@ public class ShopRepositoryImpl implements ShopRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        JPAQuery<Shop> countQuery = queryFactory
-                .selectFrom(shop)
+        Long total = queryFactory
+                .select(shop.count())
+                .from(shop)
                 .leftJoin(shop.member)
                 .where(
                         containsSearchKeyword(requestDTO.getSearchKeyword())
-                );
+                )
+                .fetchOne();
 
-
-        return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(list, pageable, () -> total != null ? total : 0L);
     }
 
     private BooleanExpression containsSearchKeyword(String searchKeyword) {

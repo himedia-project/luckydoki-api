@@ -65,14 +65,16 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
         // pageable의 sort 정보를 querydsl에 적용
 
-        JPAQuery<Member> countQuery = queryFactory
-                .selectFrom(member)
+        Long total = queryFactory
+                .select(member.count())
+                .from(member)
                 .leftJoin(member.memberRoleList).fetchJoin()
                 .where(
                         containsKeyword(requestDTO.getSearchKeyword())
-                );
+                )
+                .fetchOne();
 
-        return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(list, pageable, () -> total != null ? total : 0L);
     }
 
     @Override
@@ -118,27 +120,31 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
     @Override
     public Long countBySellerApprovedIsFalse() {
-        return queryFactory
-                .selectFrom(member)
+        Long total = queryFactory
+                .select(member.count())
+                .from(member)
                 .leftJoin(member.sellerApplicationList, sellerApplication)
                 .where(
                         member.active.ne(MemberActive.N),
                         sellerApplication.approved.eq(ShopApproved.N)
                 )
-                .fetchCount();
+                .fetchOne();
+        return total != null ? total : 0L;
     }
 
     @Override
     public Long countNewSellersInLastMonth(LocalDateTime monthAgo) {
-        return queryFactory
-                .selectFrom(member)
+        Long total = queryFactory
+                .select(member.count())
+                .from(member)
                 .leftJoin(member.sellerApplicationList, sellerApplication)
                 .where(
                         sellerApplication.isNotNull(),
                         sellerApplication.approved.eq(ShopApproved.Y),
                         sellerApplication.createdAt.after(monthAgo)
                 )
-                .fetchCount();
+                .fetchOne();
+        return total != null ? total : 0L;
     }
 
     /**

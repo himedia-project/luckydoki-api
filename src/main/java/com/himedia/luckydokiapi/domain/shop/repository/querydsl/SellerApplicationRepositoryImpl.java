@@ -37,13 +37,15 @@ public class SellerApplicationRepositoryImpl implements SellerApplicationReposit
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        JPAQuery<SellerApplication> countQuery = queryFactory
-                .selectFrom(sellerApplication)
+        Long total = queryFactory
+                .select(sellerApplication.count())
+                .from(sellerApplication)
                 .where(
                         containsSearchKeyword(requestDTO.getSearchKeyword())
-                );
+                )
+                .fetchOne();
 
-        return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(list, pageable, () -> total != null ? total : 0L);
     }
 
 

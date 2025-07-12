@@ -53,15 +53,17 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .orderBy(getOrderSpecifier(pageable.getSort()))
                 .fetch();
 
-        JPAQuery<Order> countQuery = queryFactory
-                .selectFrom(order)
+        Long total = queryFactory
+                .select(order.count())
+                .from(order)
                 .leftJoin(order.orderItems, orderItem)
                 .where(
                         containsSearchKeyword(requestDTO.getSearchKeyword()),
                         getEqOrderDateOfYear(requestDTO.getYear())
-                );
+                )
+                .fetchOne();
 
-        return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(list, pageable, () -> total != null ? total : 0L);
     }
 
     @Override

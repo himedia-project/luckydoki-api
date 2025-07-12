@@ -49,14 +49,16 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
 				.limit(pageable.getPageSize())
 				.fetch();
 
-		JPAQuery<Event> countQuery = queryFactory
-				.selectFrom(event)
+		Long total = queryFactory
+				.select(event.count())
+				.from(event)
 				.leftJoin(event.eventBridgeList, eventBridge)
 				.where(
 						containsSearchKeyword(requestDto.getSearchKeyword())
-				);
+				)
+				.fetchOne();
 
-		return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchCount);
+		return PageableExecutionUtils.getPage(list, pageable, () -> total != null ? total : 0L);
 
 	}
 
