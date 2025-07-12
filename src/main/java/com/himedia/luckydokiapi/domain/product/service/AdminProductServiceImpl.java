@@ -14,7 +14,7 @@ import com.himedia.luckydokiapi.domain.review.service.ReviewService;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
+import com.himedia.luckydokiapi.util.file.CustomFileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ import static com.himedia.luckydokiapi.domain.product.enums.ProductBest.Y;
 @RequiredArgsConstructor
 public class AdminProductServiceImpl implements AdminProductService {
 
-    private final CustomFileUtil fileUtil;
+    private final CustomFileService fileService;
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
@@ -110,7 +110,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         // 파일 업로드 처리
         if (dto.getFiles() != null || !dto.getFiles().isEmpty()) {
             List<MultipartFile> files = dto.getFiles();
-            List<String> uploadFileNames = fileUtil.uploadToThumbnailS3Files(files);
+            List<String> uploadFileNames = fileService.uploadToThumbnailS3Files(files);
             log.info("uploadFileNames: {}", uploadFileNames);
             dto.setUploadFileNames(uploadFileNames);
         }
@@ -118,7 +118,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         // excel 업로드 imagePathList 있을시 s3 업로드
         if (dto.getImagePathList() != null) {
             log.info("excel 업로드 이미지 파일 존재! dto.getImagePathList(): {}", dto.getImagePathList());
-            dto.setUploadFileNames(fileUtil.uploadImagePathS3Files(dto.getImagePathList()));
+            dto.setUploadFileNames(fileService.uploadImagePathS3Files(dto.getImagePathList()));
         }
 
 
@@ -186,7 +186,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         List<MultipartFile> files = dto.getFiles();
 
         //새로 업로드되어서 만들어진 파일 이름들
-        List<String> currentUploadFileNames = fileUtil.uploadToThumbnailS3Files(files);
+        List<String> currentUploadFileNames = fileService.uploadToThumbnailS3Files(files);
 
         //화면에서 변화 없이 계속 유지된 파일들
         List<String> uploadedFileNames = dto.getUploadFileNames();
@@ -207,7 +207,7 @@ public class AdminProductServiceImpl implements AdminProductService {
                     .filter(fileName -> !uploadedFileNames.contains(fileName)).toList();
 
             //실제 파일 삭제
-            fileUtil.deleteS3Files(removeFiles);
+            fileService.deleteS3Files(removeFiles);
         }
 
         // 상품 수정
@@ -245,7 +245,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         }
 
         // 파일 삭제
-        fileUtil.deleteS3Files(product.getImageList().stream()
+        fileService.deleteS3Files(product.getImageList().stream()
                 .map(ProductImage::getImageName)
                 .collect(Collectors.toList()));
 

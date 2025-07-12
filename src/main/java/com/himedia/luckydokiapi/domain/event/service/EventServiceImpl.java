@@ -9,7 +9,7 @@ import com.himedia.luckydokiapi.domain.event.repository.EventBridgeRepository;
 import com.himedia.luckydokiapi.domain.event.repository.EventRepository;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
 import com.himedia.luckydokiapi.exception.EventNotFoundException;
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
+import com.himedia.luckydokiapi.util.file.CustomFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class EventServiceImpl implements EventService {
 	private final EventRepository eventRepository;
 	private final EventBridgeService eventBridgeService;
 
-	private final CustomFileUtil fileUtil;
+	private final CustomFileService fileService;
 	private final EventBridgeRepository eventBridgeRepository;
 
 	@Transactional(readOnly = true)
@@ -77,7 +77,7 @@ public class EventServiceImpl implements EventService {
 
 		// 이미지 업로드
 		if (requestDto.getFile() != null) {
-			requestDto.setImage(fileUtil.uploadS3File(requestDto.getFile()));
+			requestDto.setImage(fileService.uploadS3File(requestDto.getFile()));
 		}
 
 		Event event = Event.builder()

@@ -10,7 +10,7 @@ import com.himedia.luckydokiapi.domain.review.entity.Review;
 import com.himedia.luckydokiapi.domain.review.repository.ReviewRepository;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
+import com.himedia.luckydokiapi.util.file.CustomFileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
-    private final CustomFileUtil customFileUtil;
+    private final CustomFileService customFileService;
     private final ShopRepository shopRepository;
     private final ProductRepository productRepository;
 
@@ -58,7 +58,7 @@ public class ReviewServiceImpl implements ReviewService {
         // 만약 리뷰 이미지가 있으면 s3에 업로드
         String reviewImage = null;
         if (reviewRequestDTO.getImage() != null && !reviewRequestDTO.getImage().isEmpty()) {
-            reviewImage = customFileUtil.uploadToThumbnailS3File(reviewRequestDTO.getImage());
+            reviewImage = customFileService.uploadToThumbnailS3File(reviewRequestDTO.getImage());
         }
         Review review = dtoToEntity(reviewRequestDTO, member, shop, product, reviewImage);
         reviewRepository.save(review);
@@ -69,7 +69,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void deleteByProduct(Product product) {
         List<Review> reviews = reviewRepository.findByProductId(product.getId());
         for (Review review : reviews) {
-            customFileUtil.deleteS3File(review.getImage());
+            customFileService.deleteS3File(review.getImage());
             reviewRepository.delete(review);
         }
     }
@@ -81,7 +81,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (!review.getMember().getEmail().equals(member.getEmail())) {
             throw new RuntimeException("리뷰 작성자 본인만 삭제 가능합니다");
         }
-        customFileUtil.deleteS3File(review.getImage());
+        customFileService.deleteS3File(review.getImage());
         reviewRepository.delete(review);
         return review.getId();
     }

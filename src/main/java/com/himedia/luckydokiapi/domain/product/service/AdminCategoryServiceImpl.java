@@ -5,7 +5,7 @@ import com.himedia.luckydokiapi.domain.product.dto.CategoryDTO;
 import com.himedia.luckydokiapi.domain.product.entity.Category;
 import com.himedia.luckydokiapi.domain.product.repository.CategoryRepository;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
+import com.himedia.luckydokiapi.util.file.CustomFileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final CustomFileUtil fileUtil;
+    private final CustomFileService fileService;
 
     private final ProductRepository productRepository;
 
@@ -38,7 +38,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         // 파일 s3 업로드
         if (dto.getFile() != null || dto.getFile().isEmpty()) {
             MultipartFile file = dto.getFile();
-            String uploadFileName = fileUtil.uploadToThumbnailS3File(file);
+            String uploadFileName = fileService.uploadToThumbnailS3File(file);
             dto.setFileName(uploadFileName);
         }
         Category result = categoryRepository.save(this.dtoToEntity(dto));
@@ -53,11 +53,11 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         if (categoryDTO.getFile() != null || categoryDTO.getFile().isEmpty()) {
 
             if(category.getLogo() != null) {
-                fileUtil.deleteS3File(category.getLogo());
+                fileService.deleteS3File(category.getLogo());
             }
 
             MultipartFile file = categoryDTO.getFile();
-            String uploadFileName = fileUtil.uploadToThumbnailS3File(file);
+            String uploadFileName = fileService.uploadToThumbnailS3File(file);
             category.changeLogo(uploadFileName);
         }
 
@@ -73,7 +73,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
         categoryRepository.deleteById(categoryId);
         // 파일 삭제
-        fileUtil.deleteS3File(this.getEntity(categoryId).getLogo());
+        fileService.deleteS3File(this.getEntity(categoryId).getLogo());
     }
 
 

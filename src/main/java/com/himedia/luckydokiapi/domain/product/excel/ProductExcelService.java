@@ -5,14 +5,12 @@ import com.himedia.luckydokiapi.domain.product.dto.ProductDTO;
 import com.himedia.luckydokiapi.domain.product.entity.ProductImage;
 import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.exception.ExcelFailException;
-import com.himedia.luckydokiapi.util.excel.RegistrationFailResponseDTO;
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
+import com.himedia.luckydokiapi.util.file.CustomFileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -23,7 +21,7 @@ public class ProductExcelService {
 
     private final ProductRepository productRepository;
     private final ProductCreator productCreator;
-    private final CustomFileUtil fileUtil;
+    private final CustomFileService fileService;
 
 
     public Long register(List<ProductDTO.Request> dtoList) {
@@ -54,7 +52,7 @@ public class ProductExcelService {
                             .discountPrice(product.getDiscountPrice())
                             .description(product.getDescription())
                             .stockNumber(product.getStockNumber())
-                            .imagePathList(fileUtil.getMergedS3ImagePathList(product.getImageList().stream().map(ProductImage::getImageName).toList()))
+                            .imagePathList(fileService.getMergedS3ImagePathList(product.getImageList().stream().map(ProductImage::getImageName).toList()))
                             .build();
                 })
                 .toList();

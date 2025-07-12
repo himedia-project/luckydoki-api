@@ -2,7 +2,6 @@ package com.himedia.luckydokiapi.util.file;
 
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -10,15 +9,15 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Set;
 import java.util.UUID;
+
+import static com.himedia.luckydokiapi.util.file.FileNameUtil.*;
 
 @Slf4j
 public final class ThumbnailUtil {
 
     private static final int THUMBNAIL_SIZE = 400;
     private static final float WEBP_QUALITY = 0.8f;
-    private static final Set<String> ALLOWED_EXTENSIONS = Set.of("svg", "jpg", "jpeg", "png", "gif", "webp");
 
     // 유틸리티 클래스이므로 인스턴스화 방지
     private ThumbnailUtil() {
@@ -35,8 +34,13 @@ public final class ThumbnailUtil {
     public static Path createThumbnail(MultipartFile file) throws IOException {
         validateFile(file);
         
-        String extension = getFileExtension(file.getOriginalFilename());
-        String baseFileName = getBaseFileName(file.getOriginalFilename());
+        String originalFilename = file.getOriginalFilename();
+        String extension = getFileExtension(originalFilename);
+        String sanitizedFilename = sanitizeFileName(originalFilename);
+        String baseFileName = getBaseFileName(sanitizedFilename);
+        
+        // 파일명 변환 로그 추가
+        logFileNameSanitization(originalFilename, sanitizedFilename);
         
         // WebP 변환 여부 결정 (GIF는 애니메이션 보존을 위해 원본 유지)
         boolean convertToWebP = shouldConvertToWebP(extension);
@@ -103,8 +107,8 @@ public final class ThumbnailUtil {
         }
         
         String extension = getFileExtension(originalFilename);
-        if (!ALLOWED_EXTENSIONS.contains(extension)) {
-            throw new IllegalArgumentException("지원되지 않는 파일 형식입니다. 허용된 확장자: " + ALLOWED_EXTENSIONS);
+        if (!isValidImageExtension(extension)) {
+            throw new IllegalArgumentException("지원되지 않는 파일 형식입니다. 허용된 확장자: " + getAllowedExtensions());
         }
     }
 
@@ -118,25 +122,7 @@ public final class ThumbnailUtil {
         log.info("썸네일 파일 생성 완료: {}, size: {} bytes", thumbnailPath, Files.size(thumbnailPath));
     }
 
-    /**
-     * 파일 확장자 추출
-     */
-    private static String getFileExtension(String filename) {
-        if (filename == null || !filename.contains(".")) {
-            throw new IllegalArgumentException("파일 확장자를 찾을 수 없습니다.");
-        }
-        return filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
-    }
 
-    /**
-     * 파일명에서 확장자를 제외한 기본 이름 추출
-     */
-    private static String getBaseFileName(String filename) {
-        if (filename == null || !filename.contains(".")) {
-            return filename;
-        }
-        return filename.substring(0, filename.lastIndexOf("."));
-    }
 
     /**
      * WebP 변환 여부 결정
@@ -157,20 +143,6 @@ public final class ThumbnailUtil {
                 log.error("임시 파일 삭제 실패: {}", e.getMessage());
             }
         }
-    }
-
-    /**
-     * 파일 확장자에 따른 Content-Type 반환
-     */
-    public static String getContentType(String extension) {
-        return switch (extension.toLowerCase()) {
-            case "jpg", "jpeg" -> "image/jpeg";
-            case "png" -> "image/png";
-            case "gif" -> "image/gif";
-            case "webp" -> "image/webp";
-            case "svg" -> "image/svg+xml";
-            default -> "application/octet-stream";
-        };
     }
 
     /**

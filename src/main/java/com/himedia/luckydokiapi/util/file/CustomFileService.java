@@ -1,7 +1,7 @@
 package com.himedia.luckydokiapi.util.file;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Log4j2
+@Slf4j
 @RequiredArgsConstructor
-public class CustomFileUtil {
+public class CustomFileService {
 
     private final AwsS3Util s3Util;
 
@@ -35,6 +35,8 @@ public class CustomFileUtil {
 //        log.info(uploadPath);
 //    }
 
+
+    // === S3 관련 메서드들 ===
 
     /**
      * 파일 s3 업로드
@@ -74,7 +76,6 @@ public class CustomFileUtil {
         return s3Util.uploadToThumbnailS3Files(files);
     }
 
-
     /**
      * 파일 가져오기
      * @param fileName 파일명
@@ -84,12 +85,10 @@ public class CustomFileUtil {
         try {
             return s3Util.getFile(fileName);
         } catch (IOException e) {
-//            e.printStackTrace();
             log.error("getFile error: {}", e.getMessage());
             throw new RuntimeException("Failed to get file: " + fileName);
         }
     }
-
 
     /**
      * s3 파일 삭제
@@ -155,18 +154,12 @@ public class CustomFileUtil {
 
                 @Override
                 public String getOriginalFilename() {
-                    // Extract file name from the URL
-                    // https://product-image.wconcept.co.kr/productimg/image/img1/36/303919636_OQ83444.jpg?RS=412
-                    // https://thumbnail6.coupangcdn.com/thumbnails/remote/292x292q65ex/image/vendor_inventory/0f9e/46ab581f1bc3e0132e88f32452433bccadc52994cf468a49014498ddbedb.jpg
                     String[] segments = finalImageUrl.split("/");
-                    // 뒤에 ?RS=412 같은 쿼리스트링 제거
-
                     return segments[segments.length - 1].replaceAll("\\?.*", "");
                 }
 
                 @Override
                 public String getContentType() {
-                    // Guess content type based on file extension
                     return URLConnection.guessContentTypeFromName(getOriginalFilename());
                 }
 
@@ -199,7 +192,6 @@ public class CustomFileUtil {
             return multipartFile;
 
         } catch (FileNotFoundException e) {
-            // 실제 FileNotFoundException 일어나면, just return null
             log.error("File not found at the given URL: {}", imageUrl);
             return null;
         } catch (IOException e) {
@@ -208,23 +200,19 @@ public class CustomFileUtil {
             if (inputStream != null) {
                 inputStream.close();
             }
-            // Close the connection
             if (connection != null) {
                 connection.getInputStream().close();
             }
         }
-
-
     }
+
 
     /**
      * 이미지 URL을 MultipartFile로 변환 후 s3에 저장
      * @param imagePathList 이미지 URL 리스트
      * @return 저장된 파일명 리스트
      */
-
     public List<String> uploadImagePathS3Files(List<String> imagePathList) {
-        // imagePathList -> MultipartFile 변환 -> saveFiles
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
         for (String imagePath : imagePathList) {
@@ -234,7 +222,6 @@ public class CustomFileUtil {
                     multipartFiles.add(multipartFile);
                 }
             } catch (IOException e) {
-//                e.printStackTrace();
                 log.error("uploadImagePathS3Files error: {}", e.getMessage());
                 throw new RuntimeException("Failed to download file from URL: " + imagePath);
             }
@@ -251,7 +238,6 @@ public class CustomFileUtil {
         return s3Util.getUrl(fileName);
     }
 
-
     /**
      * S3에 저장된 이미지 경로를 CloudFront URL로 변환하여 가져온다.
      * @param stringList 이미지 파일 이름 리스트
@@ -264,7 +250,6 @@ public class CustomFileUtil {
 
         List<String> resultList = new ArrayList<>();
 
-        // CloudFront URL 사용
         for (String fileName : stringList) {
             if (fileName != null && !fileName.isEmpty()) {
                 resultList.add(this.getS3Url(fileName));
@@ -273,6 +258,7 @@ public class CustomFileUtil {
 
         return String.join(",", resultList);
     }
+
 
     /**
      * CloudFront에서 파일 리소스 가져오기
@@ -287,4 +273,8 @@ public class CustomFileUtil {
             throw new RuntimeException("CloudFront에서 파일 리소스를 가져오는데 실패했습니다: " + fileName);
         }
     }
+
+    // === 파일명 관련 유틸리티 메서드들 ===
+    // 파일명 관련 유틸리티 메서드들은 FileNameUtil 클래스로 이동되었습니다.
+    // 사용법: FileNameUtil.getFileExtension(filename), FileNameUtil.sanitizeFileName(filename) 등
 }

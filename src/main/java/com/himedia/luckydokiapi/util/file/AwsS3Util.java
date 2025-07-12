@@ -25,9 +25,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
+
+import static com.himedia.luckydokiapi.util.file.FileNameUtil.*;
 
 
 @Slf4j
@@ -71,14 +71,11 @@ public class AwsS3Util {
             throw new IllegalArgumentException("File is empty");
         }
 
-        String extension = Objects.requireNonNull(file.getOriginalFilename())
-                .substring(file.getOriginalFilename().lastIndexOf(".") + 1)
-                .toLowerCase();
+        String extension = getFileExtension(file.getOriginalFilename());
 
-        // 이미지 확장자 검증 (허용된 이미지 확장자 검증)
-        Set<String> allowedExtensions = Set.of("svg", "jpg", "jpeg", "png", "gif", "webp");
-        if (!allowedExtensions.contains(extension)) {
-            throw new IllegalArgumentException("이미지 확장자는 jpg, jpeg, png, svg, gif, webp만 허용됩니다.");
+        // 이미지 확장자 검증
+        if (!isValidImageExtension(extension)) {
+            throw new IllegalArgumentException("지원되지 않는 파일 형식입니다. 허용된 확장자: " + getAllowedExtensions());
         }
 
         String originalFilename = file.getOriginalFilename();
@@ -132,7 +129,7 @@ public class AwsS3Util {
                         .bucket(bucketName)
                         .key(thumbnailFileName)
                         .contentLength(thumbnailPath.toFile().length())
-                        .contentType(ThumbnailUtil.getContentType(outputExtension))
+                        .contentType(getContentType(outputExtension))
                         .build();
                 s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(fileInputStream, thumbnailPath.toFile().length()));
                 log.info("S3에 업로드 성공! thumbnailPath: {}, size: {} bytes", thumbnailPath, thumbnailPath.toFile().length());
@@ -220,6 +217,10 @@ public class AwsS3Util {
                 // 캐시 관련 헤더 추가
                 headers.add("Cache-Control", "max-age=31536000, public");
                 
+                // Content-Disposition 헤더를 안전하게 설정 (한글 파일명 문제 방지)
+                String safeFileName = sanitizeFileNameForHeader(fileName);
+                headers.add("Content-Disposition", "inline; filename=\"" + safeFileName + "\"");
+                
                 return ResponseEntity.ok().headers(headers).body(resource);
             }
         } catch (IOException e) {
@@ -227,6 +228,8 @@ public class AwsS3Util {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+
 
     /**
      * S3에 파일 삭제

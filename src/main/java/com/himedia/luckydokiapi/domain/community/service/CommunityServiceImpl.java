@@ -20,7 +20,7 @@ import com.himedia.luckydokiapi.domain.product.repository.ProductRepository;
 import com.himedia.luckydokiapi.domain.product.repository.TagRepository;
 import com.himedia.luckydokiapi.domain.search.service.IndexingService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
+import com.himedia.luckydokiapi.util.file.CustomFileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final CommunityRepository communityRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
-    private final CustomFileUtil fileUtil;
+    private final CustomFileService fileService;
     private final MemberService memberService;
     private final TagRepository tagRepository;
     private final CommunityTagRepository communityTagRepository;
@@ -123,7 +123,7 @@ public class CommunityServiceImpl implements CommunityService {
 
         try {
             List<MultipartFile> files = request.getFiles();
-            List<String> uploadS3FilesNames = fileUtil.uploadS3Files(files);
+            List<String> uploadS3FilesNames = fileService.uploadS3Files(files);
             log.info("uploadS3FilesNames: {}", uploadS3FilesNames);
             request.setUploadFileNames(uploadS3FilesNames);
         } catch (Exception e) {
@@ -275,7 +275,7 @@ public class CommunityServiceImpl implements CommunityService {
         List<String> deleteImages = community.getImageList().stream()
                 .map(CommunityImage::getImageName)
                 .collect(Collectors.toList());
-        fileUtil.deleteS3Files(deleteImages);
+        fileService.deleteS3Files(deleteImages);
         communityTagRepository.deleteByCommunity(community);
         communityRepository.delete(community);
 

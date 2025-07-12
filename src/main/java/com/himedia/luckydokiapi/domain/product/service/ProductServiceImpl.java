@@ -14,12 +14,11 @@ import com.himedia.luckydokiapi.domain.search.service.IndexingService;
 import com.himedia.luckydokiapi.domain.shop.entity.Shop;
 import com.himedia.luckydokiapi.domain.shop.repository.ShopRepository;
 import com.himedia.luckydokiapi.exception.OutOfStockException;
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
+import com.himedia.luckydokiapi.util.file.CustomFileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryBridgeRepository categoryBridgeRepository;
     private final ProductTagRepository productTagRepository;
     private final TagRepository tagRepository;
-    private final CustomFileUtil fileUtil;
+    private final CustomFileService fileService;
 
     private final IndexingService indexingService;
 
@@ -124,7 +123,7 @@ public class ProductServiceImpl implements ProductService {
 
         try {
             List<MultipartFile> files = dto.getFiles();
-            List<String> uploadS3FilesNames = fileUtil.uploadToThumbnailS3Files(files);
+            List<String> uploadS3FilesNames = fileService.uploadToThumbnailS3Files(files);
             log.info("uploadS3FilesNames: {}", uploadS3FilesNames);
             //s3업로드
             dto.setUploadFileNames(uploadS3FilesNames);
@@ -200,7 +199,7 @@ public class ProductServiceImpl implements ProductService {
         List<MultipartFile> files = dto.getFiles();
 
         //s3에 업로드하고 만들어진 새 파일 이름들
-        List<String> currentUploadFileNames = fileUtil.uploadS3Files(files);
+        List<String> currentUploadFileNames = fileService.uploadS3Files(files);
 
         //화면에서 변화 없이 계속 유지된 파일들
         List<String> uploadedFileNames = dto.getUploadFileNames();
@@ -224,7 +223,7 @@ public class ProductServiceImpl implements ProductService {
                     .filter(fileName -> !uploadedFileNames.contains(fileName)).toList();
             try {
                 //실제 파일 삭제
-                fileUtil.deleteS3Files(removeFiles);
+                fileService.deleteS3Files(removeFiles);
             } catch (Exception e) {
                 log.error("파일 삭제 에러 : {}", e.getMessage());
                 throw new RuntimeException("파일 삭제 에러");
@@ -299,7 +298,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = this.getEntity(productId);
         // s3 파일 삭제
         List<String> deleteImages = product.getImageList().stream().map(ProductImage::getImageName).collect(Collectors.toList());
-        fileUtil.deleteS3Files(deleteImages);
+        fileService.deleteS3Files(deleteImages);
 
         // 파일 삭제
         product.clearImageList();

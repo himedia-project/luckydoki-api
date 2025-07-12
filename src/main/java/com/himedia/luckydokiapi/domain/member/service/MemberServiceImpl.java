@@ -16,7 +16,7 @@ import com.himedia.luckydokiapi.security.CustomUserDetailService;
 import com.himedia.luckydokiapi.security.MemberDTO;
 import com.himedia.luckydokiapi.security.service.TokenService;
 import com.himedia.luckydokiapi.util.JWTUtil;
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
+import com.himedia.luckydokiapi.util.file.CustomFileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class MemberServiceImpl implements MemberService {
     private final CustomUserDetailService userDetailService;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final CustomFileUtil fileUtil;
+    private final CustomFileService fileService;
     private final ShopRepository shopRepository;
     private final PhoneVerificationService phoneVerificationService;
     private final CouponService couponService;
@@ -198,7 +198,7 @@ public class MemberServiceImpl implements MemberService {
 
         // 새로 업로드된 파일이 있으면(이미지를 바꿧으면)
         if (request.getFile() != null && !request.getFile().isEmpty()) {
-            uploadedImageName = fileUtil.uploadToThumbnailS3File(request.getFile());
+            uploadedImageName = fileService.uploadToThumbnailS3File(request.getFile());
             // 기존 파일 삭제
 //            fileUtil.deleteS3File(oldImageName);
         }
@@ -230,7 +230,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         // 파일을 업로드하고 DB에 저장할 파일 경로를 설정
-        String uploadedImagePath = fileUtil.uploadToThumbnailS3File(requestDTO.getProfileImage());
+        String uploadedImagePath = fileService.uploadToThumbnailS3File(requestDTO.getProfileImage());
 
         // shopImage 값을 설정한 상태에서 SellerApplication 객체 생성
         SellerApplication application = SellerApplication.builder()

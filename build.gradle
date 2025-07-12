@@ -179,12 +179,3 @@ tasks.named('jar') {
     enabled = false
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
-
-// JAXB 의존성 중복 해결을 위한 설정
-configurations.all {
-    resolutionStrategy {
-        // JAXB 버전 충돌 해결
-        force 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
-        force 'com.sun.xml.bind:jaxb-impl:4.0.0'
-    }
-}

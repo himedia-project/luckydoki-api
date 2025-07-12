@@ -1,7 +1,7 @@
 package com.himedia.luckydokiapi.domain.image.controller;
 
 
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
+import com.himedia.luckydokiapi.util.file.CustomFileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 @Tag(name = "image-api", description = "이미지 upload , view 관련 api")
 public class ImageController {
 
-    private final CustomFileUtil fileUtil;
+    private final CustomFileService fileService;
 
     @Operation(
             summary = "이미지 조회 (레거시)",
@@ -40,7 +40,7 @@ public class ImageController {
     )
     @GetMapping("/view/{fileName}")
     public ResponseEntity<Resource> viewFileGET(@Parameter(description = "화면에 보여잘 파일명") @PathVariable String fileName) {
-        return fileUtil.getFile(fileName);
+        return fileService.getFile(fileName);
     }
 
 
@@ -59,7 +59,7 @@ public class ImageController {
             @PathVariable String fileName) {
         try {
             // CloudFront에서 리소스 가져오기
-            Resource resource = fileUtil.getFileResource(fileName);
+            Resource resource = fileService.getFileResource(fileName);
 
             // 파일 확장자에 따른 미디어 타입 결정
             String mediaType = determineMediaType(fileName);
@@ -87,7 +87,7 @@ public class ImageController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFilePOST(@RequestPart("file") MultipartFile file) {
         log.info("Image upload request received: {}", file.getOriginalFilename());
-        return ResponseEntity.ok(fileUtil.uploadS3File(file));
+        return ResponseEntity.ok(fileService.uploadS3File(file));
     }
 
 
@@ -102,7 +102,7 @@ public class ImageController {
     @PostMapping("/upload/thumbnail")
     public ResponseEntity<String> thumbnailUploadFilePOST(@RequestPart("file") MultipartFile file) {
         log.info("Thumbnail upload request received: {}", file.getOriginalFilename());
-        return ResponseEntity.ok(fileUtil.uploadToThumbnailS3File(file));
+        return ResponseEntity.ok(fileService.uploadToThumbnailS3File(file));
     }
 
     /**

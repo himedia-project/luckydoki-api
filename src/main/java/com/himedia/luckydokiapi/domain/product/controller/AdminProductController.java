@@ -6,7 +6,7 @@ import com.himedia.luckydokiapi.domain.product.dto.ProductSearchDTO;
 import com.himedia.luckydokiapi.domain.product.enums.ProductApproval;
 import com.himedia.luckydokiapi.domain.product.service.AdminProductService;
 import com.himedia.luckydokiapi.dto.PageResponseDTO;
-import com.himedia.luckydokiapi.util.file.CustomFileUtil;
+import com.himedia.luckydokiapi.util.file.CustomFileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminProductController {
 
-    private final CustomFileUtil fileUtil;
+    private final CustomFileService fileService;
     private final AdminProductService productService;
 
     // 리스트조회
@@ -77,7 +77,7 @@ public class AdminProductController {
     // 이미지 불러오기
     @GetMapping("/view/{fileName}")
     public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName) {
-        return fileUtil.getFile(fileName);
+        return fileService.getFile(fileName);
 
     }
 
