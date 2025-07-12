@@ -80,8 +80,8 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:4.1.2'
 
     // Jakarta XML Binding
-    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
-    implementation 'com.sun.xml.bind:jaxb-impl:4.0.0'
+//    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
+//    implementation 'com.sun.xml.bind:jaxb-impl:4.0.0'
 
     // Jakarta Activation (필요한 경우)
     implementation 'jakarta.activation:jakarta.activation-api:2.1.0'
@@ -89,7 +89,7 @@ dependencies {
     // JAXB는 AWS SDK v2에서 더 이상 불필요
 
     // WebP 지원을 위한 의존성 추가
-    implementation 'org.sejda.imageio:webp-imageio:0.1.6'
+//    implementation 'org.sejda.imageio:webp-imageio:0.1.6'
 
     // selenium
     implementation 'org.seleniumhq.selenium:selenium-java:4.25.0'
