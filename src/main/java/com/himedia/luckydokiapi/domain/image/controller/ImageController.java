@@ -2,6 +2,7 @@ package com.himedia.luckydokiapi.domain.image.controller;
 
 
 import com.himedia.luckydokiapi.util.file.CustomFileService;
+import com.himedia.luckydokiapi.util.file.FileNameUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -113,13 +114,6 @@ public class ImageController {
      */
     private String determineMediaType(String fileName) {
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-        return switch (extension) {
-            case "jpg", "jpeg" -> "image/jpeg";
-            case "png" -> "image/png";
-            case "gif" -> "image/gif";
-            case "webp" -> "image/webp";
-            case "svg" -> "image/svg+xml";
-            default -> "application/octet-stream";
-        };
+        return FileNameUtil.getContentType(extension);
     }
 }
