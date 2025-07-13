@@ -74,6 +74,8 @@ dependencies {
 
     // thumbnailator(gif,webp 지원 x)
     implementation 'net.coobird:thumbnailator:0.4.19'
+    // WebP 지원을 위한 의존성 추가
+    implementation 'org.sejda.imageio:webp-imageio:0.1.6'
 
     // Apache POI
     implementation 'org.apache.poi:poi:4.1.2'
@@ -87,9 +89,6 @@ dependencies {
     implementation 'jakarta.activation:jakarta.activation-api:2.1.0'
 
     // JAXB는 AWS SDK v2에서 더 이상 불필요
-
-    // WebP 지원을 위한 의존성 추가
-//    implementation 'org.sejda.imageio:webp-imageio:0.1.6'
 
     // selenium
     implementation 'org.seleniumhq.selenium:selenium-java:4.25.0'
